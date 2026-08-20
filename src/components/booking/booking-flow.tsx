@@ -270,7 +270,7 @@ export function BookingFlow() {
         <MapView
           className="h-full"
           showLocate
-          locateOffsetClassName="bottom-4"
+          locateOffsetClassName="top-4"
           routes={step === "route" ? routes : route ? [route] : routes}
           selectedRouteId={routeId}
           onSelectRoute={selectRoute}
