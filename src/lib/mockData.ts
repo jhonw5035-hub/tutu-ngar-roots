@@ -408,3 +408,116 @@ export const upcomingTrip: UpcomingTrip = {
 
 /** Every point name, used for lightweight destination suggestions. */
 export const allPointNames = Array.from(new Set(pickupPoints.map((p) => p.name)));
+
+/* ------------------------------------------------------------------ */
+/* Derived view-models for the card-based passenger screens.           */
+/* Everything below is computed from the arrays above — no new source. */
+/* ------------------------------------------------------------------ */
+
+export type TimeBand = "any" | "morning" | "afternoon" | "evening";
+
+export function bandOf(time: string): Exclude<TimeBand, "any"> {
+  const hour = Number(time.slice(0, 2));
+  if (hour < 12) return "morning";
+  if (hour < 17) return "afternoon";
+  return "evening";
+}
+
+function haversineKm(a: LatLng, b: LatLng) {
+  const R = 6371;
+  const dLat = ((b[0] - a[0]) * Math.PI) / 180;
+  const dLng = ((b[1] - a[1]) * Math.PI) / 180;
+  const lat1 = (a[0] * Math.PI) / 180;
+  const lat2 = (b[0] * Math.PI) / 180;
+  const h =
+    Math.sin(dLat / 2) ** 2 + Math.sin(dLng / 2) ** 2 * Math.cos(lat1) * Math.cos(lat2);
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+
+export function pathDistanceKm(path: LatLng[]) {
+  let total = 0;
+  for (let i = 0; i < path.length - 1; i++) total += haversineKm(path[i]!, path[i + 1]!);
+  return total;
+}
+
+const AVG_SPEED_KMH = 22;
+
+export function addMinutes(time: string, minutes: number) {
+  const [h, m] = time.split(":").map(Number) as [number, number];
+  const total = (h * 60 + m + Math.round(minutes)) % (24 * 60);
+  return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
+}
+
+export type SlotDetail = TimeSlot & {
+  seatsLeft: number;
+  arrival: string;
+  band: Exclude<TimeBand, "any">;
+  price: number;
+  /** True when everyone already booked in this van is female. */
+  womenOnlyAvailable: boolean;
+  recommended: boolean;
+};
+
+export function getSlotDetails(routeId: string | null): SlotDetail[] {
+  const route = getRoute(routeId);
+  if (!route) return [];
+  const minutes = (pathDistanceKm(route.path) / AVG_SPEED_KMH) * 60;
+
+  const details: SlotDetail[] = getSlotsForRoute(routeId).map((slot) => {
+    const riders = getPassengers(slot.id);
+    return {
+      ...slot,
+      seatsLeft: Math.max(0, slot.seatsCapacity - slot.seatsFilled),
+      arrival: addMinutes(slot.time, minutes),
+      band: bandOf(slot.time),
+      price: route.fare,
+      womenOnlyAvailable: riders.length > 0 && riders.every((r) => r.gender === "female"),
+      recommended: false,
+    };
+  });
+
+  // Soonest departure that still has comfortable availability.
+  const pick = details.find((d) => d.seatsLeft >= 2) ?? details.find((d) => d.seatsLeft >= 1);
+  return details.map((d) => (d.id === pick?.id ? { ...d, recommended: true } : d));
+}
+
+export type RouteSummary = {
+  route: Route;
+  label: string;
+  startingPrice: number;
+  pickupCount: number;
+  nextDeparture: SlotDetail | null;
+  distanceKm: number;
+};
+
+export function getRouteSummary(route: Route): RouteSummary {
+  const slots = getSlotDetails(route.id);
+  return {
+    route,
+    label: `${route.from} → ${route.to}`,
+    startingPrice: route.fare,
+    pickupCount: getPointsForRoute(route.id).length,
+    nextDeparture: slots.find((s) => s.seatsLeft > 0) ?? slots[0] ?? null,
+    distanceKm: pathDistanceKm(route.path),
+  };
+}
+
+export const routeSummaries = (): RouteSummary[] => routes.map(getRouteSummary);
+
+/** Quick-select cards on Passenger Home. */
+export const popularRouteIds = ["r-pyay", "r-inya"];
+
+/** All pickup/destination names, for lightweight input suggestions. */
+export const allPointNames = Array.from(new Set(pickupPoints.map((p) => p.name)));
+
+/** Mock confirmed booking shown on Passenger Home. */
+export const upcomingTrip = {
+  id: "t-2001",
+  status: "Confirmed",
+  routeName: "Pyay Road Corridor",
+  pickup: "Hledan Junction",
+  destination: "Sule Pagoda Road",
+  date: "Tomorrow",
+  time: "08:15",
+  fare: 2500,
+};
