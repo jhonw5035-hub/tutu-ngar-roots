@@ -1,23 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { AppShell } from "@/components/layout/app-shell";
-import { usePassengerNav } from "@/components/layout/passenger-nav";
-import { BookingFlow } from "@/components/booking/booking-flow";
+import { TaxiDoorScene } from "@/components/intro/taxi-door-scene";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Book a Shared Ride in Yangon — Tu Tu Ngar" },
+      { title: "Tu Tu Ngar — Shared Rides Across Yangon" },
       {
         name: "description",
         content:
-          "Pick a Yangon corridor on the map, choose your pickup, destination and departure slot, and pre-book a shared seat in minutes.",
+          "Tu Tu Ngar is pre-booked shared transportation in Yangon: scheduled departures, upfront pricing and safer rides together.",
       },
-      { property: "og:title", content: "Book a Shared Ride in Yangon — Tu Tu Ngar" },
+      { property: "og:title", content: "Tu Tu Ngar — Shared Rides Across Yangon" },
       {
         property: "og:description",
-        content:
-          "Map-first pre-booking for shared rides along Pyay Road, Inya Road and more.",
+        content: "Shared rides across Yangon — booked ahead, priced upfront, safer together.",
       },
     ],
   }),
@@ -25,11 +22,5 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const navItems = usePassengerNav();
-
-  return (
-    <AppShell portal="passenger" navItems={navItems} fullBleed>
-      <BookingFlow />
-    </AppShell>
-  );
+  return <TaxiDoorScene />;
 }
