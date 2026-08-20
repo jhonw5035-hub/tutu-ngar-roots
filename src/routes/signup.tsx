@@ -65,15 +65,36 @@ function SignupPage() {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
-  function complete(profile: SessionProfile) {
+  async function complete(profile: SessionProfile) {
+    if (role === "admin") return;
     setLoading(true);
-    // TODO(supabase): replace with supabase.auth.signUp({ email, password, options })
-    // and insert the profile row + role row server-side.
-    window.setTimeout(() => {
-      signIn(role, profile);
-      setLoading(false);
+    setError(null);
+    try {
+      await signUp({
+        role,
+        fullName: profile.fullName ?? "",
+        firstName: profile.firstName ?? "",
+        phone: profile.phone ?? "",
+        password: form.password,
+        ...(profile.gender ? { gender: profile.gender } : {}),
+        ...(profile.plateNumber ? { plateNumber: profile.plateNumber } : {}),
+        ...(profile.seatCapacity ? { seatCapacity: profile.seatCapacity } : {}),
+      });
+      // Driver-facing identification photo only — never shown to passengers.
+      if (profile.photoDataUrl) {
+        const { data } = await supabase.auth.getUser();
+        if (data.user) {
+          await supabase
+            .from("profiles")
+            .update({ photo_url: profile.photoDataUrl })
+            .eq("id", data.user.id);
+        }
+      }
       navigate({ to: portalHome[role], replace: true });
-    }, 700);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not create the account");
+      setLoading(false);
+    }
   }
 
   function handleAccountSubmit(event: React.FormEvent) {
