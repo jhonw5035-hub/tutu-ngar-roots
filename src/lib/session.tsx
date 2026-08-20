@@ -4,11 +4,9 @@ import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
 /**
- * Real Supabase Auth session store.
- *
- * The public API (role, profile, signIn*/
-/* signOut) is unchanged from the earlier local-only scaffolding so existing
- * screens keep working — only the internals now talk to Supabase.
+ * Real Supabase Auth session store. The shape (role, profile, signIn, signUp,
+ * signOut) matches the earlier local-only scaffolding so existing screens keep
+ * working — only the internals now talk to Supabase.
  */
 
 export type Role = "passenger" | "driver" | "admin";
