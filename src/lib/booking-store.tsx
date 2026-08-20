@@ -16,6 +16,8 @@ export type BookingDraft = {
   query: string;
   routeId: string | null;
   slotId: string | null;
+  /** Confirmed pickup point on the selected route. */
+  pickupPointId: string | null;
 };
 
 type BookingValue = BookingDraft & {
@@ -35,6 +37,7 @@ const initial: BookingDraft = {
   query: "",
   routeId: null,
   slotId: null,
+  pickupPointId: null,
 };
 
 const BookingContext = React.createContext<BookingValue | null>(null);
