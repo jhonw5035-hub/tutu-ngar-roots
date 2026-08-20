@@ -1,16 +1,15 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { AlertTriangle, Droplets, ShieldAlert, Sparkles, UserX, Wind } from "lucide-react";
-import { toast } from "sonner";
+import { Star } from "lucide-react";
 
 import { AppShell } from "@/components/layout/app-shell";
 import { usePassengerNav } from "@/components/layout/passenger-nav";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { pastTrips } from "@/lib/mockData";
+import { useBooking } from "@/lib/booking-store";
+import { formatTime12, getRoute, getSlotDetail, pastTrips, upcomingTrip } from "@/lib/mockData";
 
 export const Route = createFileRoute("/trips")({
   head: () => ({
@@ -19,147 +18,104 @@ export const Route = createFileRoute("/trips")({
       {
         name: "description",
         content:
-          "Review your past Tu Tu Ngar shared rides in Yangon and report an issue in a few taps.",
+          "Your upcoming Tu Tu Ngar shared departures and completed Yangon rides, with fares and ratings.",
       },
       { property: "og:title", content: "My Trips — Tu Tu Ngar" },
       {
         property: "og:description",
-        content: "Past shared rides and quick issue reporting for Yangon commuters.",
+        content: "Upcoming shared departures and completed rides in Yangon.",
       },
     ],
   }),
   component: TripsPage,
 });
 
-const categories = [
-  { id: "clean", label: "Vehicle cleanliness", icon: Sparkles },
-  { id: "odor", label: "Odor", icon: Wind },
-  { id: "driver", label: "Driver behavior", icon: UserX },
-  { id: "safety", label: "Safety", icon: ShieldAlert },
-  { id: "other", label: "Other", icon: AlertTriangle },
-];
-
 function TripsPage() {
-  const navItems = usePassengerNav();
-  const [openTripId, setOpenTripId] = useState<string | null>(null);
-  const [category, setCategory] = useState<string | null>(null);
-  const [detail, setDetail] = useState("");
-  const [sending, setSending] = useState(false);
+  const navItems = usePassengerNav("trips");
+  const navigate = useNavigate();
+  const booking = useBooking();
 
-  const submit = () => {
-    setSending(true);
-    window.setTimeout(() => {
-      setSending(false);
-      setOpenTripId(null);
-      setCategory(null);
-      setDetail("");
-      toast.success("Report submitted — our safety team will review it");
-    }, 1000);
-  };
+  const slot = getSlotDetail(booking.slotId);
+  const route = getRoute(booking.routeId);
+
+  const upcoming = slot && route
+    ? {
+        label: `${route.from} → ${route.to}`,
+        when: `${booking.day === "today" ? "Today" : "Tomorrow"} · ${formatTime12(slot.time)}`,
+      }
+    : {
+        label: `${upcomingTrip.pickup} → ${upcomingTrip.destination}`,
+        when: `${upcomingTrip.date} · ${formatTime12(upcomingTrip.time)}`,
+      };
 
   return (
     <AppShell portal="passenger" navItems={navItems}>
-      <section className="space-y-1">
-        <h1 className="text-2xl">My trips</h1>
-        <p className="text-sm text-muted-foreground">
-          Past shared rides. Something wrong? Report it in a couple of taps.
-        </p>
+      <h1 className="text-2xl">My Trips.</h1>
+
+      <section className="mt-5 space-y-2">
+        <h2 className="text-lg">Upcoming</h2>
+        <Card className="shadow-card">
+          <CardContent className="space-y-2 pt-6">
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-sm font-semibold">{upcoming.label}</span>
+              <Badge variant="confirmed">Confirmed</Badge>
+            </div>
+            <p className="num text-sm text-muted-foreground">{upcoming.when}</p>
+            <Button size="sm" onClick={() => navigate({ to: "/trip" })}>
+              View Trip
+            </Button>
+          </CardContent>
+        </Card>
       </section>
 
-      <div className="mt-5 space-y-3">
-        {pastTrips.map((trip) => (
+      <section className="mt-6 space-y-2">
+        <h2 className="text-lg">Completed</h2>
+        {pastTrips.map((trip, i) => (
           <Card key={trip.id} className="shadow-card">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center justify-between gap-2 text-base">
-                {trip.routeName}
-                <Badge variant="muted">Completed</Badge>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              <p className="text-muted-foreground">
-                {trip.pickup} → {trip.destination}
-              </p>
-              <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
-                <span>{trip.date}</span>
-                <span className="num text-foreground">{trip.time}</span>
-                <span className="num text-foreground">
-                  {trip.fare.toLocaleString()} Ks
+            <CardContent className="space-y-2 pt-6">
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-sm font-semibold">
+                  {trip.pickup} → {trip.destination}
                 </span>
-                <span>
-                  {trip.driverName} · <span className="num">{trip.plate}</span>
+                <span className="num text-sm text-primary">
+                  {trip.fare.toLocaleString()} MMK
                 </span>
               </div>
-
-              {openTripId === trip.id ? (
-                <div className="space-y-3 rounded-xl border border-border p-3">
-                  <p className="text-sm font-semibold">What went wrong?</p>
-                  <div className="flex flex-wrap gap-2">
-                    {categories.map((c) => {
-                      const Icon = c.icon;
-                      const selected = category === c.id;
-                      return (
-                        <button
-                          key={c.id}
-                          type="button"
-                          onClick={() => setCategory(c.id)}
-                          aria-pressed={selected}
-                          className={cn(
-                            "flex cursor-pointer items-center gap-2 rounded-full border px-3 py-2 text-xs font-medium transition-all active:scale-[0.98]",
-                            selected
-                              ? "border-primary bg-primary text-primary-foreground"
-                              : "border-border bg-card hover:border-primary/50",
-                          )}
-                        >
-                          <Icon className="size-3.5" />
-                          {c.label}
-                        </button>
-                      );
-                    })}
-                  </div>
-                  {category ? (
-                    <Textarea
-                      value={detail}
-                      onChange={(e) => setDetail(e.target.value)}
-                      placeholder="Add any detail that helps (optional)"
-                      rows={3}
-                    />
-                  ) : (
-                    <p className="text-xs text-muted-foreground">
-                      Pick a category first — details are optional.
-                    </p>
-                  )}
-                  <div className="flex gap-2">
-                    <Button disabled={!category || sending} onClick={submit}>
-                      {sending ? "Sending…" : "Submit report"}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      onClick={() => {
-                        setOpenTripId(null);
-                        setCategory(null);
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setOpenTripId(trip.id);
-                    setCategory(null);
-                    setDetail("");
-                  }}
-                >
-                  <Droplets className="size-4" /> Report an issue
-                </Button>
-              )}
+              <p className="num text-xs text-muted-foreground">
+                {i === 0 ? "Yesterday" : trip.date} · {formatTime12(trip.time)}
+              </p>
+              <StarRating tripId={trip.id} />
             </CardContent>
           </Card>
         ))}
-      </div>
+      </section>
     </AppShell>
+  );
+}
+
+function StarRating({ tripId }: { tripId: string }) {
+  const [rating, setRating] = useState(0);
+  return (
+    <div className="flex items-center gap-1">
+      {[1, 2, 3, 4, 5].map((n) => (
+        <button
+          key={n}
+          type="button"
+          aria-label={`Rate ${n} star${n === 1 ? "" : "s"} for trip ${tripId}`}
+          onClick={() => setRating(n)}
+          className="cursor-pointer p-0.5 transition-transform active:scale-90"
+        >
+          <Star
+            className={cn(
+              "size-4",
+              n <= rating ? "fill-primary text-primary" : "text-muted-foreground",
+            )}
+          />
+        </button>
+      ))}
+      <span className="ml-1 text-xs text-muted-foreground">
+        {rating ? `${rating}.0` : "Not rated"}
+      </span>
+    </div>
   );
 }

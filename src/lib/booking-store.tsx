@@ -12,6 +12,10 @@ export type BookingDraft = {
   destinationText: string;
   /** ISO yyyy-mm-dd */
   date: string;
+  /** Today / Tomorrow toggle on Passenger Home. */
+  day: "today" | "tomorrow";
+  /** Selected departure window id from mockData.timeWindows. */
+  windowId: string;
   band: TimeBand;
   query: string;
   routeId: string | null;
@@ -33,6 +37,8 @@ const initial: BookingDraft = {
   pickupText: "",
   destinationText: "",
   date: todayISO(),
+  day: "today",
+  windowId: "w-1",
   band: "any",
   query: "",
   routeId: null,

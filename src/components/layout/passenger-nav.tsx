@@ -1,8 +1,8 @@
 import { useNavigate, useRouterState } from "@tanstack/react-router";
-import { CalendarClock, Home, UserRound, Wallet } from "lucide-react";
+import { CalendarClock, Home, UserRound } from "lucide-react";
 import type { BottomNavItem } from "./bottom-nav";
 
-type Tab = "home" | "trips" | "wallet" | "account";
+type Tab = "home" | "trips" | "account";
 
 /** Bottom tabs for the passenger portal. Pass an override while booking. */
 export function usePassengerNav(activeTab?: Tab): BottomNavItem[] {
@@ -22,17 +22,11 @@ export function usePassengerNav(activeTab?: Tab): BottomNavItem[] {
     {
       label: "Trips",
       icon: CalendarClock,
-      active: isActive("trips", ["/trips", "/discover", "/book"]),
+      active: isActive("trips", ["/trips", "/rides", "/pay", "/confirmed", "/trip"]),
       onSelect: () => navigate({ to: "/trips" }),
     },
     {
-      label: "Wallet",
-      icon: Wallet,
-      active: isActive("wallet", ["/wallet"]),
-      onSelect: () => navigate({ to: "/wallet" }),
-    },
-    {
-      label: "Account",
+      label: "Profile",
       icon: UserRound,
       active: isActive("account", ["/account"]),
       onSelect: () => navigate({ to: "/account" }),

@@ -405,3 +405,113 @@ export function getTripStops(routeId: string | null, progress = 1): TripStop[] {
     pickedUp: i < progress,
   }));
 }
+
+/* ------------------------------------------------------------------ */
+/* Grouping-first view models: "find people going your way".           */
+/* ------------------------------------------------------------------ */
+
+/** Area-level pickup/destination options (not specific stops). */
+export const areas = [
+  "Hledan",
+  "Sanchaung",
+  "Kamayut",
+  "Insein",
+  "Mayangone",
+  "Inya Lake",
+  "Downtown Yangon",
+  "Botahtaung",
+];
+
+export type TimeWindow = { id: string; label: string; from: string; to: string };
+
+export const timeWindows: TimeWindow[] = [
+  { id: "w-any", label: "Any time", from: "00:00", to: "23:59" },
+  { id: "w-1", label: "08:00 AM – 08:30 AM", from: "08:00", to: "08:30" },
+  { id: "w-2", label: "08:30 AM – 09:00 AM", from: "08:30", to: "09:00" },
+];
+
+/** "08:15" -> "8:15 AM" */
+export function formatTime12(time: string) {
+  const [h, m] = time.split(":").map(Number) as [number, number];
+  const suffix = h < 12 ? "AM" : "PM";
+  const hour = h % 12 === 0 ? 12 : h % 12;
+  return `${hour}:${String(m).padStart(2, "0")} ${suffix}`;
+}
+
+export type Departure = {
+  slot: SlotDetail;
+  route: Route;
+  /** "Hledan → Downtown Yangon" */
+  label: string;
+  /** Minutes until the van reaches the passenger's area, when plausible. */
+  pickupEtaMin: number | null;
+  riders: MockPassenger[];
+};
+
+const matchesArea = (route: Route, text: string) => {
+  const q = text.trim().toLowerCase();
+  if (!q) return true;
+  return (
+    route.from.toLowerCase().includes(q) ||
+    route.to.toLowerCase().includes(q) ||
+    route.roadName.toLowerCase().includes(q) ||
+    route.name.toLowerCase().includes(q) ||
+    getPointsForRoute(route.id).some((p) => p.name.toLowerCase().includes(q))
+  );
+};
+
+/**
+ * Shared departures matching the passenger's area pair + time window.
+ * Falls back to every departure so the demo never shows an empty screen.
+ */
+export function getDepartures(
+  pickup: string,
+  destination: string,
+  windowId: string,
+): Departure[] {
+  const win = timeWindows.find((w) => w.id === windowId) ?? timeWindows[0]!;
+
+  const build = (route: Route) =>
+    getSlotDetails(route.id)
+      .filter((s) => s.time >= win.from && s.time <= win.to)
+      .map((slot, i) => ({
+        slot,
+        route,
+        label: `${route.from} → ${route.to}`,
+        pickupEtaMin: slot.seatsLeft > 0 ? 8 + i * 6 : null,
+        riders: getPassengers(slot.id),
+      }));
+
+  const matched = routes.filter((r) => matchesArea(r, pickup) && matchesArea(r, destination));
+  // A couple of corridors, all their departures — so the demo shows both a
+  // nearly-full van (social proof) and one that is just starting to fill.
+  const pool = (matched.length ? matched : routes).slice(0, 2).flatMap(build);
+  return pool.sort((a, b) => a.slot.time.localeCompare(b.slot.time)).slice(0, 5);
+}
+
+export const getSlotDetail = (slotId: string | null) => {
+  const slot = timeSlots.find((s) => s.id === slotId);
+  if (!slot) return null;
+  return getSlotDetails(slot.routeId).find((s) => s.id === slot.id) ?? null;
+};
+
+/**
+ * Nearest pickup point on a route, using the shared Haversine helper.
+ * Applied silently on Ride Details — the passenger never picks a stop.
+ */
+export function nearestPickupPoint(routeId: string | null, location: LatLng | null) {
+  const points = getPointsForRoute(routeId).filter((p) => !p.isDestination);
+  const list = points.length ? points : getPointsForRoute(routeId);
+  if (!list.length) return null;
+  if (!location) return list[0]!;
+  return list.reduce((best, p) =>
+    distanceKm(location, [p.lat, p.lng]) < distanceKm(location, [best.lat, best.lng]) ? p : best,
+  );
+}
+
+/** Trust-signal copy for the home footer (believable placeholders). */
+export const trustSignals = [
+  { icon: "👥", label: "1,240+ shared trips" },
+  { icon: "💰", label: "Save on your journey" },
+  { icon: "🛡", label: "Verified drivers" },
+];

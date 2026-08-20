@@ -12,17 +12,16 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as AdminRouteImport } from './routes/admin'
-import { Route as BookRouteImport } from './routes/book'
-import { Route as DiscoverRouteImport } from './routes/discover'
+import { Route as ConfirmedRouteImport } from './routes/confirmed'
 import { Route as DriverRouteImport } from './routes/driver'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as PickupRouteImport } from './routes/pickup'
+import { Route as PayRouteImport } from './routes/pay'
+import { Route as RidesRouteImport } from './routes/rides'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as TripRouteImport } from './routes/trip'
 import { Route as TripsRouteImport } from './routes/trips'
-import { Route as WalletRouteImport } from './routes/wallet'
-import { Route as DepartRouteIdRouteImport } from './routes/depart.$routeId'
+import { Route as RideSlotIdRouteImport } from './routes/ride.$slotId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -39,14 +38,9 @@ const AdminRoute = AdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BookRoute = BookRouteImport.update({
-  id: '/book',
-  path: '/book',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DiscoverRoute = DiscoverRouteImport.update({
-  id: '/discover',
-  path: '/discover',
+const ConfirmedRoute = ConfirmedRouteImport.update({
+  id: '/confirmed',
+  path: '/confirmed',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DriverRoute = DriverRouteImport.update({
@@ -64,9 +58,14 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PickupRoute = PickupRouteImport.update({
-  id: '/pickup',
-  path: '/pickup',
+const PayRoute = PayRouteImport.update({
+  id: '/pay',
+  path: '/pay',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RidesRoute = RidesRouteImport.update({
+  id: '/rides',
+  path: '/rides',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SignupRoute = SignupRouteImport.update({
@@ -84,14 +83,9 @@ const TripsRoute = TripsRouteImport.update({
   path: '/trips',
   getParentRoute: () => rootRouteImport,
 } as any)
-const WalletRoute = WalletRouteImport.update({
-  id: '/wallet',
-  path: '/wallet',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DepartRouteIdRoute = DepartRouteIdRouteImport.update({
-  id: '/depart/$routeId',
-  path: '/depart/$routeId',
+const RideSlotIdRoute = RideSlotIdRouteImport.update({
+  id: '/ride/$slotId',
+  path: '/ride/$slotId',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -99,50 +93,47 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/admin': typeof AdminRoute
-  '/book': typeof BookRoute
-  '/discover': typeof DiscoverRoute
+  '/confirmed': typeof ConfirmedRoute
   '/driver': typeof DriverRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
-  '/pickup': typeof PickupRoute
+  '/pay': typeof PayRoute
+  '/rides': typeof RidesRoute
   '/signup': typeof SignupRoute
   '/trip': typeof TripRoute
   '/trips': typeof TripsRoute
-  '/wallet': typeof WalletRoute
-  '/depart/$routeId': typeof DepartRouteIdRoute
+  '/ride/$slotId': typeof RideSlotIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/admin': typeof AdminRoute
-  '/book': typeof BookRoute
-  '/discover': typeof DiscoverRoute
+  '/confirmed': typeof ConfirmedRoute
   '/driver': typeof DriverRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
-  '/pickup': typeof PickupRoute
+  '/pay': typeof PayRoute
+  '/rides': typeof RidesRoute
   '/signup': typeof SignupRoute
   '/trip': typeof TripRoute
   '/trips': typeof TripsRoute
-  '/wallet': typeof WalletRoute
-  '/depart/$routeId': typeof DepartRouteIdRoute
+  '/ride/$slotId': typeof RideSlotIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/admin': typeof AdminRoute
-  '/book': typeof BookRoute
-  '/discover': typeof DiscoverRoute
+  '/confirmed': typeof ConfirmedRoute
   '/driver': typeof DriverRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
-  '/pickup': typeof PickupRoute
+  '/pay': typeof PayRoute
+  '/rides': typeof RidesRoute
   '/signup': typeof SignupRoute
   '/trip': typeof TripRoute
   '/trips': typeof TripsRoute
-  '/wallet': typeof WalletRoute
-  '/depart/$routeId': typeof DepartRouteIdRoute
+  '/ride/$slotId': typeof RideSlotIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -150,66 +141,62 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/admin'
-    | '/book'
-    | '/discover'
+    | '/confirmed'
     | '/driver'
     | '/home'
     | '/login'
-    | '/pickup'
+    | '/pay'
+    | '/rides'
     | '/signup'
     | '/trip'
     | '/trips'
-    | '/wallet'
-    | '/depart/$routeId'
+    | '/ride/$slotId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/account'
     | '/admin'
-    | '/book'
-    | '/discover'
+    | '/confirmed'
     | '/driver'
     | '/home'
     | '/login'
-    | '/pickup'
+    | '/pay'
+    | '/rides'
     | '/signup'
     | '/trip'
     | '/trips'
-    | '/wallet'
-    | '/depart/$routeId'
+    | '/ride/$slotId'
   id:
     | '__root__'
     | '/'
     | '/account'
     | '/admin'
-    | '/book'
-    | '/discover'
+    | '/confirmed'
     | '/driver'
     | '/home'
     | '/login'
-    | '/pickup'
+    | '/pay'
+    | '/rides'
     | '/signup'
     | '/trip'
     | '/trips'
-    | '/wallet'
-    | '/depart/$routeId'
+    | '/ride/$slotId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRoute
   AdminRoute: typeof AdminRoute
-  BookRoute: typeof BookRoute
-  DiscoverRoute: typeof DiscoverRoute
+  ConfirmedRoute: typeof ConfirmedRoute
   DriverRoute: typeof DriverRoute
   HomeRoute: typeof HomeRoute
   LoginRoute: typeof LoginRoute
-  PickupRoute: typeof PickupRoute
+  PayRoute: typeof PayRoute
+  RidesRoute: typeof RidesRoute
   SignupRoute: typeof SignupRoute
   TripRoute: typeof TripRoute
   TripsRoute: typeof TripsRoute
-  WalletRoute: typeof WalletRoute
-  DepartRouteIdRoute: typeof DepartRouteIdRoute
+  RideSlotIdRoute: typeof RideSlotIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -235,18 +222,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/book': {
-      id: '/book'
-      path: '/book'
-      fullPath: '/book'
-      preLoaderRoute: typeof BookRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/discover': {
-      id: '/discover'
-      path: '/discover'
-      fullPath: '/discover'
-      preLoaderRoute: typeof DiscoverRouteImport
+    '/confirmed': {
+      id: '/confirmed'
+      path: '/confirmed'
+      fullPath: '/confirmed'
+      preLoaderRoute: typeof ConfirmedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/driver': {
@@ -270,11 +250,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/pickup': {
-      id: '/pickup'
-      path: '/pickup'
-      fullPath: '/pickup'
-      preLoaderRoute: typeof PickupRouteImport
+    '/pay': {
+      id: '/pay'
+      path: '/pay'
+      fullPath: '/pay'
+      preLoaderRoute: typeof PayRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rides': {
+      id: '/rides'
+      path: '/rides'
+      fullPath: '/rides'
+      preLoaderRoute: typeof RidesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/signup': {
@@ -298,18 +285,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TripsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/wallet': {
-      id: '/wallet'
-      path: '/wallet'
-      fullPath: '/wallet'
-      preLoaderRoute: typeof WalletRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/depart/$routeId': {
-      id: '/depart/$routeId'
-      path: '/depart/$routeId'
-      fullPath: '/depart/$routeId'
-      preLoaderRoute: typeof DepartRouteIdRouteImport
+    '/ride/$slotId': {
+      id: '/ride/$slotId'
+      path: '/ride/$slotId'
+      fullPath: '/ride/$slotId'
+      preLoaderRoute: typeof RideSlotIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -319,17 +299,16 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
   AdminRoute: AdminRoute,
-  BookRoute: BookRoute,
-  DiscoverRoute: DiscoverRoute,
+  ConfirmedRoute: ConfirmedRoute,
   DriverRoute: DriverRoute,
   HomeRoute: HomeRoute,
   LoginRoute: LoginRoute,
-  PickupRoute: PickupRoute,
+  PayRoute: PayRoute,
+  RidesRoute: RidesRoute,
   SignupRoute: SignupRoute,
   TripRoute: TripRoute,
   TripsRoute: TripsRoute,
-  WalletRoute: WalletRoute,
-  DepartRouteIdRoute: DepartRouteIdRoute,
+  RideSlotIdRoute: RideSlotIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
