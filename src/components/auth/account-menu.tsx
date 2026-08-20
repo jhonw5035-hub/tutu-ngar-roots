@@ -59,9 +59,7 @@ export function AccountMenu() {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onSelect={() => {
-            // TODO(supabase): await supabase.auth.signOut() before navigating.
-            signOut();
-            navigate({ to: "/login", replace: true });
+            void signOut().then(() => navigate({ to: "/login", replace: true }));
           }}
         >
           <LogOut className="size-4" />
