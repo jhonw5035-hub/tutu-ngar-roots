@@ -483,10 +483,10 @@ export function getDepartures(
       }));
 
   const matched = routes.filter((r) => matchesArea(r, pickup) && matchesArea(r, destination));
-  const pool = (matched.length ? matched : routes).flatMap(build);
-
-  // Nearly-full vans first — the strongest social proof of "people going your way".
-  return pool.sort((a, b) => b.slot.seatsFilled - a.slot.seatsFilled).slice(0, 6);
+  // A couple of corridors, all their departures — so the demo shows both a
+  // nearly-full van (social proof) and one that is just starting to fill.
+  const pool = (matched.length ? matched : routes).slice(0, 2).flatMap(build);
+  return pool.sort((a, b) => a.slot.time.localeCompare(b.slot.time)).slice(0, 5);
 }
 
 export const getSlotDetail = (slotId: string | null) => {
