@@ -16,6 +16,7 @@ import { Wordmark } from "@/components/layout/wordmark";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { RolePortalTabs } from "@/components/auth/role-portal-tabs";
 import { ProfilePhotoField } from "@/components/auth/profile-photo-field";
+import { supabase } from "@/integrations/supabase/client";
 import { portalHome, useSession, type Role, type SessionProfile } from "@/lib/session";
 
 const searchSchema = z.object({
@@ -103,12 +104,12 @@ function SignupPage() {
       setStep("vehicle");
       return;
     }
-    complete({ ...form, ...(photoDataUrl ? { photoDataUrl } : {}) });
+    void complete({ ...form, ...(photoDataUrl ? { photoDataUrl } : {}) });
   }
 
   function handleVehicleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    complete({
+    void complete({
       ...form,
       ...(photoDataUrl ? { photoDataUrl } : {}),
       plateNumber: vehicle.plateNumber,
