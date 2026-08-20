@@ -153,7 +153,7 @@ function PassengerHome() {
                 onValueChange={(v) => booking.set({ band: v as TimeBand })}
               >
                 <SelectTrigger id="band" className="w-full">
-                  <SelectValue />
+                  <SelectValue placeholder="Any time" />
                 </SelectTrigger>
                 <SelectContent>
                   {bands.map((b) => (
