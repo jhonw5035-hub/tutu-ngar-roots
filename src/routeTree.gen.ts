@@ -22,6 +22,7 @@ import { Route as SignupRouteImport } from './routes/signup'
 import { Route as TripRouteImport } from './routes/trip'
 import { Route as TripsRouteImport } from './routes/trips'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminAiMatchingRouteImport } from './routes/admin.ai-matching'
 import { Route as AdminAlertsRouteImport } from './routes/admin.alerts'
 import { Route as AdminForecastRouteImport } from './routes/admin.forecast'
 import { Route as AdminPassengersRouteImport } from './routes/admin.passengers'
@@ -94,6 +95,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminAiMatchingRoute = AdminAiMatchingRouteImport.update({
+  id: '/ai-matching',
+  path: '/ai-matching',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminAlertsRoute = AdminAlertsRouteImport.update({
   id: '/alerts',
   path: '/alerts',
@@ -138,6 +144,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/trip': typeof TripRoute
   '/trips': typeof TripsRoute
+  '/admin/ai-matching': typeof AdminAiMatchingRoute
   '/admin/alerts': typeof AdminAlertsRoute
   '/admin/forecast': typeof AdminForecastRoute
   '/admin/passengers': typeof AdminPassengersRoute
@@ -158,6 +165,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/trip': typeof TripRoute
   '/trips': typeof TripsRoute
+  '/admin/ai-matching': typeof AdminAiMatchingRoute
   '/admin/alerts': typeof AdminAlertsRoute
   '/admin/forecast': typeof AdminForecastRoute
   '/admin/passengers': typeof AdminPassengersRoute
@@ -180,6 +188,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/trip': typeof TripRoute
   '/trips': typeof TripsRoute
+  '/admin/ai-matching': typeof AdminAiMatchingRoute
   '/admin/alerts': typeof AdminAlertsRoute
   '/admin/forecast': typeof AdminForecastRoute
   '/admin/passengers': typeof AdminPassengersRoute
@@ -203,6 +212,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/trip'
     | '/trips'
+    | '/admin/ai-matching'
     | '/admin/alerts'
     | '/admin/forecast'
     | '/admin/passengers'
@@ -223,6 +233,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/trip'
     | '/trips'
+    | '/admin/ai-matching'
     | '/admin/alerts'
     | '/admin/forecast'
     | '/admin/passengers'
@@ -244,6 +255,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/trip'
     | '/trips'
+    | '/admin/ai-matching'
     | '/admin/alerts'
     | '/admin/forecast'
     | '/admin/passengers'
@@ -362,6 +374,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/ai-matching': {
+      id: '/admin/ai-matching'
+      path: '/ai-matching'
+      fullPath: '/admin/ai-matching'
+      preLoaderRoute: typeof AdminAiMatchingRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/alerts': {
       id: '/admin/alerts'
       path: '/alerts'
@@ -408,6 +427,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
+  AdminAiMatchingRoute: typeof AdminAiMatchingRoute
   AdminAlertsRoute: typeof AdminAlertsRoute
   AdminForecastRoute: typeof AdminForecastRoute
   AdminPassengersRoute: typeof AdminPassengersRoute
@@ -417,6 +437,7 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminAiMatchingRoute: AdminAiMatchingRoute,
   AdminAlertsRoute: AdminAlertsRoute,
   AdminForecastRoute: AdminForecastRoute,
   AdminPassengersRoute: AdminPassengersRoute,

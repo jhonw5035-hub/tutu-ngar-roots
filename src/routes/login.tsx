@@ -42,11 +42,24 @@ function LoginPage() {
   const [identifier, setIdentifier] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
 
   const Accent = accent[role].icon;
 
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
+    setError(null);
+    // TEMPORARY: hardcoded demo admin credential check standing in for real
+    // Supabase Auth + `user_roles` role verification. Replace with
+    // supabase.auth.signInWithPassword() + a server-side role lookup.
+    if (role === "admin") {
+      const ok =
+        identifier.trim().toLowerCase() === "admin@gmail.com" && password === "admin@123";
+      if (!ok) {
+        setError("Invalid admin credentials");
+        return;
+      }
+    }
     setLoading(true);
     // TODO(supabase): replace with
     //   await supabase.auth.signInWithPassword({ email, password })
@@ -67,7 +80,13 @@ function LoginPage() {
 
       <main className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center px-5 pb-16">
         <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-          <RolePortalTabs value={role} onChange={setRole} />
+          <RolePortalTabs
+            value={role}
+            onChange={(next) => {
+              setError(null);
+              setRole(next);
+            }}
+          />
 
           <div className="mt-5 flex items-start gap-3">
             <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
@@ -105,6 +124,11 @@ function LoginPage() {
                 required
               />
             </div>
+            {error ? (
+              <p role="alert" className="text-sm font-medium text-destructive">
+                {error}
+              </p>
+            ) : null}
             <Button type="submit" size="lg" className="w-full" disabled={loading}>
               {loading ? "Logging in…" : "Log In"}
             </Button>
