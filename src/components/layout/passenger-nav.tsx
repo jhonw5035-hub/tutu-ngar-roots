@@ -1,23 +1,41 @@
 import { useNavigate, useRouterState } from "@tanstack/react-router";
-import { CalendarClock, Home } from "lucide-react";
+import { CalendarClock, Home, UserRound, Wallet } from "lucide-react";
 import type { BottomNavItem } from "./bottom-nav";
 
-export function usePassengerNav(): BottomNavItem[] {
+type Tab = "home" | "trips" | "wallet" | "account";
+
+/** Bottom tabs for the passenger portal. Pass an override while booking. */
+export function usePassengerNav(activeTab?: Tab): BottomNavItem[] {
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
+  const isActive = (tab: Tab, paths: string[]) =>
+    activeTab ? activeTab === tab : paths.includes(pathname);
+
   return [
     {
-      label: "Book",
+      label: "Home",
       icon: Home,
-      active: pathname === "/book",
-      onSelect: () => navigate({ to: "/book" }),
+      active: isActive("home", ["/home"]),
+      onSelect: () => navigate({ to: "/home" }),
     },
     {
-      label: "My trips",
+      label: "Trips",
       icon: CalendarClock,
-      active: pathname === "/trips",
+      active: isActive("trips", ["/trips", "/discover", "/book"]),
       onSelect: () => navigate({ to: "/trips" }),
+    },
+    {
+      label: "Wallet",
+      icon: Wallet,
+      active: isActive("wallet", ["/wallet"]),
+      onSelect: () => navigate({ to: "/wallet" }),
+    },
+    {
+      label: "Account",
+      icon: UserRound,
+      active: isActive("account", ["/account"]),
+      onSelect: () => navigate({ to: "/account" }),
     },
   ];
 }

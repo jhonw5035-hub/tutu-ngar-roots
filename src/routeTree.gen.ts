@@ -10,16 +10,26 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AccountRouteImport } from './routes/account'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as BookRouteImport } from './routes/book'
+import { Route as DiscoverRouteImport } from './routes/discover'
 import { Route as DriverRouteImport } from './routes/driver'
+import { Route as HomeRouteImport } from './routes/home'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as TripsRouteImport } from './routes/trips'
+import { Route as WalletRouteImport } from './routes/wallet'
+import { Route as DepartRouteIdRouteImport } from './routes/depart.$routeId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountRoute = AccountRouteImport.update({
+  id: '/account',
+  path: '/account',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -32,9 +42,19 @@ const BookRoute = BookRouteImport.update({
   path: '/book',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DiscoverRoute = DiscoverRouteImport.update({
+  id: '/discover',
+  path: '/discover',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DriverRoute = DriverRouteImport.update({
   id: '/driver',
   path: '/driver',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HomeRoute = HomeRouteImport.update({
+  id: '/home',
+  path: '/home',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -52,60 +72,118 @@ const TripsRoute = TripsRouteImport.update({
   path: '/trips',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WalletRoute = WalletRouteImport.update({
+  id: '/wallet',
+  path: '/wallet',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DepartRouteIdRoute = DepartRouteIdRouteImport.update({
+  id: '/depart/$routeId',
+  path: '/depart/$routeId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
   '/admin': typeof AdminRoute
   '/book': typeof BookRoute
+  '/discover': typeof DiscoverRoute
   '/driver': typeof DriverRoute
+  '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/trips': typeof TripsRoute
+  '/wallet': typeof WalletRoute
+  '/depart/$routeId': typeof DepartRouteIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
   '/admin': typeof AdminRoute
   '/book': typeof BookRoute
+  '/discover': typeof DiscoverRoute
   '/driver': typeof DriverRoute
+  '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/trips': typeof TripsRoute
+  '/wallet': typeof WalletRoute
+  '/depart/$routeId': typeof DepartRouteIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
   '/admin': typeof AdminRoute
   '/book': typeof BookRoute
+  '/discover': typeof DiscoverRoute
   '/driver': typeof DriverRoute
+  '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/trips': typeof TripsRoute
+  '/wallet': typeof WalletRoute
+  '/depart/$routeId': typeof DepartRouteIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/admin' | '/book' | '/driver' | '/login' | '/signup' | '/trips'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/book' | '/driver' | '/login' | '/signup' | '/trips'
-  id:
-    | '__root__'
     | '/'
+    | '/account'
     | '/admin'
     | '/book'
+    | '/discover'
     | '/driver'
+    | '/home'
     | '/login'
     | '/signup'
     | '/trips'
+    | '/wallet'
+    | '/depart/$routeId'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/'
+    | '/account'
+    | '/admin'
+    | '/book'
+    | '/discover'
+    | '/driver'
+    | '/home'
+    | '/login'
+    | '/signup'
+    | '/trips'
+    | '/wallet'
+    | '/depart/$routeId'
+  id:
+    | '__root__'
+    | '/'
+    | '/account'
+    | '/admin'
+    | '/book'
+    | '/discover'
+    | '/driver'
+    | '/home'
+    | '/login'
+    | '/signup'
+    | '/trips'
+    | '/wallet'
+    | '/depart/$routeId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AccountRoute: typeof AccountRoute
   AdminRoute: typeof AdminRoute
   BookRoute: typeof BookRoute
+  DiscoverRoute: typeof DiscoverRoute
   DriverRoute: typeof DriverRoute
+  HomeRoute: typeof HomeRoute
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
   TripsRoute: typeof TripsRoute
+  WalletRoute: typeof WalletRoute
+  DepartRouteIdRoute: typeof DepartRouteIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -115,6 +193,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/account': {
+      id: '/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AccountRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -131,11 +216,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/discover': {
+      id: '/discover'
+      path: '/discover'
+      fullPath: '/discover'
+      preLoaderRoute: typeof DiscoverRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/driver': {
       id: '/driver'
       path: '/driver'
       fullPath: '/driver'
       preLoaderRoute: typeof DriverRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/home': {
+      id: '/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof HomeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -159,17 +258,36 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TripsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/wallet': {
+      id: '/wallet'
+      path: '/wallet'
+      fullPath: '/wallet'
+      preLoaderRoute: typeof WalletRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/depart/$routeId': {
+      id: '/depart/$routeId'
+      path: '/depart/$routeId'
+      fullPath: '/depart/$routeId'
+      preLoaderRoute: typeof DepartRouteIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AccountRoute: AccountRoute,
   AdminRoute: AdminRoute,
   BookRoute: BookRoute,
+  DiscoverRoute: DiscoverRoute,
   DriverRoute: DriverRoute,
+  HomeRoute: HomeRoute,
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,
   TripsRoute: TripsRoute,
+  WalletRoute: WalletRoute,
+  DepartRouteIdRoute: DepartRouteIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
