@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Car, MapPin, Share2 } from "lucide-react";
+import { Car, Loader2, MapPin, Share2, Users } from "lucide-react";
 import { toast } from "sonner";
+import { z } from "zod";
 
 import { AppShell } from "@/components/layout/app-shell";
 import { usePassengerNav } from "@/components/layout/passenger-nav";
@@ -17,8 +18,11 @@ import {
   getSlotDetail,
   mockDriver,
 } from "@/lib/mockData";
+import { useMyLiveBooking } from "@/lib/live";
+import { useSession } from "@/lib/session";
 
 export const Route = createFileRoute("/confirmed")({
+  validateSearch: z.object({ booking: z.string().optional() }),
   head: () => ({
     meta: [
       { title: "You're Booked — Tu Tu Ngar Shared Ride" },
@@ -38,6 +42,12 @@ function ConfirmationPage() {
   const navItems = usePassengerNav("trips");
   const navigate = useNavigate();
   const booking = useBooking();
+  const { booking: bookingId } = Route.useSearch();
+  const { userId } = useSession();
+  // Live: flips from "matching" to the real group + driver the moment the
+  // admin optimizer groups this booking.
+  const live = useMyLiveBooking(userId, bookingId ?? null);
+  const grouped = live.booking?.status === "grouped";
 
   const slot = getSlotDetail(booking.slotId);
   const route = getRoute(booking.routeId);
@@ -88,8 +98,45 @@ function ConfirmationPage() {
             <MapPin className="size-3.5 text-primary" /> Pickup: {pickup?.name ?? "Your stop"}
           </p>
           <p className="text-muted-foreground">
-            Driver: {mockDriver.name} · <span className="num text-foreground">{mockDriver.plate}</span>
+            Driver:{" "}
+            {live.driver
+              ? `${live.driver.first_name ?? live.driver.full_name ?? "Assigned driver"}`
+              : mockDriver.name}{" "}
+            ·{" "}
+            <span className="num text-foreground">
+              {live.driver?.plate_number ?? mockDriver.plate}
+            </span>
           </p>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-4 shadow-card">
+        <CardContent className="space-y-1 pt-6 text-sm">
+          {grouped ? (
+            <>
+              <p className="flex items-center gap-2 font-semibold text-primary">
+                <Users className="size-4" /> You&apos;ve been matched into a shared group
+              </p>
+              <p className="text-muted-foreground">
+                Meeting point: {live.group?.pickup_point_label ?? "Being finalised"}
+                {live.group?.eta_to_pickup ? ` · Driver ETA ${live.group.eta_to_pickup}` : ""}
+              </p>
+              <p className="text-muted-foreground">
+                {live.members.length} passenger{live.members.length === 1 ? "" : "s"} in this group
+              </p>
+              {live.booking?.minority_gender_note ? (
+                <p className="rounded-lg bg-muted px-3 py-2 text-xs text-muted-foreground">
+                  Heads up: you&apos;re the only passenger of your gender in this group. Tell us if
+                  you&apos;d rather wait for the next departure.
+                </p>
+              ) : null}
+            </>
+          ) : (
+            <p className="flex items-center gap-2 text-muted-foreground">
+              <Loader2 className="size-4 animate-spin text-primary" /> Matching you with nearby
+              passengers… this screen updates automatically.
+            </p>
+          )}
         </CardContent>
       </Card>
 
