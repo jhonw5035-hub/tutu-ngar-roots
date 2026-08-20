@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { toast } from "sonner";
 import { Banknote, Bell, Car, MapPin, Power, Users } from "lucide-react";
 
 import { AppShell } from "@/components/layout/app-shell";
@@ -9,8 +10,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
 import { useSession } from "@/lib/session";
+import { acceptTrip, useAssignedTrip, useDriverStatus } from "@/lib/driver-live";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/driver/")({
@@ -47,12 +48,28 @@ function formatMmk(amount: number) {
 }
 
 function DriverHome() {
-  const { profile } = useSession();
+  const { profile, userId } = useSession();
   const navItems = useDriverNav("home");
 
-  // TODO(supabase): replace these local states with real driver availability and trip status.
-  const [isOnline, setIsOnline] = useState(false);
-  const [hasAssignedTrip, setHasAssignedTrip] = useState(false);
+  // Real availability + dispatch, live from Supabase.
+  const { isOnline, saving, setOnline } = useDriverStatus(userId);
+  const { trip } = useAssignedTrip(userId);
+  const [accepting, setAccepting] = useState(false);
+
+  const hasAssignedTrip = Boolean(trip);
+  const awaitingAccept = trip?.group.status === "pending_driver";
+
+  async function accept() {
+    if (!trip) return;
+    setAccepting(true);
+    try {
+      await acceptTrip(trip.group.id, 8);
+      toast.success("Trip accepted — passengers have been notified");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not accept the trip");
+    }
+    setAccepting(false);
+  }
 
   const displayName = profile?.firstName || profile?.fullName || "Driver";
   const earnings = 35000;
@@ -150,26 +167,36 @@ function DriverHome() {
           {hasAssignedTrip ? (
             <CardContent className="space-y-4 p-5">
               <div className="flex items-center justify-between">
-                <Badge className="bg-amber-500 text-white">Active trip</Badge>
-                <span className="text-xs text-muted-foreground">Assigned 2 min ago</span>
+                <Badge className="bg-amber-500 text-white">
+                  {awaitingAccept ? "New assignment" : "Active trip"}
+                </Badge>
+                <span className="text-xs text-muted-foreground">
+                  {trip?.group.eta_to_pickup ? `ETA ${trip.group.eta_to_pickup}` : "Just assigned"}
+                </span>
               </div>
               <div className="space-y-2 text-sm">
                 <p className="flex items-center gap-2 font-medium">
                   <MapPin className="size-4 text-primary" />
-                  Hledan → Downtown
+                  {trip?.group.corridor_label ?? trip?.group.pickup_point_label ?? "Shared trip"}
                 </p>
                 <p className="flex items-center gap-2">
                   <Car className="size-4 text-primary" />
-                  Pickup at 15:30
+                  Pickup: {trip?.group.pickup_point_label ?? "Meeting point"}
                 </p>
                 <p className="flex items-center gap-2">
                   <Users className="size-4 text-primary" />
-                  3 passengers · 4-seat sedan
+                  {trip?.bookings.length ?? 0} passengers · {profile?.seatCapacity ?? 4}-seat vehicle
                 </p>
               </div>
-              <Button className="w-full" variant="secondary">
-                View Trip Details
-              </Button>
+              {awaitingAccept ? (
+                <Button className="w-full" disabled={accepting} onClick={() => void accept()}>
+                  {accepting ? "Accepting…" : "Accept Trip"}
+                </Button>
+              ) : (
+                <Button className="w-full" variant="secondary" disabled>
+                  Trip accepted · en route
+                </Button>
+              )}
             </CardContent>
           ) : (
             <CardContent className="flex flex-col items-center justify-center gap-3 p-8 text-center">
@@ -200,7 +227,8 @@ function DriverHome() {
                 ? "border border-border bg-background text-foreground hover:bg-accent"
                 : "bg-primary text-primary-foreground hover:bg-primary/90",
             )}
-            onClick={() => setIsOnline((prev) => !prev)}
+            disabled={saving}
+            onClick={() => void setOnline(!isOnline)}
           >
             <Power
               className={cn("size-5 transition-transform duration-300", isOnline && "rotate-180")}
@@ -214,18 +242,6 @@ function DriverHome() {
           </p>
         </div>
 
-        {/* Demo-only state toggle */}
-        <div className="flex items-center justify-between rounded-xl border border-dashed border-border bg-muted/30 px-4 py-3">
-          <div className="text-xs">
-            <p className="font-medium text-foreground">Demo: simulate assigned trip</p>
-            <p className="text-muted-foreground">Toggles the active-trip card preview.</p>
-          </div>
-          <Switch
-            checked={hasAssignedTrip}
-            onCheckedChange={setHasAssignedTrip}
-            aria-label="Simulate assigned trip"
-          />
-        </div>
       </div>
     </AppShell>
   );
