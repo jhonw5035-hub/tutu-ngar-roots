@@ -204,6 +204,7 @@ function SignupPage() {
                     </SelectContent>
                   </Select>
                 </div>
+                {error ? <p className="text-sm text-destructive">{error}</p> : null}
                 <Button type="submit" size="lg" className="w-full" disabled={loading}>
                   {role === "driver"
                     ? "Continue"
@@ -266,6 +267,7 @@ function SignupPage() {
                   >
                     Back
                   </Button>
+                {error ? <p className="text-sm text-destructive">{error}</p> : null}
                   <Button type="submit" size="lg" className="flex-1" disabled={loading}>
                     {loading ? "Saving…" : "Finish"}
                   </Button>
