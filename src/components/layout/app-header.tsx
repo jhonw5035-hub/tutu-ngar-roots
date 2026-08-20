@@ -11,7 +11,13 @@ const portalLabel: Record<Portal, string> = {
   admin: "Admin",
 };
 
-export function AppHeader({ portal, actions }: { portal?: Portal; actions?: ReactNode }) {
+export function AppHeader({
+  portal,
+  actions,
+}: {
+  portal?: Portal | undefined;
+  actions?: ReactNode | undefined;
+}) {
   return (
     <header className="safe-top sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
       <div className="mx-auto flex h-14 w-full max-w-3xl items-center justify-between gap-3 px-4">
