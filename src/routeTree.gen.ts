@@ -21,6 +21,7 @@ import { Route as RidesRouteImport } from './routes/rides'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as TripRouteImport } from './routes/trip'
 import { Route as TripsRouteImport } from './routes/trips'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAlertsRouteImport } from './routes/admin.alerts'
 import { Route as AdminForecastRouteImport } from './routes/admin.forecast'
 import { Route as AdminPassengersRouteImport } from './routes/admin.passengers'
@@ -88,6 +89,11 @@ const TripsRoute = TripsRouteImport.update({
   path: '/trips',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminAlertsRoute = AdminAlertsRouteImport.update({
   id: '/alerts',
   path: '/alerts',
@@ -138,11 +144,11 @@ export interface FileRoutesByFullPath {
   '/admin/routes': typeof AdminRoutesRoute
   '/admin/vehicles': typeof AdminVehiclesRoute
   '/ride/$slotId': typeof RideSlotIdRoute
+  '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
-  '/admin': typeof AdminRouteWithChildren
   '/confirmed': typeof ConfirmedRoute
   '/driver': typeof DriverRoute
   '/home': typeof HomeRoute
@@ -158,6 +164,7 @@ export interface FileRoutesByTo {
   '/admin/routes': typeof AdminRoutesRoute
   '/admin/vehicles': typeof AdminVehiclesRoute
   '/ride/$slotId': typeof RideSlotIdRoute
+  '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -179,6 +186,7 @@ export interface FileRoutesById {
   '/admin/routes': typeof AdminRoutesRoute
   '/admin/vehicles': typeof AdminVehiclesRoute
   '/ride/$slotId': typeof RideSlotIdRoute
+  '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -201,11 +209,11 @@ export interface FileRouteTypes {
     | '/admin/routes'
     | '/admin/vehicles'
     | '/ride/$slotId'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/account'
-    | '/admin'
     | '/confirmed'
     | '/driver'
     | '/home'
@@ -221,6 +229,7 @@ export interface FileRouteTypes {
     | '/admin/routes'
     | '/admin/vehicles'
     | '/ride/$slotId'
+    | '/admin'
   id:
     | '__root__'
     | '/'
@@ -241,6 +250,7 @@ export interface FileRouteTypes {
     | '/admin/routes'
     | '/admin/vehicles'
     | '/ride/$slotId'
+    | '/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -345,6 +355,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TripsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/alerts': {
       id: '/admin/alerts'
       path: '/alerts'
@@ -396,6 +413,7 @@ interface AdminRouteChildren {
   AdminPassengersRoute: typeof AdminPassengersRoute
   AdminRoutesRoute: typeof AdminRoutesRoute
   AdminVehiclesRoute: typeof AdminVehiclesRoute
+  AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
@@ -404,6 +422,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminPassengersRoute: AdminPassengersRoute,
   AdminRoutesRoute: AdminRoutesRoute,
   AdminVehiclesRoute: AdminVehiclesRoute,
+  AdminIndexRoute: AdminIndexRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
