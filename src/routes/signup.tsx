@@ -45,7 +45,8 @@ export const Route = createFileRoute("/signup")({
 function SignupPage() {
   const navigate = useNavigate();
   const search = Route.useSearch();
-  const { signIn } = useSession();
+  const { signUp } = useSession();
+  const [error, setError] = React.useState<string | null>(null);
 
   const [role, setRole] = React.useState<Role>(search.role);
   const [step, setStep] = React.useState<"account" | "vehicle">("account");
