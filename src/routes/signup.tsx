@@ -15,6 +15,7 @@ import {
 import { Wordmark } from "@/components/layout/wordmark";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { RolePortalTabs } from "@/components/auth/role-portal-tabs";
+import { ProfilePhotoField } from "@/components/auth/profile-photo-field";
 import { portalHome, useSession, type Role, type SessionProfile } from "@/lib/session";
 
 const searchSchema = z.object({
@@ -56,6 +57,7 @@ function SignupPage() {
     password: "",
     gender: "",
   });
+  const [photoDataUrl, setPhotoDataUrl] = React.useState<string | undefined>(undefined);
   const [vehicle, setVehicle] = React.useState({ plateNumber: "", seatCapacity: "4" });
 
   function update(key: keyof typeof form, value: string) {
@@ -79,13 +81,14 @@ function SignupPage() {
       setStep("vehicle");
       return;
     }
-    complete({ ...form });
+    complete({ ...form, ...(photoDataUrl ? { photoDataUrl } : {}) });
   }
 
   function handleVehicleSubmit(event: React.FormEvent) {
     event.preventDefault();
     complete({
       ...form,
+      ...(photoDataUrl ? { photoDataUrl } : {}),
       plateNumber: vehicle.plateNumber,
       seatCapacity: Number(vehicle.seatCapacity),
     });
@@ -115,6 +118,11 @@ function SignupPage() {
               </p>
 
               <form className="mt-6 space-y-4" onSubmit={handleAccountSubmit}>
+                <ProfilePhotoField
+                  value={photoDataUrl}
+                  onChange={setPhotoDataUrl}
+                  name={form.fullName || form.firstName}
+                />
                 <div className="space-y-1.5">
                   <Label htmlFor="fullName">Full name</Label>
                   <Input

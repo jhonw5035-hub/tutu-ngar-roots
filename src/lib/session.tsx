@@ -19,6 +19,13 @@ export type SessionProfile = {
   firstName?: string;
   phone?: string;
   gender?: string;
+  /**
+   * Driver-facing identification photo only (base64 data URL for now).
+   * NEVER render this in the passenger group preview — that screen stays
+   * first name + gender icon by design.
+   * TODO(supabase): store in Supabase Storage and keep only the object path here.
+   */
+  photoDataUrl?: string;
   plateNumber?: string;
   seatCapacity?: number;
 };
