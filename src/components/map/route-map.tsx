@@ -48,7 +48,7 @@ export type RouteMapProps = {
   /** Passenger's approximate location (real geolocation, when granted). */
   userLocation?: LatLng | null;
   /** Optional label bubble rendered next to the vehicle marker. */
-  vehicleLabel?: string;
+  vehicleLabel?: string | undefined;
   fitTo?: LatLng[];
   locateNonce?: number;
 };

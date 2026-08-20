@@ -19,6 +19,7 @@ import { Route as HomeRouteImport } from './routes/home'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PickupRouteImport } from './routes/pickup'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as TripRouteImport } from './routes/trip'
 import { Route as TripsRouteImport } from './routes/trips'
 import { Route as WalletRouteImport } from './routes/wallet'
 import { Route as DepartRouteIdRouteImport } from './routes/depart.$routeId'
@@ -73,6 +74,11 @@ const SignupRoute = SignupRouteImport.update({
   path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TripRoute = TripRouteImport.update({
+  id: '/trip',
+  path: '/trip',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TripsRoute = TripsRouteImport.update({
   id: '/trips',
   path: '/trips',
@@ -100,6 +106,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/pickup': typeof PickupRoute
   '/signup': typeof SignupRoute
+  '/trip': typeof TripRoute
   '/trips': typeof TripsRoute
   '/wallet': typeof WalletRoute
   '/depart/$routeId': typeof DepartRouteIdRoute
@@ -115,6 +122,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/pickup': typeof PickupRoute
   '/signup': typeof SignupRoute
+  '/trip': typeof TripRoute
   '/trips': typeof TripsRoute
   '/wallet': typeof WalletRoute
   '/depart/$routeId': typeof DepartRouteIdRoute
@@ -131,6 +139,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/pickup': typeof PickupRoute
   '/signup': typeof SignupRoute
+  '/trip': typeof TripRoute
   '/trips': typeof TripsRoute
   '/wallet': typeof WalletRoute
   '/depart/$routeId': typeof DepartRouteIdRoute
@@ -148,6 +157,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/pickup'
     | '/signup'
+    | '/trip'
     | '/trips'
     | '/wallet'
     | '/depart/$routeId'
@@ -163,6 +173,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/pickup'
     | '/signup'
+    | '/trip'
     | '/trips'
     | '/wallet'
     | '/depart/$routeId'
@@ -178,6 +189,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/pickup'
     | '/signup'
+    | '/trip'
     | '/trips'
     | '/wallet'
     | '/depart/$routeId'
@@ -194,6 +206,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   PickupRoute: typeof PickupRoute
   SignupRoute: typeof SignupRoute
+  TripRoute: typeof TripRoute
   TripsRoute: typeof TripsRoute
   WalletRoute: typeof WalletRoute
   DepartRouteIdRoute: typeof DepartRouteIdRoute
@@ -271,6 +284,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignupRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/trip': {
+      id: '/trip'
+      path: '/trip'
+      fullPath: '/trip'
+      preLoaderRoute: typeof TripRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/trips': {
       id: '/trips'
       path: '/trips'
@@ -306,6 +326,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   PickupRoute: PickupRoute,
   SignupRoute: SignupRoute,
+  TripRoute: TripRoute,
   TripsRoute: TripsRoute,
   WalletRoute: WalletRoute,
   DepartRouteIdRoute: DepartRouteIdRoute,
