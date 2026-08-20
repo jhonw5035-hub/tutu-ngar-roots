@@ -6,16 +6,18 @@ import { PageContainer } from "./page-container";
 export function AppShell({
   portal,
   navItems,
+  fullBleed = false,
   children,
 }: {
   portal?: Portal;
   navItems?: BottomNavItem[];
+  fullBleed?: boolean;
   children: ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className={fullBleed ? "h-screen overflow-hidden bg-background text-foreground" : "min-h-screen bg-background text-foreground"}>
       <AppHeader portal={portal} />
-      <PageContainer>{children}</PageContainer>
+      {fullBleed ? children : <PageContainer>{children}</PageContainer>}
       {navItems?.length ? <BottomNav items={navItems} /> : null}
     </div>
   );

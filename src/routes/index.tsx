@@ -28,7 +28,7 @@ function Index() {
   const navItems = usePassengerNav();
 
   return (
-    <AppShell portal="passenger" navItems={navItems}>
+    <AppShell portal="passenger" navItems={navItems} fullBleed>
       <BookingFlow />
     </AppShell>
   );
