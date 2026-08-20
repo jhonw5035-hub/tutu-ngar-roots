@@ -46,29 +46,24 @@ function LoginPage() {
 
   const Accent = accent[role].icon;
 
-  function handleSubmit(event: React.FormEvent) {
+  async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     setError(null);
-    // TEMPORARY: hardcoded demo admin credential check standing in for real
-    // Supabase Auth + `user_roles` role verification. Replace with
-    // supabase.auth.signInWithPassword() + a server-side role lookup.
-    if (role === "admin") {
-      const ok =
-        identifier.trim().toLowerCase() === "admin@gmail.com" && password === "admin@123";
-      if (!ok) {
-        setError("Invalid admin credentials");
+    setLoading(true);
+    try {
+      // Real Supabase Auth. The role comes from the `user_roles` table, never
+      // from the selected tab — the tab only decides where we land.
+      const actualRole = await signIn(identifier, password);
+      if (actualRole !== role) {
+        setError(`This account is registered as a ${actualRole}. Switch to that tab to continue.`);
+        setLoading(false);
         return;
       }
-    }
-    setLoading(true);
-    // TODO(supabase): replace with
-    //   await supabase.auth.signInWithPassword({ email, password })
-    // then read the role from the `user_roles` table instead of the tab.
-    window.setTimeout(() => {
-      signIn(role, { phone: identifier });
+      navigate({ to: portalHome[actualRole], replace: true });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not sign in");
       setLoading(false);
-      navigate({ to: portalHome[role], replace: true });
-    }, 700);
+    }
   }
 
   return (
