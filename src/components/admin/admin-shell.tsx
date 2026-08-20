@@ -7,7 +7,7 @@ import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Wordmark } from "@/components/layout/wordmark";
 
 const navItems = [
-  { to: "/admin", label: "Dashboard", icon: "📊", exact: true },
+  { to: "/admin", label: "Dashboard", icon: "📊" },
   { to: "/admin/ai-matching", label: "AI Matching", icon: "🤖" },
   { to: "/admin/vehicles", label: "Vehicles & Drivers", icon: "🚗" },
   { to: "/admin/routes", label: "Routes", icon: "🗺" },
@@ -48,7 +48,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
               <Link
                 key={item.to}
                 to={item.to}
-                activeOptions={{ exact: "exact" in item ? item.exact : false }}
+                activeOptions={{ exact: item.to === "/admin" }}
                 activeProps={{ className: "bg-primary/10 text-foreground font-semibold" }}
                 inactiveProps={{ className: "text-muted-foreground" }}
                 className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-muted hover:text-foreground"
@@ -66,7 +66,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
               <Link
                 key={item.to}
                 to={item.to}
-                activeOptions={{ exact: "exact" in item ? item.exact : false }}
+                activeOptions={{ exact: item.to === "/admin" }}
                 activeProps={{ className: "bg-primary/10 text-foreground font-semibold" }}
                 inactiveProps={{ className: "text-muted-foreground" }}
                 className="shrink-0 rounded-lg px-3 py-1.5 text-xs transition-colors"
