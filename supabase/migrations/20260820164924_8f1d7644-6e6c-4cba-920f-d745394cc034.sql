@@ -1,0 +1,11 @@
+revoke execute on function public.has_role(uuid, public.app_role) from anon, public;
+revoke execute on function public.is_group_member(uuid, uuid) from anon, public;
+revoke execute on function public.is_group_driver(uuid, uuid) from anon, public;
+revoke execute on function public.shares_group_with_driver(uuid, uuid) from anon, public;
+revoke execute on function public.update_updated_at_column() from anon, authenticated, public;
+revoke execute on function public.handle_new_user() from anon, authenticated, public;
+revoke execute on function public.rls_auto_enable() from anon, authenticated, public;
+grant execute on function public.has_role(uuid, public.app_role) to authenticated;
+grant execute on function public.is_group_member(uuid, uuid) to authenticated;
+grant execute on function public.is_group_driver(uuid, uuid) to authenticated;
+grant execute on function public.shares_group_with_driver(uuid, uuid) to authenticated;
