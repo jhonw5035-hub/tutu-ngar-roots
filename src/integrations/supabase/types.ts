@@ -205,6 +205,54 @@ export type Database = {
           },
         ]
       }
+      trip_group_messages: {
+        Row: {
+          created_at: string
+          group_id: string
+          id: string
+          is_system_message: boolean
+          message: string
+          sender_id: string | null
+          sender_name: string | null
+          sender_role: string | null
+        }
+        Insert: {
+          created_at?: string
+          group_id: string
+          id?: string
+          is_system_message?: boolean
+          message: string
+          sender_id?: string | null
+          sender_name?: string | null
+          sender_role?: string | null
+        }
+        Update: {
+          created_at?: string
+          group_id?: string
+          id?: string
+          is_system_message?: boolean
+          message?: string
+          sender_id?: string | null
+          sender_name?: string | null
+          sender_role?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trip_group_messages_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "trip_groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trip_group_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       trip_groups: {
         Row: {
           corridor_label: string | null
