@@ -18,6 +18,9 @@ import {
   getSlotDetail,
   mockDriver,
 } from "@/lib/mockData";
+import { MapView } from "@/components/map/map-view";
+import { TripChat } from "@/components/chat/trip-chat";
+import { useDriverLocation } from "@/lib/driver-sim";
 import { useMyLiveBooking } from "@/lib/live";
 import { useSession } from "@/lib/session";
 
@@ -43,11 +46,19 @@ function ConfirmationPage() {
   const navigate = useNavigate();
   const booking = useBooking();
   const { booking: bookingId } = Route.useSearch();
-  const { userId } = useSession();
+  const { userId, profile } = useSession();
   // Live: flips from "matching" to the real group + driver the moment the
   // admin optimizer groups this booking.
   const live = useMyLiveBooking(userId, bookingId ?? null);
   const grouped = live.booking?.status === "grouped";
+  // Chat + live driver tracking only exist once the driver has accepted.
+  const accepted = live.group?.status === "accepted" || live.group?.status === "in_progress";
+  // Driver position is simulated on the driver side; passenger location stays real.
+  const driverLive = useDriverLocation(accepted ? (live.group?.driver_id ?? null) : null);
+  const groupPickup =
+    live.group?.pickup_lat != null && live.group?.pickup_lng != null
+      ? { lat: Number(live.group.pickup_lat), lng: Number(live.group.pickup_lng) }
+      : null;
 
   const slot = getSlotDetail(booking.slotId);
   const route = getRoute(booking.routeId);
@@ -160,6 +171,60 @@ function ConfirmationPage() {
           </div>
         </CardContent>
       </Card>
+
+      {accepted ? (
+        <>
+          <Card className="mt-4 shadow-card">
+            <CardContent className="space-y-2 pt-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg">Driver on the way</h2>
+                <Badge variant="confirmed">Live</Badge>
+              </div>
+              <div className="overflow-hidden rounded-2xl border border-border">
+                <MapView
+                  className="h-56"
+                  routes={[]}
+                  points={[]}
+                  vehicle={
+                    driverLive.position
+                      ? [driverLive.position.lat, driverLive.position.lng]
+                      : null
+                  }
+                  vehicleLabel={
+                    live.group?.eta_to_pickup ? `Driver · ${live.group.eta_to_pickup}` : "Driver"
+                  }
+                  userLocation={groupPickup ? [groupPickup.lat, groupPickup.lng] : null}
+                  fitTo={
+                    driverLive.position && groupPickup
+                      ? [
+                          [driverLive.position.lat, driverLive.position.lng],
+                          [groupPickup.lat, groupPickup.lng],
+                        ]
+                      : groupPickup
+                        ? [[groupPickup.lat, groupPickup.lng]]
+                        : []
+                  }
+                />
+              </div>
+              <p className="text-xs text-muted-foreground">
+                The driver marker updates live as they approach your pickup point.
+              </p>
+            </CardContent>
+          </Card>
+
+          {userId && live.group ? (
+            <TripChat
+              className="mt-4"
+              groupId={live.group.id}
+              senderId={userId}
+              senderName={
+                profile?.firstName || profile?.fullName?.split(" ")[0] || "Passenger"
+              }
+              senderRole="passenger"
+            />
+          ) : null}
+        </>
+      ) : null}
 
       <div className="mt-5 grid grid-cols-2 gap-3">
         <Button variant="outline" size="lg" onClick={share}>

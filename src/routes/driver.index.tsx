@@ -10,6 +10,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { MapView } from "@/components/map/map-view";
+import { TripChat } from "@/components/chat/trip-chat";
+import { NORTH_OKKALAPA, useDriverSimulation } from "@/lib/driver-sim";
 import { useSession } from "@/lib/session";
 import { acceptTrip, useAssignedTrip, useDriverStatus } from "@/lib/driver-live";
 import { cn } from "@/lib/utils";
@@ -70,6 +73,17 @@ function DriverHome() {
     }
     setAccepting(false);
   }
+
+  const accepted = trip?.group.status === "accepted" || trip?.group.status === "in_progress";
+  const pickupTarget =
+    trip?.group.pickup_lat != null && trip?.group.pickup_lng != null
+      ? { lat: Number(trip.group.pickup_lat), lng: Number(trip.group.pickup_lng) }
+      : null;
+  const etaMinutes = Number(trip?.group.eta_to_pickup?.replace(/\D/g, "") || 8);
+
+  // DEMO: only the driver's position is simulated (starting in North
+  // Okkalapa). Passenger locations come from real device geolocation.
+  const sim = useDriverSimulation(userId, pickupTarget, etaMinutes);
 
   const displayName = profile?.firstName || profile?.fullName || "Driver";
   const earnings = 35000;
@@ -216,6 +230,69 @@ function DriverHome() {
             </CardContent>
           )}
         </Card>
+
+        {/* Live trip: simulated location control + temporary group chat */}
+        {accepted && trip ? (
+          <>
+            <Card className="border border-border bg-card shadow-sm">
+              <CardContent className="space-y-3 p-5">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg">Live position</h2>
+                  <span className="text-xs text-muted-foreground">
+                    Demo simulation · {Math.round(sim.progress * 100)}% to pickup
+                  </span>
+                </div>
+                <div className="overflow-hidden rounded-2xl border border-border">
+                  <MapView
+                    className="h-56"
+                    routes={[]}
+                    points={[]}
+                    vehicle={sim.position ? [sim.position.lat, sim.position.lng] : null}
+                    vehicleLabel="You"
+                    userLocation={pickupTarget ? [pickupTarget.lat, pickupTarget.lng] : null}
+                    fitTo={
+                      pickupTarget
+                        ? [
+                            [NORTH_OKKALAPA.lat, NORTH_OKKALAPA.lng],
+                            [pickupTarget.lat, pickupTarget.lng],
+                          ]
+                        : []
+                    }
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    className="flex-1"
+                    variant={sim.running ? "secondary" : "default"}
+                    disabled={!pickupTarget}
+                    onClick={() => (sim.running ? sim.stop() : sim.start())}
+                  >
+                    {sim.running ? "Pause movement" : "Simulate movement"}
+                  </Button>
+                  <Button variant="outline" disabled={!pickupTarget} onClick={() => sim.step()}>
+                    Step
+                  </Button>
+                  <Button variant="ghost" onClick={() => sim.reset()}>
+                    Reset
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Operator-controlled for the demo: moves you from North Okkalapa to the pickup
+                  point over the accepted ETA. Passengers see this live on their map.
+                </p>
+              </CardContent>
+            </Card>
+
+            {userId ? (
+              <TripChat
+                groupId={trip.group.id}
+                senderId={userId}
+                senderName={displayName}
+                senderRole="driver"
+              />
+            ) : null}
+          </>
+        ) : null}
 
         {/* Main action */}
         <div className="pt-2">

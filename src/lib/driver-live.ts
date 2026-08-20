@@ -3,6 +3,7 @@ import * as React from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { BookingRow, TripGroupMemberRow, TripGroupRow } from "@/lib/live";
 import { getCurrentPosition } from "@/lib/live";
+import { postSystemMessage } from "@/lib/chat";
 
 /** Yangon fallback coordinates for the demo when geolocation is unavailable. */
 const FALLBACK = { lat: 16.8261, lng: 96.1315 };
@@ -113,11 +114,16 @@ export function useAssignedTrip(driverId: string | null) {
   return { trip, loading, refresh };
 }
 
-/** Accept a dispatched group: records the ETA and flips it to `accepted`. */
+/**
+ * Accept a dispatched group: records the ETA, flips it to `accepted` and
+ * opens the temporary trip chat with a system ETA notice.
+ */
 export async function acceptTrip(groupId: string, etaMinutes: number) {
+  const eta = `${etaMinutes} min`;
   const { error } = await supabase
     .from("trip_groups")
-    .update({ status: "accepted", eta_to_pickup: `${etaMinutes} min` })
+    .update({ status: "accepted", eta_to_pickup: eta })
     .eq("id", groupId);
   if (error) throw new Error(error.message);
+  await postSystemMessage(groupId, `Driver is heading to pickup point. ETA ${eta}.`);
 }
