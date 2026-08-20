@@ -214,7 +214,7 @@ export function BookingFlow() {
         )}
       </header>
 
-      {step !== "payment" ? (
+      {step !== "payment" && !(step === "route" && view === "list") ? (
         <MapView
           className={step === "confirmed" ? "h-56" : "h-72"}
           routes={step === "route" ? routes : route ? [route] : routes}
@@ -253,8 +253,7 @@ export function BookingFlow() {
               ))}
             </div>
           </div>
-          {view === "list" || true ? (
-            <ul className="space-y-2">
+          <ul className="space-y-2">
               {routes.map((r) => (
                 <li key={r.id}>
                   <button
@@ -280,8 +279,7 @@ export function BookingFlow() {
                   </button>
                 </li>
               ))}
-            </ul>
-          ) : null}
+          </ul>
         </section>
       ) : null}
 
