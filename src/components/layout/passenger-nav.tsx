@@ -10,8 +10,8 @@ export function usePassengerNav(): BottomNavItem[] {
     {
       label: "Book",
       icon: Home,
-      active: pathname === "/",
-      onSelect: () => navigate({ to: "/" }),
+      active: pathname === "/book",
+      onSelect: () => navigate({ to: "/book" }),
     },
     {
       label: "My trips",
