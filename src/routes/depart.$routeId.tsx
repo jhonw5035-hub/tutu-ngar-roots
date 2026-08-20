@@ -152,7 +152,7 @@ function TimeSelection() {
             className="w-full"
             size="lg"
             disabled={!booking.slotId}
-            onClick={() => navigate({ to: "/book" })}
+            onClick={() => navigate({ to: "/pickup" })}
           >
             {booking.slotId ? "Confirm pickup point" : "Select a departure time"}
           </Button>

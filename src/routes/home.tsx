@@ -195,6 +195,13 @@ function PassengerHome() {
             <p className="text-sm text-muted-foreground">
               {upcomingTrip.pickup} → {upcomingTrip.destination}
             </p>
+            <Link
+              to="/trip"
+              className="inline-block text-sm font-semibold text-primary"
+              onClick={() => booking.set({ routeId: "r-pyay" })}
+            >
+              Track live
+            </Link>
             <p className="text-xs text-muted-foreground">
               {upcomingTrip.date} · <span className="num text-foreground">{upcomingTrip.time}</span>{" "}
               · <span className="num text-foreground">{upcomingTrip.fare.toLocaleString()} Ks</span>

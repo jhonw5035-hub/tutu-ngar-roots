@@ -45,6 +45,10 @@ export type RouteMapProps = {
   destinationId?: string | null;
   onSelectPoint?: (id: string) => void;
   vehicle?: LatLng | null;
+  /** Passenger's approximate location (real geolocation, when granted). */
+  userLocation?: LatLng | null;
+  /** Optional label bubble rendered next to the vehicle marker. */
+  vehicleLabel?: string | undefined;
   fitTo?: LatLng[];
   locateNonce?: number;
 };
@@ -70,6 +74,8 @@ export default function RouteMap({
   destinationId = null,
   onSelectPoint,
   vehicle = null,
+  userLocation = null,
+  vehicleLabel,
   fitTo,
   locateNonce = 0,
 }: RouteMapProps) {
@@ -98,6 +104,13 @@ export default function RouteMap({
           position={MOCK_USER_LOCATION}
           icon={pinIcon({ color: "#2563eb", size: 18, pulse: true })}
           title="You are here"
+        />
+      ) : null}
+      {userLocation ? (
+        <Marker
+          position={userLocation}
+          icon={pinIcon({ color: "#2563eb", size: 18, pulse: true })}
+          title="Your location"
         />
       ) : null}
 
@@ -140,7 +153,19 @@ export default function RouteMap({
       {vehicle ? (
         <Marker
           position={vehicle}
-          icon={pinIcon({ color: "#0f172a", size: 26, label: "▲" })}
+          icon={
+            vehicleLabel
+              ? L.divIcon({
+                  className: "ttn-marker",
+                  html: `<span style="display:flex;align-items:center;gap:6px;white-space:nowrap;
+                    padding:5px 10px 5px 6px;border-radius:9999px;background:#0f172a;color:#fff;
+                    font:600 11px/1 Inter,sans-serif;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.4)">
+                    <span style="font-size:12px">▲</span>${vehicleLabel}</span>`,
+                  iconSize: [10, 10],
+                  iconAnchor: [12, 12],
+                })
+              : pinIcon({ color: "#0f172a", size: 26, label: "▲" })
+          }
           title="Your vehicle"
         />
       ) : null}

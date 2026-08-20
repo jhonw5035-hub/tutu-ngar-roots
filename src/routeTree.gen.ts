@@ -17,7 +17,9 @@ import { Route as DiscoverRouteImport } from './routes/discover'
 import { Route as DriverRouteImport } from './routes/driver'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as PickupRouteImport } from './routes/pickup'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as TripRouteImport } from './routes/trip'
 import { Route as TripsRouteImport } from './routes/trips'
 import { Route as WalletRouteImport } from './routes/wallet'
 import { Route as DepartRouteIdRouteImport } from './routes/depart.$routeId'
@@ -62,9 +64,19 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PickupRoute = PickupRouteImport.update({
+  id: '/pickup',
+  path: '/pickup',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TripRoute = TripRouteImport.update({
+  id: '/trip',
+  path: '/trip',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TripsRoute = TripsRouteImport.update({
@@ -92,7 +104,9 @@ export interface FileRoutesByFullPath {
   '/driver': typeof DriverRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
+  '/pickup': typeof PickupRoute
   '/signup': typeof SignupRoute
+  '/trip': typeof TripRoute
   '/trips': typeof TripsRoute
   '/wallet': typeof WalletRoute
   '/depart/$routeId': typeof DepartRouteIdRoute
@@ -106,7 +120,9 @@ export interface FileRoutesByTo {
   '/driver': typeof DriverRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
+  '/pickup': typeof PickupRoute
   '/signup': typeof SignupRoute
+  '/trip': typeof TripRoute
   '/trips': typeof TripsRoute
   '/wallet': typeof WalletRoute
   '/depart/$routeId': typeof DepartRouteIdRoute
@@ -121,7 +137,9 @@ export interface FileRoutesById {
   '/driver': typeof DriverRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
+  '/pickup': typeof PickupRoute
   '/signup': typeof SignupRoute
+  '/trip': typeof TripRoute
   '/trips': typeof TripsRoute
   '/wallet': typeof WalletRoute
   '/depart/$routeId': typeof DepartRouteIdRoute
@@ -137,7 +155,9 @@ export interface FileRouteTypes {
     | '/driver'
     | '/home'
     | '/login'
+    | '/pickup'
     | '/signup'
+    | '/trip'
     | '/trips'
     | '/wallet'
     | '/depart/$routeId'
@@ -151,7 +171,9 @@ export interface FileRouteTypes {
     | '/driver'
     | '/home'
     | '/login'
+    | '/pickup'
     | '/signup'
+    | '/trip'
     | '/trips'
     | '/wallet'
     | '/depart/$routeId'
@@ -165,7 +187,9 @@ export interface FileRouteTypes {
     | '/driver'
     | '/home'
     | '/login'
+    | '/pickup'
     | '/signup'
+    | '/trip'
     | '/trips'
     | '/wallet'
     | '/depart/$routeId'
@@ -180,7 +204,9 @@ export interface RootRouteChildren {
   DriverRoute: typeof DriverRoute
   HomeRoute: typeof HomeRoute
   LoginRoute: typeof LoginRoute
+  PickupRoute: typeof PickupRoute
   SignupRoute: typeof SignupRoute
+  TripRoute: typeof TripRoute
   TripsRoute: typeof TripsRoute
   WalletRoute: typeof WalletRoute
   DepartRouteIdRoute: typeof DepartRouteIdRoute
@@ -244,11 +270,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pickup': {
+      id: '/pickup'
+      path: '/pickup'
+      fullPath: '/pickup'
+      preLoaderRoute: typeof PickupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/signup': {
       id: '/signup'
       path: '/signup'
       fullPath: '/signup'
       preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/trip': {
+      id: '/trip'
+      path: '/trip'
+      fullPath: '/trip'
+      preLoaderRoute: typeof TripRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/trips': {
@@ -284,7 +324,9 @@ const rootRouteChildren: RootRouteChildren = {
   DriverRoute: DriverRoute,
   HomeRoute: HomeRoute,
   LoginRoute: LoginRoute,
+  PickupRoute: PickupRoute,
   SignupRoute: SignupRoute,
+  TripRoute: TripRoute,
   TripsRoute: TripsRoute,
   WalletRoute: WalletRoute,
   DepartRouteIdRoute: DepartRouteIdRoute,
