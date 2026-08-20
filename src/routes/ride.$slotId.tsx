@@ -69,9 +69,12 @@ function RideDetails() {
   const men = riders.length - women;
   const youFemale = profile?.gender === "female";
 
+  const routeId = slot?.routeId ?? null;
+  const pickupId = pickup?.id ?? null;
+  const set = booking.set;
   useEffect(() => {
-    if (slot && pickup) booking.set({ routeId: slot.routeId, slotId: slot.id, pickupPointId: pickup.id });
-  }, [slot, pickup, booking]);
+    if (routeId && pickupId) set({ routeId, slotId, pickupPointId: pickupId });
+  }, [routeId, slotId, pickupId, set]);
 
   if (!slot || !route) {
     return (
