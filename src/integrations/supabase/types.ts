@@ -14,16 +14,293 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      bookings: {
+        Row: {
+          created_at: string
+          destination_label: string | null
+          destination_lat: number | null
+          destination_lng: number | null
+          group_id: string | null
+          id: string
+          minority_gender_note: boolean
+          passenger_gender: Database["public"]["Enums"]["gender_type"] | null
+          passenger_id: string
+          passenger_name: string | null
+          pickup_label: string | null
+          pickup_lat: number | null
+          pickup_lng: number | null
+          requested_time: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          destination_label?: string | null
+          destination_lat?: number | null
+          destination_lng?: number | null
+          group_id?: string | null
+          id?: string
+          minority_gender_note?: boolean
+          passenger_gender?: Database["public"]["Enums"]["gender_type"] | null
+          passenger_id: string
+          passenger_name?: string | null
+          pickup_label?: string | null
+          pickup_lat?: number | null
+          pickup_lng?: number | null
+          requested_time?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          destination_label?: string | null
+          destination_lat?: number | null
+          destination_lng?: number | null
+          group_id?: string | null
+          id?: string
+          minority_gender_note?: boolean
+          passenger_gender?: Database["public"]["Enums"]["gender_type"] | null
+          passenger_id?: string
+          passenger_name?: string | null
+          pickup_label?: string | null
+          pickup_lat?: number | null
+          pickup_lng?: number | null
+          requested_time?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "trip_groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_passenger_id_fkey"
+            columns: ["passenger_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      driver_status: {
+        Row: {
+          current_lat: number | null
+          current_lng: number | null
+          driver_id: string
+          is_online: boolean
+          updated_at: string
+        }
+        Insert: {
+          current_lat?: number | null
+          current_lng?: number | null
+          driver_id: string
+          is_online?: boolean
+          updated_at?: string
+        }
+        Update: {
+          current_lat?: number | null
+          current_lng?: number | null
+          driver_id?: string
+          is_online?: boolean
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "driver_status_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          first_name: string | null
+          full_name: string | null
+          gender: Database["public"]["Enums"]["gender_type"] | null
+          id: string
+          phone: string | null
+          photo_url: string | null
+          plate_number: string | null
+          seat_capacity: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          first_name?: string | null
+          full_name?: string | null
+          gender?: Database["public"]["Enums"]["gender_type"] | null
+          id: string
+          phone?: string | null
+          photo_url?: string | null
+          plate_number?: string | null
+          seat_capacity?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          first_name?: string | null
+          full_name?: string | null
+          gender?: Database["public"]["Enums"]["gender_type"] | null
+          id?: string
+          phone?: string | null
+          photo_url?: string | null
+          plate_number?: string | null
+          seat_capacity?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      trip_group_members: {
+        Row: {
+          booking_id: string
+          created_at: string
+          drop_label: string | null
+          drop_lat: number | null
+          drop_lng: number | null
+          drop_order: number | null
+          group_id: string
+          id: string
+        }
+        Insert: {
+          booking_id: string
+          created_at?: string
+          drop_label?: string | null
+          drop_lat?: number | null
+          drop_lng?: number | null
+          drop_order?: number | null
+          group_id: string
+          id?: string
+        }
+        Update: {
+          booking_id?: string
+          created_at?: string
+          drop_label?: string | null
+          drop_lat?: number | null
+          drop_lng?: number | null
+          drop_order?: number | null
+          group_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trip_group_members_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trip_group_members_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "trip_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trip_groups: {
+        Row: {
+          corridor_label: string | null
+          created_at: string
+          driver_id: string | null
+          eta_to_pickup: string | null
+          id: string
+          pickup_lat: number | null
+          pickup_lng: number | null
+          pickup_point_label: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          corridor_label?: string | null
+          created_at?: string
+          driver_id?: string | null
+          eta_to_pickup?: string | null
+          id?: string
+          pickup_lat?: number | null
+          pickup_lng?: number | null
+          pickup_point_label?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          corridor_label?: string | null
+          created_at?: string
+          driver_id?: string | null
+          eta_to_pickup?: string | null
+          id?: string
+          pickup_lat?: number | null
+          pickup_lng?: number | null
+          pickup_point_label?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trip_groups_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_group_driver: {
+        Args: { _group_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_group_member: {
+        Args: { _group_id: string; _user_id: string }
+        Returns: boolean
+      }
+      shares_group_with_driver: {
+        Args: { _driver_id: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "passenger" | "driver" | "admin"
+      gender_type: "male" | "female" | "other"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +427,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["passenger", "driver", "admin"],
+      gender_type: ["male", "female", "other"],
+    },
   },
 } as const
