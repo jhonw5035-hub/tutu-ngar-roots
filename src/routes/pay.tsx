@@ -6,7 +6,11 @@ import { AppShell } from "@/components/layout/app-shell";
 import { usePassengerNav } from "@/components/layout/passenger-nav";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { toast } from "sonner";
+
 import { useBooking } from "@/lib/booking-store";
+import { createBooking, getCurrentPosition } from "@/lib/live";
+import { useSession } from "@/lib/session";
 import { formatTime12, getRoute, getSlotDetail } from "@/lib/mockData";
 
 export const Route = createFileRoute("/pay")({
@@ -29,16 +33,42 @@ function PaymentPage() {
   const navItems = usePassengerNav("trips");
   const navigate = useNavigate();
   const booking = useBooking();
+  const { userId, profile } = useSession();
   const [paying, setPaying] = useState(false);
 
   const slot = getSlotDetail(booking.slotId);
   const route = getRoute(booking.routeId);
   const fare = slot?.price ?? route?.fare ?? 3500;
 
-  // Mock payment only — no gateway. Replace with a real MMQR charge later.
-  const pay = () => {
+  // Payment stays mocked (no gateway), but the booking itself is real: we
+  // capture the device's coordinates and insert a pending row that the admin
+  // optimizer will pick up.
+  const pay = async () => {
+    if (!userId) {
+      toast.error("Please log in again to book a seat");
+      navigate({ to: "/login" });
+      return;
+    }
     setPaying(true);
-    window.setTimeout(() => navigate({ to: "/confirmed" }), 1500);
+    try {
+      const position = await getCurrentPosition();
+      if (!position) {
+        toast.message("Location unavailable — using your selected pickup area");
+      }
+      const created = await createBooking({
+        passengerId: userId,
+        passengerName: profile?.firstName ?? profile?.fullName ?? null,
+        passengerGender: profile?.gender ?? null,
+        pickupLabel: booking.pickupText || route?.from || "Pickup area",
+        destinationLabel: booking.destinationText || route?.to || "Destination",
+        requestedTime: slot ? new Date().toISOString() : null,
+        pickup: position,
+      });
+      navigate({ to: "/confirmed", search: { booking: created.id } });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not confirm your booking");
+      setPaying(false);
+    }
   };
 
   return (
@@ -89,7 +119,7 @@ function PaymentPage() {
 
       <div className="safe-bottom fixed inset-x-0 bottom-14 z-30 border-t border-border bg-background/95 px-4 py-3 backdrop-blur">
         <div className="mx-auto w-full max-w-3xl">
-          <Button className="w-full" size="lg" disabled={paying} onClick={pay}>
+          <Button className="w-full" size="lg" disabled={paying} onClick={() => void pay()}>
             {paying ? (
               <>
                 <Loader2 className="size-4 animate-spin" /> Processing payment…

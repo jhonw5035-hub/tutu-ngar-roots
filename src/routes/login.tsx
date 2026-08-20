@@ -8,7 +8,10 @@ import { Label } from "@/components/ui/label";
 import { Wordmark } from "@/components/layout/wordmark";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { RolePortalTabs } from "@/components/auth/role-portal-tabs";
+import { toast } from "sonner";
+
 import { portalHome, useSession, type Role } from "@/lib/session";
+import { provisionDemoAccounts } from "@/lib/demo.functions";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -43,32 +46,45 @@ function LoginPage() {
   const [password, setPassword] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [provisioning, setProvisioning] = React.useState(false);
+
+  // Demo helper: creates the fixed admin account plus a teammate driver and a
+  // bot driver. Idempotent — existing accounts are skipped.
+  async function setupDemoAccounts() {
+    setProvisioning(true);
+    try {
+      const result = await provisionDemoAccounts();
+      toast.success(
+        result.created.length
+          ? `Demo accounts ready: ${result.created.join(", ")}`
+          : "Demo accounts already exist",
+      );
+    } catch {
+      toast.error("Could not set up the demo accounts");
+    }
+    setProvisioning(false);
+  }
 
   const Accent = accent[role].icon;
 
-  function handleSubmit(event: React.FormEvent) {
+  async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     setError(null);
-    // TEMPORARY: hardcoded demo admin credential check standing in for real
-    // Supabase Auth + `user_roles` role verification. Replace with
-    // supabase.auth.signInWithPassword() + a server-side role lookup.
-    if (role === "admin") {
-      const ok =
-        identifier.trim().toLowerCase() === "admin@gmail.com" && password === "admin@123";
-      if (!ok) {
-        setError("Invalid admin credentials");
+    setLoading(true);
+    try {
+      // Real Supabase Auth. The role comes from the `user_roles` table, never
+      // from the selected tab — the tab only decides where we land.
+      const actualRole = await signIn(identifier, password);
+      if (actualRole !== role) {
+        setError(`This account is registered as a ${actualRole}. Switch to that tab to continue.`);
+        setLoading(false);
         return;
       }
-    }
-    setLoading(true);
-    // TODO(supabase): replace with
-    //   await supabase.auth.signInWithPassword({ email, password })
-    // then read the role from the `user_roles` table instead of the tab.
-    window.setTimeout(() => {
-      signIn(role, { phone: identifier });
+      navigate({ to: portalHome[actualRole], replace: true });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not sign in");
       setLoading(false);
-      navigate({ to: portalHome[role], replace: true });
-    }, 700);
+    }
   }
 
   return (
@@ -98,7 +114,7 @@ function LoginPage() {
             </div>
           </div>
 
-          <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
+          <form className="mt-6 space-y-4" onSubmit={(e) => void handleSubmit(e)}>
             <div className="space-y-1.5">
               <Label htmlFor="identifier">Phone number or email</Label>
               <Input
@@ -136,9 +152,20 @@ function LoginPage() {
 
           <div className="mt-5 text-center text-sm">
             {role === "admin" ? (
-              <p className="text-muted-foreground">
-                Admin accounts are provisioned by the team.
-              </p>
+              <div className="space-y-2">
+                <p className="text-muted-foreground">
+                  Admin accounts are provisioned by the team.
+                </p>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  disabled={provisioning}
+                  onClick={() => void setupDemoAccounts()}
+                >
+                  {provisioning ? "Setting up…" : "Set up demo accounts"}
+                </Button>
+              </div>
             ) : (
               <p className="text-muted-foreground">
                 Don&apos;t have an account?{" "}

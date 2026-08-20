@@ -16,6 +16,7 @@ import { Wordmark } from "@/components/layout/wordmark";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { RolePortalTabs } from "@/components/auth/role-portal-tabs";
 import { ProfilePhotoField } from "@/components/auth/profile-photo-field";
+import { supabase } from "@/integrations/supabase/client";
 import { portalHome, useSession, type Role, type SessionProfile } from "@/lib/session";
 
 const searchSchema = z.object({
@@ -45,7 +46,8 @@ export const Route = createFileRoute("/signup")({
 function SignupPage() {
   const navigate = useNavigate();
   const search = Route.useSearch();
-  const { signIn } = useSession();
+  const { signUp } = useSession();
+  const [error, setError] = React.useState<string | null>(null);
 
   const [role, setRole] = React.useState<Role>(search.role);
   const [step, setStep] = React.useState<"account" | "vehicle">("account");
@@ -64,15 +66,36 @@ function SignupPage() {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
-  function complete(profile: SessionProfile) {
+  async function complete(profile: SessionProfile) {
+    if (role === "admin") return;
     setLoading(true);
-    // TODO(supabase): replace with supabase.auth.signUp({ email, password, options })
-    // and insert the profile row + role row server-side.
-    window.setTimeout(() => {
-      signIn(role, profile);
-      setLoading(false);
+    setError(null);
+    try {
+      await signUp({
+        role,
+        fullName: profile.fullName ?? "",
+        firstName: profile.firstName ?? "",
+        phone: profile.phone ?? "",
+        password: form.password,
+        ...(profile.gender ? { gender: profile.gender } : {}),
+        ...(profile.plateNumber ? { plateNumber: profile.plateNumber } : {}),
+        ...(profile.seatCapacity ? { seatCapacity: profile.seatCapacity } : {}),
+      });
+      // Driver-facing identification photo only — never shown to passengers.
+      if (profile.photoDataUrl) {
+        const { data } = await supabase.auth.getUser();
+        if (data.user) {
+          await supabase
+            .from("profiles")
+            .update({ photo_url: profile.photoDataUrl })
+            .eq("id", data.user.id);
+        }
+      }
       navigate({ to: portalHome[role], replace: true });
-    }, 700);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not create the account");
+      setLoading(false);
+    }
   }
 
   function handleAccountSubmit(event: React.FormEvent) {
@@ -81,12 +104,12 @@ function SignupPage() {
       setStep("vehicle");
       return;
     }
-    complete({ ...form, ...(photoDataUrl ? { photoDataUrl } : {}) });
+    void complete({ ...form, ...(photoDataUrl ? { photoDataUrl } : {}) });
   }
 
   function handleVehicleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    complete({
+    void complete({
       ...form,
       ...(photoDataUrl ? { photoDataUrl } : {}),
       plateNumber: vehicle.plateNumber,
@@ -181,6 +204,7 @@ function SignupPage() {
                     </SelectContent>
                   </Select>
                 </div>
+                {error ? <p className="text-sm text-destructive">{error}</p> : null}
                 <Button type="submit" size="lg" className="w-full" disabled={loading}>
                   {role === "driver"
                     ? "Continue"
@@ -233,6 +257,7 @@ function SignupPage() {
                     </SelectContent>
                   </Select>
                 </div>
+                {error ? <p className="text-sm text-destructive">{error}</p> : null}
                 <div className="flex gap-2">
                   <Button
                     type="button"
