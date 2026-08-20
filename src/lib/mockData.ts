@@ -382,3 +382,26 @@ export const upcomingTrip = {
   time: "08:15",
   fare: 2500,
 };
+
+/** Great-circle distance in km between two [lat, lng] pairs. */
+export const distanceKm = (a: LatLng, b: LatLng) => haversineKm(a, b);
+
+export type TripStop = {
+  id: string;
+  name: string;
+  isDestination: boolean;
+  pickedUp: boolean;
+};
+
+/**
+ * Ordered stop list for a live trip. `progress` is how many stops the van has
+ * already served — the demo steps through this to update the checklist.
+ */
+export function getTripStops(routeId: string | null, progress = 1): TripStop[] {
+  return getPointsForRoute(routeId).map((p, i) => ({
+    id: p.id,
+    name: p.name,
+    isDestination: i === getPointsForRoute(routeId).length - 1,
+    pickedUp: i < progress,
+  }));
+}
