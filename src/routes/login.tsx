@@ -8,7 +8,10 @@ import { Label } from "@/components/ui/label";
 import { Wordmark } from "@/components/layout/wordmark";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { RolePortalTabs } from "@/components/auth/role-portal-tabs";
+import { toast } from "sonner";
+
 import { portalHome, useSession, type Role } from "@/lib/session";
+import { provisionDemoAccounts } from "@/lib/demo.functions";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -43,6 +46,24 @@ function LoginPage() {
   const [password, setPassword] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [provisioning, setProvisioning] = React.useState(false);
+
+  // Demo helper: creates the fixed admin account plus a teammate driver and a
+  // bot driver. Idempotent — existing accounts are skipped.
+  async function setupDemoAccounts() {
+    setProvisioning(true);
+    try {
+      const result = await provisionDemoAccounts();
+      toast.success(
+        result.created.length
+          ? `Demo accounts ready: ${result.created.join(", ")}`
+          : "Demo accounts already exist",
+      );
+    } catch {
+      toast.error("Could not set up the demo accounts");
+    }
+    setProvisioning(false);
+  }
 
   const Accent = accent[role].icon;
 
@@ -93,7 +114,7 @@ function LoginPage() {
             </div>
           </div>
 
-          <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
+          <form className="mt-6 space-y-4" onSubmit={(e) => void handleSubmit(e)}>
             <div className="space-y-1.5">
               <Label htmlFor="identifier">Phone number or email</Label>
               <Input
@@ -131,9 +152,20 @@ function LoginPage() {
 
           <div className="mt-5 text-center text-sm">
             {role === "admin" ? (
-              <p className="text-muted-foreground">
-                Admin accounts are provisioned by the team.
-              </p>
+              <div className="space-y-2">
+                <p className="text-muted-foreground">
+                  Admin accounts are provisioned by the team.
+                </p>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  disabled={provisioning}
+                  onClick={() => void setupDemoAccounts()}
+                >
+                  {provisioning ? "Setting up…" : "Set up demo accounts"}
+                </Button>
+              </div>
             ) : (
               <p className="text-muted-foreground">
                 Don&apos;t have an account?{" "}
