@@ -72,9 +72,9 @@ function RideDetails() {
   const routeId = slot?.routeId ?? null;
   const pickupId = pickup?.id ?? null;
   const set = booking.set;
-//   useEffect(() => {
-//     if (routeId && pickupId) set({ routeId, slotId, pickupPointId: pickupId });
-//   }, [routeId, slotId, pickupId, set]);
+  useEffect(() => {
+    if (routeId && pickupId) set({ routeId, slotId, pickupPointId: pickupId });
+  }, [routeId, slotId, pickupId, set]);
 
   if (!slot || !route) {
     return (
