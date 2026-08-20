@@ -17,7 +17,7 @@ function pinIcon(opts: { color: string; size: number; label?: string; pulse?: bo
       width:${size}px;height:${size}px;border-radius:9999px;
       background:${color};color:#fff;font:700 11px/1 Inter,sans-serif;
       border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35);
-      ${pulse ? "outline:6px solid rgba(247,85,20,.25);" : ""}
+      ${pulse ? "animation: ttn-pin-pulse 1.6s ease-out infinite;" : ""}
     ">${label}</span>`,
     iconSize: [size, size],
     iconAnchor: [size / 2, size / 2],
@@ -46,7 +46,20 @@ export type RouteMapProps = {
   onSelectPoint?: (id: string) => void;
   vehicle?: LatLng | null;
   fitTo?: LatLng[];
+  locateNonce?: number;
 };
+
+/** Mock "locate me" — recentres on a Yangon location instead of real GPS. */
+const MOCK_USER_LOCATION: LatLng = [16.8261, 96.1385];
+
+function LocateHandler({ nonce }: { nonce: number }) {
+  const map = useMap();
+  useEffect(() => {
+    if (!nonce) return;
+    map.flyTo(MOCK_USER_LOCATION, 14, { duration: 0.8 });
+  }, [map, nonce]);
+  return null;
+}
 
 export default function RouteMap({
   routes,
@@ -58,6 +71,7 @@ export default function RouteMap({
   onSelectPoint,
   vehicle = null,
   fitTo,
+  locateNonce = 0,
 }: RouteMapProps) {
   const bounds = useMemo<LatLng[]>(() => {
     if (fitTo?.length) return fitTo;
@@ -78,6 +92,14 @@ export default function RouteMap({
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
       <FitBounds positions={bounds} />
+      <LocateHandler nonce={locateNonce} />
+      {locateNonce ? (
+        <Marker
+          position={MOCK_USER_LOCATION}
+          icon={pinIcon({ color: "#2563eb", size: 18, pulse: true })}
+          title="You are here"
+        />
+      ) : null}
 
       {routes.map((route) => {
         const active = route.id === selectedRouteId;
