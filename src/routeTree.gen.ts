@@ -17,6 +17,7 @@ import { Route as DiscoverRouteImport } from './routes/discover'
 import { Route as DriverRouteImport } from './routes/driver'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as PickupRouteImport } from './routes/pickup'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as TripsRouteImport } from './routes/trips'
 import { Route as WalletRouteImport } from './routes/wallet'
@@ -62,6 +63,11 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PickupRoute = PickupRouteImport.update({
+  id: '/pickup',
+  path: '/pickup',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
@@ -92,6 +98,7 @@ export interface FileRoutesByFullPath {
   '/driver': typeof DriverRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
+  '/pickup': typeof PickupRoute
   '/signup': typeof SignupRoute
   '/trips': typeof TripsRoute
   '/wallet': typeof WalletRoute
@@ -106,6 +113,7 @@ export interface FileRoutesByTo {
   '/driver': typeof DriverRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
+  '/pickup': typeof PickupRoute
   '/signup': typeof SignupRoute
   '/trips': typeof TripsRoute
   '/wallet': typeof WalletRoute
@@ -121,6 +129,7 @@ export interface FileRoutesById {
   '/driver': typeof DriverRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
+  '/pickup': typeof PickupRoute
   '/signup': typeof SignupRoute
   '/trips': typeof TripsRoute
   '/wallet': typeof WalletRoute
@@ -137,6 +146,7 @@ export interface FileRouteTypes {
     | '/driver'
     | '/home'
     | '/login'
+    | '/pickup'
     | '/signup'
     | '/trips'
     | '/wallet'
@@ -151,6 +161,7 @@ export interface FileRouteTypes {
     | '/driver'
     | '/home'
     | '/login'
+    | '/pickup'
     | '/signup'
     | '/trips'
     | '/wallet'
@@ -165,6 +176,7 @@ export interface FileRouteTypes {
     | '/driver'
     | '/home'
     | '/login'
+    | '/pickup'
     | '/signup'
     | '/trips'
     | '/wallet'
@@ -180,6 +192,7 @@ export interface RootRouteChildren {
   DriverRoute: typeof DriverRoute
   HomeRoute: typeof HomeRoute
   LoginRoute: typeof LoginRoute
+  PickupRoute: typeof PickupRoute
   SignupRoute: typeof SignupRoute
   TripsRoute: typeof TripsRoute
   WalletRoute: typeof WalletRoute
@@ -244,6 +257,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pickup': {
+      id: '/pickup'
+      path: '/pickup'
+      fullPath: '/pickup'
+      preLoaderRoute: typeof PickupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/signup': {
       id: '/signup'
       path: '/signup'
@@ -284,6 +304,7 @@ const rootRouteChildren: RootRouteChildren = {
   DriverRoute: DriverRoute,
   HomeRoute: HomeRoute,
   LoginRoute: LoginRoute,
+  PickupRoute: PickupRoute,
   SignupRoute: SignupRoute,
   TripsRoute: TripsRoute,
   WalletRoute: WalletRoute,
