@@ -12,9 +12,11 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as ConfirmedRouteImport } from './routes/confirmed'
 import { Route as DriverRouteImport } from './routes/driver'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as PayRouteImport } from './routes/pay'
 import { Route as RidesRouteImport } from './routes/rides'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as TripRouteImport } from './routes/trip'
@@ -36,6 +38,11 @@ const AdminRoute = AdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ConfirmedRoute = ConfirmedRouteImport.update({
+  id: '/confirmed',
+  path: '/confirmed',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DriverRoute = DriverRouteImport.update({
   id: '/driver',
   path: '/driver',
@@ -49,6 +56,11 @@ const HomeRoute = HomeRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PayRoute = PayRouteImport.update({
+  id: '/pay',
+  path: '/pay',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RidesRoute = RidesRouteImport.update({
@@ -81,9 +93,11 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/admin': typeof AdminRoute
+  '/confirmed': typeof ConfirmedRoute
   '/driver': typeof DriverRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
+  '/pay': typeof PayRoute
   '/rides': typeof RidesRoute
   '/signup': typeof SignupRoute
   '/trip': typeof TripRoute
@@ -94,9 +108,11 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/admin': typeof AdminRoute
+  '/confirmed': typeof ConfirmedRoute
   '/driver': typeof DriverRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
+  '/pay': typeof PayRoute
   '/rides': typeof RidesRoute
   '/signup': typeof SignupRoute
   '/trip': typeof TripRoute
@@ -108,9 +124,11 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/admin': typeof AdminRoute
+  '/confirmed': typeof ConfirmedRoute
   '/driver': typeof DriverRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
+  '/pay': typeof PayRoute
   '/rides': typeof RidesRoute
   '/signup': typeof SignupRoute
   '/trip': typeof TripRoute
@@ -123,9 +141,11 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/admin'
+    | '/confirmed'
     | '/driver'
     | '/home'
     | '/login'
+    | '/pay'
     | '/rides'
     | '/signup'
     | '/trip'
@@ -136,9 +156,11 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/admin'
+    | '/confirmed'
     | '/driver'
     | '/home'
     | '/login'
+    | '/pay'
     | '/rides'
     | '/signup'
     | '/trip'
@@ -149,9 +171,11 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/admin'
+    | '/confirmed'
     | '/driver'
     | '/home'
     | '/login'
+    | '/pay'
     | '/rides'
     | '/signup'
     | '/trip'
@@ -163,9 +187,11 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRoute
   AdminRoute: typeof AdminRoute
+  ConfirmedRoute: typeof ConfirmedRoute
   DriverRoute: typeof DriverRoute
   HomeRoute: typeof HomeRoute
   LoginRoute: typeof LoginRoute
+  PayRoute: typeof PayRoute
   RidesRoute: typeof RidesRoute
   SignupRoute: typeof SignupRoute
   TripRoute: typeof TripRoute
@@ -196,6 +222,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/confirmed': {
+      id: '/confirmed'
+      path: '/confirmed'
+      fullPath: '/confirmed'
+      preLoaderRoute: typeof ConfirmedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/driver': {
       id: '/driver'
       path: '/driver'
@@ -215,6 +248,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pay': {
+      id: '/pay'
+      path: '/pay'
+      fullPath: '/pay'
+      preLoaderRoute: typeof PayRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/rides': {
@@ -259,9 +299,11 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
   AdminRoute: AdminRoute,
+  ConfirmedRoute: ConfirmedRoute,
   DriverRoute: DriverRoute,
   HomeRoute: HomeRoute,
   LoginRoute: LoginRoute,
+  PayRoute: PayRoute,
   RidesRoute: RidesRoute,
   SignupRoute: SignupRoute,
   TripRoute: TripRoute,
