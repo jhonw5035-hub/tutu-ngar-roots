@@ -28,6 +28,10 @@ import { Route as AdminForecastRouteImport } from './routes/admin.forecast'
 import { Route as AdminPassengersRouteImport } from './routes/admin.passengers'
 import { Route as AdminRoutesRouteImport } from './routes/admin.routes'
 import { Route as AdminVehiclesRouteImport } from './routes/admin.vehicles'
+import { Route as DriverIndexRouteImport } from './routes/driver.index'
+import { Route as DriverEarningsRouteImport } from './routes/driver.earnings'
+import { Route as DriverProfileRouteImport } from './routes/driver.profile'
+import { Route as DriverTripsRouteImport } from './routes/driver.trips'
 import { Route as RideSlotIdRouteImport } from './routes/ride.$slotId'
 
 const IndexRoute = IndexRouteImport.update({
@@ -125,6 +129,26 @@ const AdminVehiclesRoute = AdminVehiclesRouteImport.update({
   path: '/vehicles',
   getParentRoute: () => AdminRoute,
 } as any)
+const DriverIndexRoute = DriverIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DriverRoute,
+} as any)
+const DriverEarningsRoute = DriverEarningsRouteImport.update({
+  id: '/earnings',
+  path: '/earnings',
+  getParentRoute: () => DriverRoute,
+} as any)
+const DriverProfileRoute = DriverProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => DriverRoute,
+} as any)
+const DriverTripsRoute = DriverTripsRouteImport.update({
+  id: '/trips',
+  path: '/trips',
+  getParentRoute: () => DriverRoute,
+} as any)
 const RideSlotIdRoute = RideSlotIdRouteImport.update({
   id: '/ride/$slotId',
   path: '/ride/$slotId',
@@ -136,7 +160,7 @@ export interface FileRoutesByFullPath {
   '/account': typeof AccountRoute
   '/admin': typeof AdminRouteWithChildren
   '/confirmed': typeof ConfirmedRoute
-  '/driver': typeof DriverRoute
+  '/driver': typeof DriverRouteWithChildren
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/pay': typeof PayRoute
@@ -150,14 +174,17 @@ export interface FileRoutesByFullPath {
   '/admin/passengers': typeof AdminPassengersRoute
   '/admin/routes': typeof AdminRoutesRoute
   '/admin/vehicles': typeof AdminVehiclesRoute
+  '/driver/earnings': typeof DriverEarningsRoute
+  '/driver/profile': typeof DriverProfileRoute
+  '/driver/trips': typeof DriverTripsRoute
   '/ride/$slotId': typeof RideSlotIdRoute
   '/admin/': typeof AdminIndexRoute
+  '/driver/': typeof DriverIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/confirmed': typeof ConfirmedRoute
-  '/driver': typeof DriverRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/pay': typeof PayRoute
@@ -171,8 +198,12 @@ export interface FileRoutesByTo {
   '/admin/passengers': typeof AdminPassengersRoute
   '/admin/routes': typeof AdminRoutesRoute
   '/admin/vehicles': typeof AdminVehiclesRoute
+  '/driver/earnings': typeof DriverEarningsRoute
+  '/driver/profile': typeof DriverProfileRoute
+  '/driver/trips': typeof DriverTripsRoute
   '/ride/$slotId': typeof RideSlotIdRoute
   '/admin': typeof AdminIndexRoute
+  '/driver': typeof DriverIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -180,7 +211,7 @@ export interface FileRoutesById {
   '/account': typeof AccountRoute
   '/admin': typeof AdminRouteWithChildren
   '/confirmed': typeof ConfirmedRoute
-  '/driver': typeof DriverRoute
+  '/driver': typeof DriverRouteWithChildren
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/pay': typeof PayRoute
@@ -194,8 +225,12 @@ export interface FileRoutesById {
   '/admin/passengers': typeof AdminPassengersRoute
   '/admin/routes': typeof AdminRoutesRoute
   '/admin/vehicles': typeof AdminVehiclesRoute
+  '/driver/earnings': typeof DriverEarningsRoute
+  '/driver/profile': typeof DriverProfileRoute
+  '/driver/trips': typeof DriverTripsRoute
   '/ride/$slotId': typeof RideSlotIdRoute
   '/admin/': typeof AdminIndexRoute
+  '/driver/': typeof DriverIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -218,14 +253,17 @@ export interface FileRouteTypes {
     | '/admin/passengers'
     | '/admin/routes'
     | '/admin/vehicles'
+    | '/driver/earnings'
+    | '/driver/profile'
+    | '/driver/trips'
     | '/ride/$slotId'
     | '/admin/'
+    | '/driver/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/account'
     | '/confirmed'
-    | '/driver'
     | '/home'
     | '/login'
     | '/pay'
@@ -239,8 +277,12 @@ export interface FileRouteTypes {
     | '/admin/passengers'
     | '/admin/routes'
     | '/admin/vehicles'
+    | '/driver/earnings'
+    | '/driver/profile'
+    | '/driver/trips'
     | '/ride/$slotId'
     | '/admin'
+    | '/driver'
   id:
     | '__root__'
     | '/'
@@ -261,8 +303,12 @@ export interface FileRouteTypes {
     | '/admin/passengers'
     | '/admin/routes'
     | '/admin/vehicles'
+    | '/driver/earnings'
+    | '/driver/profile'
+    | '/driver/trips'
     | '/ride/$slotId'
     | '/admin/'
+    | '/driver/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -270,7 +316,7 @@ export interface RootRouteChildren {
   AccountRoute: typeof AccountRoute
   AdminRoute: typeof AdminRouteWithChildren
   ConfirmedRoute: typeof ConfirmedRoute
-  DriverRoute: typeof DriverRoute
+  DriverRoute: typeof DriverRouteWithChildren
   HomeRoute: typeof HomeRoute
   LoginRoute: typeof LoginRoute
   PayRoute: typeof PayRoute
@@ -416,6 +462,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminVehiclesRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/driver/': {
+      id: '/driver/'
+      path: '/'
+      fullPath: '/driver/'
+      preLoaderRoute: typeof DriverIndexRouteImport
+      parentRoute: typeof DriverRoute
+    }
+    '/driver/earnings': {
+      id: '/driver/earnings'
+      path: '/earnings'
+      fullPath: '/driver/earnings'
+      preLoaderRoute: typeof DriverEarningsRouteImport
+      parentRoute: typeof DriverRoute
+    }
+    '/driver/profile': {
+      id: '/driver/profile'
+      path: '/profile'
+      fullPath: '/driver/profile'
+      preLoaderRoute: typeof DriverProfileRouteImport
+      parentRoute: typeof DriverRoute
+    }
+    '/driver/trips': {
+      id: '/driver/trips'
+      path: '/trips'
+      fullPath: '/driver/trips'
+      preLoaderRoute: typeof DriverTripsRouteImport
+      parentRoute: typeof DriverRoute
+    }
     '/ride/$slotId': {
       id: '/ride/$slotId'
       path: '/ride/$slotId'
@@ -448,12 +522,29 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface DriverRouteChildren {
+  DriverEarningsRoute: typeof DriverEarningsRoute
+  DriverProfileRoute: typeof DriverProfileRoute
+  DriverTripsRoute: typeof DriverTripsRoute
+  DriverIndexRoute: typeof DriverIndexRoute
+}
+
+const DriverRouteChildren: DriverRouteChildren = {
+  DriverEarningsRoute: DriverEarningsRoute,
+  DriverProfileRoute: DriverProfileRoute,
+  DriverTripsRoute: DriverTripsRoute,
+  DriverIndexRoute: DriverIndexRoute,
+}
+
+const DriverRouteWithChildren =
+  DriverRoute._addFileChildren(DriverRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
   AdminRoute: AdminRouteWithChildren,
   ConfirmedRoute: ConfirmedRoute,
-  DriverRoute: DriverRoute,
+  DriverRoute: DriverRouteWithChildren,
   HomeRoute: HomeRoute,
   LoginRoute: LoginRoute,
   PayRoute: PayRoute,
