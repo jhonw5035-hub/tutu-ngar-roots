@@ -257,6 +257,7 @@ function SignupPage() {
                     </SelectContent>
                   </Select>
                 </div>
+                {error ? <p className="text-sm text-destructive">{error}</p> : null}
                 <div className="flex gap-2">
                   <Button
                     type="button"
@@ -267,7 +268,6 @@ function SignupPage() {
                   >
                     Back
                   </Button>
-                {error ? <p className="text-sm text-destructive">{error}</p> : null}
                   <Button type="submit" size="lg" className="flex-1" disabled={loading}>
                     {loading ? "Saving…" : "Finish"}
                   </Button>
