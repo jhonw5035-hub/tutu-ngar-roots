@@ -198,22 +198,26 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     async (input) => {
       const email = input.email.trim().toLowerCase();
       if (!email) throw new Error("An email address is required to create an account");
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password: input.password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/login`,
-          data: {
-            role: input.role,
-            full_name: input.fullName,
-            first_name: input.firstName,
-            phone: input.phone,
-            gender: ["male", "female", "other"].includes(input.gender ?? "") ? input.gender : null,
-            plate_number: input.plateNumber ?? null,
-            seat_capacity: input.seatCapacity ?? null,
+      const { data, error } = await withNetworkRetry(() =>
+        supabase.auth.signUp({
+          email,
+          password: input.password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/login`,
+            data: {
+              role: input.role,
+              full_name: input.fullName,
+              first_name: input.firstName,
+              phone: input.phone,
+              gender: ["male", "female", "other"].includes(input.gender ?? "")
+                ? input.gender
+                : null,
+              plate_number: input.plateNumber ?? null,
+              seat_capacity: input.seatCapacity ?? null,
+            },
           },
-        },
-      });
+        }),
+      );
       if (error) {
         const message = /already registered|already been registered|user_already_exists/i.test(
           error.message,
@@ -221,17 +225,17 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
           ? "That email already has an account — log in instead."
           : /password/i.test(error.message) && /at least|short/i.test(error.message)
             ? "Password must be at least 6 characters."
-            : error.message;
+            : friendlyNetworkMessage(error.message);
         throw new Error(message);
       }
       if (!data.user) throw new Error("Could not create the account");
       if (!data.session) {
-        const { error: signInError } = await supabase.auth.signInWithPassword({
-          email,
-          password: input.password,
-        });
-        if (signInError) throw new Error(signInError.message);
+        const { error: signInError } = await withNetworkRetry(() =>
+          supabase.auth.signInWithPassword({ email, password: input.password }),
+        );
+        if (signInError) throw new Error(friendlyNetworkMessage(signInError.message));
       }
+
       try {
         await load(data.user);
       } catch (loadError) {
