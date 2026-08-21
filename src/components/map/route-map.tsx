@@ -36,6 +36,18 @@ function FitBounds({ positions }: { positions: LatLng[] }) {
   return null;
 }
 
+/** Free-form pin, used by the location-search preview map. */
+export type MapMarker = {
+  id: string;
+  lat: number;
+  lng: number;
+  label?: string;
+  color?: string;
+  size?: number;
+  pulse?: boolean;
+  title?: string;
+};
+
 export type RouteMapProps = {
   routes: Route[];
   selectedRouteId?: string | null;
@@ -53,6 +65,10 @@ export type RouteMapProps = {
   locateNonce?: number;
   /** Per-route polyline colour override (used for the simulated traffic view). */
   routeColors?: Record<string, string>;
+  /** Ad-hoc pins (search suggestions, pickup/drop preview). */
+  markers?: MapMarker[];
+  /** Straight connector drawn between arbitrary coordinates. */
+  line?: LatLng[];
 };
 
 /** Mock "locate me" — recentres on a Yangon location instead of real GPS. */
