@@ -131,11 +131,24 @@ function SignupPage() {
         <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
           {step === "account" ? (
             <>
-              <RolePortalTabs
-                value={role}
-                onChange={setRole}
-                options={["passenger", "driver"]}
-              />
+              <div className="grid grid-cols-2 gap-1 rounded-xl bg-muted p-1">
+                {(["passenger", "driver"] as SignupRole[]).map((option) => (
+                  <button
+                    key={option}
+                    type="button"
+                    aria-pressed={role === option}
+                    onClick={() => setRole(option)}
+                    className={cn(
+                      "rounded-lg px-3 py-2 text-sm font-medium capitalize transition-colors",
+                      role === option
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground",
+                    )}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
               <h1 className="mt-5 text-lg font-bold tracking-tight">
                 Create your {role === "driver" ? "driver" : "passenger"} account
               </h1>
