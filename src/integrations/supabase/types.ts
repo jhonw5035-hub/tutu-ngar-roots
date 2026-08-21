@@ -22,6 +22,7 @@ export type Database = {
           destination_lng: number | null
           group_id: string | null
           id: string
+          is_bot: boolean
           minority_gender_note: boolean
           passenger_gender: Database["public"]["Enums"]["gender_type"] | null
           passenger_id: string
@@ -40,6 +41,7 @@ export type Database = {
           destination_lng?: number | null
           group_id?: string | null
           id?: string
+          is_bot?: boolean
           minority_gender_note?: boolean
           passenger_gender?: Database["public"]["Enums"]["gender_type"] | null
           passenger_id: string
@@ -58,6 +60,7 @@ export type Database = {
           destination_lng?: number | null
           group_id?: string | null
           id?: string
+          is_bot?: boolean
           minority_gender_note?: boolean
           passenger_gender?: Database["public"]["Enums"]["gender_type"] | null
           passenger_id?: string
@@ -186,6 +189,7 @@ export type Database = {
           full_name: string | null
           gender: Database["public"]["Enums"]["gender_type"] | null
           id: string
+          is_bot: boolean
           phone: string | null
           photo_url: string | null
           plate_number: string | null
@@ -198,6 +202,7 @@ export type Database = {
           full_name?: string | null
           gender?: Database["public"]["Enums"]["gender_type"] | null
           id: string
+          is_bot?: boolean
           phone?: string | null
           photo_url?: string | null
           plate_number?: string | null
@@ -210,6 +215,7 @@ export type Database = {
           full_name?: string | null
           gender?: Database["public"]["Enums"]["gender_type"] | null
           id?: string
+          is_bot?: boolean
           phone?: string | null
           photo_url?: string | null
           plate_number?: string | null
