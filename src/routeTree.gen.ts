@@ -23,10 +23,9 @@ import { Route as TripRouteImport } from './routes/trip'
 import { Route as TripsRouteImport } from './routes/trips'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAiMatchingRouteImport } from './routes/admin.ai-matching'
-import { Route as AdminAlertsRouteImport } from './routes/admin.alerts'
-import { Route as AdminForecastRouteImport } from './routes/admin.forecast'
 import { Route as AdminPassengersRouteImport } from './routes/admin.passengers'
 import { Route as AdminRoutesRouteImport } from './routes/admin.routes'
+import { Route as AdminSupportRouteImport } from './routes/admin.support'
 import { Route as AdminVehiclesRouteImport } from './routes/admin.vehicles'
 import { Route as DriverIndexRouteImport } from './routes/driver.index'
 import { Route as DriverEarningsRouteImport } from './routes/driver.earnings'
@@ -104,16 +103,6 @@ const AdminAiMatchingRoute = AdminAiMatchingRouteImport.update({
   path: '/ai-matching',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminAlertsRoute = AdminAlertsRouteImport.update({
-  id: '/alerts',
-  path: '/alerts',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminForecastRoute = AdminForecastRouteImport.update({
-  id: '/forecast',
-  path: '/forecast',
-  getParentRoute: () => AdminRoute,
-} as any)
 const AdminPassengersRoute = AdminPassengersRouteImport.update({
   id: '/passengers',
   path: '/passengers',
@@ -122,6 +111,11 @@ const AdminPassengersRoute = AdminPassengersRouteImport.update({
 const AdminRoutesRoute = AdminRoutesRouteImport.update({
   id: '/routes',
   path: '/routes',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSupportRoute = AdminSupportRouteImport.update({
+  id: '/support',
+  path: '/support',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminVehiclesRoute = AdminVehiclesRouteImport.update({
@@ -169,10 +163,9 @@ export interface FileRoutesByFullPath {
   '/trip': typeof TripRoute
   '/trips': typeof TripsRoute
   '/admin/ai-matching': typeof AdminAiMatchingRoute
-  '/admin/alerts': typeof AdminAlertsRoute
-  '/admin/forecast': typeof AdminForecastRoute
   '/admin/passengers': typeof AdminPassengersRoute
   '/admin/routes': typeof AdminRoutesRoute
+  '/admin/support': typeof AdminSupportRoute
   '/admin/vehicles': typeof AdminVehiclesRoute
   '/driver/earnings': typeof DriverEarningsRoute
   '/driver/profile': typeof DriverProfileRoute
@@ -193,10 +186,9 @@ export interface FileRoutesByTo {
   '/trip': typeof TripRoute
   '/trips': typeof TripsRoute
   '/admin/ai-matching': typeof AdminAiMatchingRoute
-  '/admin/alerts': typeof AdminAlertsRoute
-  '/admin/forecast': typeof AdminForecastRoute
   '/admin/passengers': typeof AdminPassengersRoute
   '/admin/routes': typeof AdminRoutesRoute
+  '/admin/support': typeof AdminSupportRoute
   '/admin/vehicles': typeof AdminVehiclesRoute
   '/driver/earnings': typeof DriverEarningsRoute
   '/driver/profile': typeof DriverProfileRoute
@@ -220,10 +212,9 @@ export interface FileRoutesById {
   '/trip': typeof TripRoute
   '/trips': typeof TripsRoute
   '/admin/ai-matching': typeof AdminAiMatchingRoute
-  '/admin/alerts': typeof AdminAlertsRoute
-  '/admin/forecast': typeof AdminForecastRoute
   '/admin/passengers': typeof AdminPassengersRoute
   '/admin/routes': typeof AdminRoutesRoute
+  '/admin/support': typeof AdminSupportRoute
   '/admin/vehicles': typeof AdminVehiclesRoute
   '/driver/earnings': typeof DriverEarningsRoute
   '/driver/profile': typeof DriverProfileRoute
@@ -248,10 +239,9 @@ export interface FileRouteTypes {
     | '/trip'
     | '/trips'
     | '/admin/ai-matching'
-    | '/admin/alerts'
-    | '/admin/forecast'
     | '/admin/passengers'
     | '/admin/routes'
+    | '/admin/support'
     | '/admin/vehicles'
     | '/driver/earnings'
     | '/driver/profile'
@@ -272,10 +262,9 @@ export interface FileRouteTypes {
     | '/trip'
     | '/trips'
     | '/admin/ai-matching'
-    | '/admin/alerts'
-    | '/admin/forecast'
     | '/admin/passengers'
     | '/admin/routes'
+    | '/admin/support'
     | '/admin/vehicles'
     | '/driver/earnings'
     | '/driver/profile'
@@ -298,10 +287,9 @@ export interface FileRouteTypes {
     | '/trip'
     | '/trips'
     | '/admin/ai-matching'
-    | '/admin/alerts'
-    | '/admin/forecast'
     | '/admin/passengers'
     | '/admin/routes'
+    | '/admin/support'
     | '/admin/vehicles'
     | '/driver/earnings'
     | '/driver/profile'
@@ -427,20 +415,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAiMatchingRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/alerts': {
-      id: '/admin/alerts'
-      path: '/alerts'
-      fullPath: '/admin/alerts'
-      preLoaderRoute: typeof AdminAlertsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/forecast': {
-      id: '/admin/forecast'
-      path: '/forecast'
-      fullPath: '/admin/forecast'
-      preLoaderRoute: typeof AdminForecastRouteImport
-      parentRoute: typeof AdminRoute
-    }
     '/admin/passengers': {
       id: '/admin/passengers'
       path: '/passengers'
@@ -453,6 +427,13 @@ declare module '@tanstack/react-router' {
       path: '/routes'
       fullPath: '/admin/routes'
       preLoaderRoute: typeof AdminRoutesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/support': {
+      id: '/admin/support'
+      path: '/support'
+      fullPath: '/admin/support'
+      preLoaderRoute: typeof AdminSupportRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/vehicles': {
@@ -502,20 +483,18 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminAiMatchingRoute: typeof AdminAiMatchingRoute
-  AdminAlertsRoute: typeof AdminAlertsRoute
-  AdminForecastRoute: typeof AdminForecastRoute
   AdminPassengersRoute: typeof AdminPassengersRoute
   AdminRoutesRoute: typeof AdminRoutesRoute
+  AdminSupportRoute: typeof AdminSupportRoute
   AdminVehiclesRoute: typeof AdminVehiclesRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAiMatchingRoute: AdminAiMatchingRoute,
-  AdminAlertsRoute: AdminAlertsRoute,
-  AdminForecastRoute: AdminForecastRoute,
   AdminPassengersRoute: AdminPassengersRoute,
   AdminRoutesRoute: AdminRoutesRoute,
+  AdminSupportRoute: AdminSupportRoute,
   AdminVehiclesRoute: AdminVehiclesRoute,
   AdminIndexRoute: AdminIndexRoute,
 }

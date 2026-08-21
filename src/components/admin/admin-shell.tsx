@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import { Settings } from "lucide-react";
 
 import { AccountMenu } from "@/components/auth/account-menu";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
@@ -12,8 +11,7 @@ const navItems = [
   { to: "/admin/vehicles", label: "Vehicles & Drivers", icon: "🚗" },
   { to: "/admin/routes", label: "Routes", icon: "🗺" },
   { to: "/admin/passengers", label: "Passengers", icon: "👥" },
-  { to: "/admin/forecast", label: "Demand Forecast", icon: "📈" },
-  { to: "/admin/alerts", label: "Alerts", icon: "⚠️" },
+  { to: "/admin/support", label: "Customer Support", icon: "🎧" },
 ] as const;
 
 export function AdminShell({ children }: { children: ReactNode }) {
@@ -28,13 +26,6 @@ export function AdminShell({ children }: { children: ReactNode }) {
             </span>
           </div>
           <div className="flex items-center gap-1">
-            <button
-              type="button"
-              aria-label="Settings"
-              className="inline-flex size-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-            >
-              <Settings className="size-4" />
-            </button>
             <ThemeToggle />
             <AccountMenu />
           </div>

@@ -51,6 +51,8 @@ export type RouteMapProps = {
   vehicleLabel?: string | undefined;
   fitTo?: LatLng[];
   locateNonce?: number;
+  /** Per-route polyline colour override (used for the simulated traffic view). */
+  routeColors?: Record<string, string>;
 };
 
 /** Mock "locate me" — recentres on a Yangon location instead of real GPS. */
@@ -78,6 +80,7 @@ export default function RouteMap({
   vehicleLabel,
   fitTo,
   locateNonce = 0,
+  routeColors,
 }: RouteMapProps) {
   const bounds = useMemo<LatLng[]>(() => {
     if (fitTo?.length) return fitTo;
@@ -121,9 +124,9 @@ export default function RouteMap({
             key={route.id}
             positions={route.path}
             pathOptions={{
-              color: active ? BRAND : MUTED,
-              weight: active ? 6 : 4,
-              opacity: active ? 1 : 0.55,
+              color: routeColors?.[route.id] ?? (active ? BRAND : MUTED),
+              weight: routeColors ? 5 : active ? 6 : 4,
+              opacity: routeColors ? 0.9 : active ? 1 : 0.55,
             }}
             eventHandlers={{ click: () => onSelectRoute?.(route.id) }}
           />

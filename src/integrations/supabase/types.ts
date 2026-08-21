@@ -86,6 +86,67 @@ export type Database = {
           },
         ]
       }
+      complaints: {
+        Row: {
+          booking_id: string | null
+          category: string
+          created_at: string
+          details: string | null
+          driver_id: string | null
+          id: string
+          passenger_id: string
+          status: string
+          target_type: string
+          updated_at: string
+        }
+        Insert: {
+          booking_id?: string | null
+          category?: string
+          created_at?: string
+          details?: string | null
+          driver_id?: string | null
+          id?: string
+          passenger_id: string
+          status?: string
+          target_type?: string
+          updated_at?: string
+        }
+        Update: {
+          booking_id?: string | null
+          category?: string
+          created_at?: string
+          details?: string | null
+          driver_id?: string | null
+          id?: string
+          passenger_id?: string
+          status?: string
+          target_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "complaints_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "complaints_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "complaints_passenger_id_fkey"
+            columns: ["passenger_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       driver_status: {
         Row: {
           current_lat: number | null
