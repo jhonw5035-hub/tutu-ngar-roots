@@ -64,13 +64,14 @@ function LoginPage() {
     try {
       // The role always comes from the authenticated user's stored role —
       // never from anything the client guessed before signing in.
-      const actualRole = await signIn(email, password);
+      const actualRole = await signIn(email.trim(), password);
       navigate({ to: portalHome[actualRole], replace: true });
-    } catch {
-      setError("Invalid email or password");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not log in. Please try again.");
       setLoading(false);
     }
   }
+
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
