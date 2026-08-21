@@ -32,7 +32,7 @@ export type SignUpInput = {
   fullName: string;
   firstName: string;
   phone: string;
-  email?: string;
+  email: string;
   password: string;
   gender?: string;
   plateNumber?: string;
@@ -45,20 +45,13 @@ type SessionValue = {
   role: Role | null;
   profile: SessionProfile | null;
   loading: boolean;
-  signIn: (identifier: string, password: string) => Promise<Role>;
+  signIn: (email: string, password: string) => Promise<Role>;
   signUp: (input: SignUpInput) => Promise<Role>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
 };
 
 const SessionContext = React.createContext<SessionValue | null>(null);
-
-/** Demo convenience: phone numbers are turned into a stable synthetic email. */
-export function identifierToEmail(identifier: string) {
-  const value = identifier.trim();
-  if (value.includes("@")) return value.toLowerCase();
-  return `${value.replace(/\D/g, "")}@ttn.demo`;
-}
 
 export function SessionProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = React.useState<User | null>(null);
@@ -121,8 +114,9 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   }, [load]);
 
   const signIn = React.useCallback<SessionValue["signIn"]>(
-    async (identifier, password) => {
-      const email = identifierToEmail(identifier);
+    async (emailInput, password) => {
+      // Supabase Auth signs in by email only — phone numbers are contact data.
+      const email = emailInput.trim().toLowerCase();
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error || !data.user) throw new Error(error?.message ?? "Could not sign in");
       const { data: roleRows } = await supabase
@@ -143,9 +137,8 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = React.useCallback<SessionValue["signUp"]>(
     async (input) => {
-      const email = input.email?.trim()
-        ? input.email.trim().toLowerCase()
-        : identifierToEmail(input.phone);
+      const email = input.email.trim().toLowerCase();
+      if (!email) throw new Error("An email address is required to create an account");
       const { data, error } = await supabase.auth.signUp({
         email,
         password: input.password,

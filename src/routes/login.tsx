@@ -18,7 +18,7 @@ export const Route = createFileRoute("/login")({
       {
         name: "description",
         content:
-          "Log in to Tu Tu Ngar with your phone number or email to book shared rides, drive a route, or manage the Yangon network.",
+          "Log in to Tu Tu Ngar with your email to book shared rides, drive a route, or manage the Yangon network.",
       },
       { property: "og:title", content: "Log in — Tu Tu Ngar Shared Rides" },
       {
@@ -33,7 +33,7 @@ export const Route = createFileRoute("/login")({
 function LoginPage() {
   const navigate = useNavigate();
   const { signIn } = useSession();
-  const [identifier, setIdentifier] = React.useState("");
+  const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -63,7 +63,7 @@ function LoginPage() {
     try {
       // The role always comes from the authenticated user's stored role —
       // never from anything the client guessed before signing in.
-      const actualRole = await signIn(identifier, password);
+      const actualRole = await signIn(email, password);
       navigate({ to: portalHome[actualRole], replace: true });
     } catch {
       setError("Invalid email or password");
@@ -87,14 +87,14 @@ function LoginPage() {
 
           <form className="mt-6 space-y-4" onSubmit={(e) => void handleSubmit(e)}>
             <div className="space-y-1.5">
-              <Label htmlFor="identifier">Phone number or email</Label>
+              <Label htmlFor="email">Email</Label>
               <Input
-                id="identifier"
-                type="text"
-                autoComplete="username"
-                placeholder="09 xxx xxx xxx"
-                value={identifier}
-                onChange={(e) => setIdentifier(e.target.value)}
+                id="email"
+                type="email"
+                autoComplete="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
