@@ -17,6 +17,7 @@ import { useSession } from "@/lib/session";
 import { useMyLiveBooking, getCurrentPosition } from "@/lib/live";
 import { useDriverLocation } from "@/lib/driver-sim";
 import { startDemoTrip } from "@/lib/demo-trip.functions";
+import { useRoadPath } from "@/lib/road-path";
 import {
   distanceKm,
   getPointsForRoute,
@@ -160,12 +161,14 @@ function TripInProgress() {
     [stops, nextStop],
   );
 
-  const line = useMemo<LatLng[] | undefined>(() => {
+  // Shared source: the stop sequence is snapped to real roads via OSRM.
+  const stopWaypoints = useMemo<LatLng[] | null>(() => {
     const pts = stops
       .filter((s) => s.lat != null && s.lng != null)
       .map((s) => [s.lat as number, s.lng as number] as LatLng);
-    return pts.length > 1 ? pts : undefined;
+    return pts.length > 1 ? pts : null;
   }, [stops]);
+  const line = useRoadPath(stopWaypoints);
 
   const remainingKm =
     vehicle && nextStop?.lat != null && nextStop.lng != null

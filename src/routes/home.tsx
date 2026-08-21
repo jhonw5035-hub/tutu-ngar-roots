@@ -275,7 +275,7 @@ function PassengerHome() {
           navigate({ to: "/rides" });
         }}
       >
-        Find Shared Rides <ArrowRight className="size-4" />
+        {t("findSharedRides")} <ArrowRight className="size-4" />
       </Button>
 
       <ul className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
