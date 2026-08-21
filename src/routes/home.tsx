@@ -1,11 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { lazy, Suspense, useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { ArrowRight, Flag, MapPin } from "lucide-react";
 
 import { AppShell } from "@/components/layout/app-shell";
 import { usePassengerNav } from "@/components/layout/passenger-nav";
 import { LocationAutocomplete } from "@/components/booking/location-autocomplete";
-import { ClientOnly } from "@tanstack/react-router";
+import { MapView } from "@/components/map/map-view";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -22,8 +22,6 @@ import type { Suggestion } from "@/lib/geocode";
 import type { MapMarker } from "@/components/map/route-map";
 import type { LatLng } from "@/lib/mockData";
 import { timeWindows, trustSignals } from "@/lib/mockData";
-
-const RouteMap = lazy(() => import("@/components/map/route-map"));
 
 export const Route = createFileRoute("/home")({
   head: () => ({
@@ -145,12 +143,8 @@ function PassengerHome() {
           </div>
 
           {markers.length ? (
-            <div className="h-48 overflow-hidden rounded-xl border border-border">
-              <ClientOnly fallback={<div className="size-full animate-pulse bg-muted" />}>
-                <Suspense fallback={<div className="size-full animate-pulse bg-muted" />}>
-                  <RouteMap routes={[]} markers={markers} line={previewLine} />
-                </Suspense>
-              </ClientOnly>
+            <div className="overflow-hidden rounded-xl border border-border">
+              <MapView className="h-48" routes={[]} markers={markers} line={previewLine} />
             </div>
           ) : null}
         </CardContent>
