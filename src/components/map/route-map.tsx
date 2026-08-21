@@ -97,12 +97,15 @@ export default function RouteMap({
   fitTo,
   locateNonce = 0,
   routeColors,
+  markers = [],
+  line,
 }: RouteMapProps) {
   const bounds = useMemo<LatLng[]>(() => {
     if (fitTo?.length) return fitTo;
+    if (markers.length) return markers.map((m) => [m.lat, m.lng] as LatLng);
     const active = routes.find((r) => r.id === selectedRouteId);
     return active ? active.path : routes.flatMap((r) => r.path);
-  }, [fitTo, routes, selectedRouteId]);
+  }, [fitTo, markers, routes, selectedRouteId]);
 
   return (
     <MapContainer
