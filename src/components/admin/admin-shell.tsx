@@ -26,13 +26,6 @@ export function AdminShell({ children }: { children: ReactNode }) {
             </span>
           </div>
           <div className="flex items-center gap-1">
-            <button
-              type="button"
-              aria-label="Settings"
-              className="inline-flex size-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-            >
-              <Settings className="size-4" />
-            </button>
             <ThemeToggle />
             <AccountMenu />
           </div>
