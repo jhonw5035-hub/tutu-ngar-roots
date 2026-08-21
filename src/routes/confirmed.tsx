@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { SeatBar } from "@/components/booking/seat-bar";
+import { resolveSlot } from "@/lib/departure";
 import { useBooking } from "@/lib/booking-store";
 import {
   formatTime12,
@@ -60,7 +61,7 @@ function ConfirmationPage() {
       ? { lat: Number(live.group.pickup_lat), lng: Number(live.group.pickup_lng) }
       : null;
 
-  const slot = getSlotDetail(booking.slotId);
+  const slot = resolveSlot(booking.slotId, booking.liveDeparture, booking.routeId);
   const route = getRoute(booking.routeId);
   const points = getPointsForRoute(route?.id ?? null);
   const pickup = getPoint(booking.pickupPointId) ?? points[0] ?? null;

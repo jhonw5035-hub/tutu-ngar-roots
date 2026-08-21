@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 
+import { resolveSlot } from "@/lib/departure";
 import { useBooking } from "@/lib/booking-store";
 import { createBooking, getCurrentPosition } from "@/lib/live";
 import { useSession } from "@/lib/session";
@@ -36,7 +37,7 @@ function PaymentPage() {
   const { userId, profile } = useSession();
   const [paying, setPaying] = useState(false);
 
-  const slot = getSlotDetail(booking.slotId);
+  const slot = resolveSlot(booking.slotId, booking.liveDeparture, booking.routeId);
   const route = getRoute(booking.routeId);
   const fare = slot?.price ?? route?.fare ?? 3500;
 

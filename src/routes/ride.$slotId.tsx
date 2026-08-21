@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { SeatBar } from "@/components/booking/seat-bar";
 import { useBooking } from "@/lib/booking-store";
+import { resolveSlot } from "@/lib/departure";
 import { useSession } from "@/lib/session";
 import {
   formatTime12,
@@ -58,13 +59,21 @@ function RideDetails() {
     );
   }, []);
 
-  const slot = getSlotDetail(slotId);
+  const slot = resolveSlot(slotId, booking.liveDeparture, booking.routeId);
   const route = getRoute(slot?.routeId ?? booking.routeId);
   const points = getPointsForRoute(route?.id ?? null);
   const pickup = nearestPickupPoint(route?.id ?? null, location);
   const destination = points[points.length - 1] ?? null;
 
-  const riders = getPassengers(slotId);
+  const liveRiders = booking.liveDeparture?.riders ?? null;
+  const riders = liveRiders
+    ? liveRiders.map((r) => ({
+        id: r.id,
+        firstName: r.firstName,
+        gender: (r.gender === "female" ? "female" : "male") as "female" | "male",
+        timeSlotId: slotId,
+      }))
+    : getPassengers(slotId);
   const women = riders.filter((r) => r.gender === "female").length;
   const men = riders.length - women;
   const youFemale = profile?.gender === "female";
