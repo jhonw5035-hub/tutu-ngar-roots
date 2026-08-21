@@ -1,16 +1,14 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import * as React from "react";
-import { Car, ShieldCheck, UserRound } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Wordmark } from "@/components/layout/wordmark";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { RolePortalTabs } from "@/components/auth/role-portal-tabs";
-import { toast } from "sonner";
 
-import { portalHome, useSession, type Role } from "@/lib/session";
+import { portalHome, useSession } from "@/lib/session";
 import { provisionDemoAccounts } from "@/lib/demo.functions";
 
 export const Route = createFileRoute("/login")({
@@ -20,7 +18,7 @@ export const Route = createFileRoute("/login")({
       {
         name: "description",
         content:
-          "Log in to Tu Tu Ngar with your phone number to book shared rides, drive a route, or manage the Yangon network.",
+          "Log in to Tu Tu Ngar with your phone number or email to book shared rides, drive a route, or manage the Yangon network.",
       },
       { property: "og:title", content: "Log in — Tu Tu Ngar Shared Rides" },
       {
@@ -32,16 +30,9 @@ export const Route = createFileRoute("/login")({
   component: LoginPage,
 });
 
-const accent: Record<Role, { icon: typeof UserRound; note: string }> = {
-  passenger: { icon: UserRound, note: "Book and manage your shared seats." },
-  driver: { icon: Car, note: "Pick up your assigned route and passengers." },
-  admin: { icon: ShieldCheck, note: "Manage routes, drivers and reports." },
-};
-
 function LoginPage() {
   const navigate = useNavigate();
   const { signIn } = useSession();
-  const [role, setRole] = React.useState<Role>("passenger");
   const [identifier, setIdentifier] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [loading, setLoading] = React.useState(false);
@@ -65,24 +56,17 @@ function LoginPage() {
     setProvisioning(false);
   }
 
-  const Accent = accent[role].icon;
-
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     setError(null);
     setLoading(true);
     try {
-      // Real Supabase Auth. The role comes from the `user_roles` table, never
-      // from the selected tab — the tab only decides where we land.
+      // The role always comes from the authenticated user's stored role —
+      // never from anything the client guessed before signing in.
       const actualRole = await signIn(identifier, password);
-      if (actualRole !== role) {
-        setError(`This account is registered as a ${actualRole}. Switch to that tab to continue.`);
-        setLoading(false);
-        return;
-      }
       navigate({ to: portalHome[actualRole], replace: true });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not sign in");
+    } catch {
+      setError("Invalid email or password");
       setLoading(false);
     }
   }
@@ -96,23 +80,10 @@ function LoginPage() {
 
       <main className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center px-5 pb-16">
         <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-          <RolePortalTabs
-            value={role}
-            onChange={(next) => {
-              setError(null);
-              setRole(next);
-            }}
-          />
-
-          <div className="mt-5 flex items-start gap-3">
-            <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-              <Accent className="size-5" />
-            </span>
-            <div>
-              <h1 className="text-lg font-bold tracking-tight">Welcome back</h1>
-              <p className="text-sm text-muted-foreground">{accent[role].note}</p>
-            </div>
-          </div>
+          <h1 className="text-xl font-bold tracking-tight">Welcome back</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Log in and we&apos;ll take you to the right place.
+          </p>
 
           <form className="mt-6 space-y-4" onSubmit={(e) => void handleSubmit(e)}>
             <div className="space-y-1.5">
@@ -120,7 +91,6 @@ function LoginPage() {
               <Input
                 id="identifier"
                 type="text"
-                inputMode="tel"
                 autoComplete="username"
                 placeholder="09 xxx xxx xxx"
                 value={identifier}
@@ -150,34 +120,25 @@ function LoginPage() {
             </Button>
           </form>
 
-          <div className="mt-5 text-center text-sm">
-            {role === "admin" ? (
-              <div className="space-y-2">
-                <p className="text-muted-foreground">
-                  Admin accounts are provisioned by the team.
-                </p>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  disabled={provisioning}
-                  onClick={() => void setupDemoAccounts()}
-                >
-                  {provisioning ? "Setting up…" : "Set up demo accounts"}
-                </Button>
-              </div>
-            ) : (
-              <p className="text-muted-foreground">
-                Don&apos;t have an account?{" "}
-                <Link
-                  to="/signup"
-                  search={{ role }}
-                  className="font-semibold text-primary underline-offset-4 hover:underline"
-                >
-                  Sign up
-                </Link>
-              </p>
-            )}
+          <div className="mt-5 space-y-2 text-center text-sm">
+            <p className="text-muted-foreground">
+              Don&apos;t have an account?{" "}
+              <Link
+                to="/signup"
+                className="font-semibold text-primary underline-offset-4 hover:underline"
+              >
+                Sign up
+              </Link>
+            </p>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              disabled={provisioning}
+              onClick={() => void setupDemoAccounts()}
+            >
+              {provisioning ? "Setting up…" : "Set up demo accounts"}
+            </Button>
           </div>
         </div>
       </main>
