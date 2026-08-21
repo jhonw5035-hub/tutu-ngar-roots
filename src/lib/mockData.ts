@@ -437,7 +437,7 @@ export const timeWindows: TimeWindow[] = Array.from({ length: 48 }, (_, i) => {
   const em = endTotal % 60;
   return {
     id: `w-${i}`,
-    label: `${to12(h, m)} – ${to12(Math.floor(endTotal / 60), em)}`,
+    label: `${to12(h, m)} – ${to12(eh, em)}`,
     from: `${pad(h)}:${pad(m)}`,
     to: endTotal >= 1440 ? "23:59" : `${pad(eh)}:${pad(em)}`,
   };
