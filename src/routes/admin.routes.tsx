@@ -5,7 +5,8 @@ import { AdminShell } from "@/components/admin/admin-shell";
 import { Badge } from "@/components/ui/badge";
 import { MapView } from "@/components/map/map-view";
 import { supabase } from "@/integrations/supabase/client";
-import { routes as corridors } from "@/lib/mockData";
+import { routes as rawCorridors } from "@/lib/mockData";
+import { useSnappedCorridors } from "@/lib/routeGeometry";
 import type { BookingRow, TripGroupRow } from "@/lib/admin-data";
 
 export const Route = createFileRoute("/admin/routes")({
@@ -43,8 +44,10 @@ function shift(level: Traffic): Traffic {
 }
 
 function RoutesPage() {
+  // Shared road-snapped corridor geometry (same source as the passenger maps).
+  const { routes: corridors } = useSnappedCorridors();
   const [traffic, setTraffic] = React.useState<Record<string, Traffic>>(() =>
-    Object.fromEntries(corridors.map((r) => [r.id, levels[Math.floor(Math.random() * 3)]!])),
+    Object.fromEntries(rawCorridors.map((r) => [r.id, levels[Math.floor(Math.random() * 3)]!])),
   );
   const [bookings, setBookings] = React.useState<BookingRow[]>([]);
   const [groups, setGroups] = React.useState<TripGroupRow[]>([]);
@@ -54,7 +57,7 @@ function RoutesPage() {
     const id = window.setInterval(() => {
       setTraffic((prev) => {
         const next = { ...prev };
-        for (const r of corridors)
+        for (const r of rawCorridors)
           if (Math.random() < 0.6) next[r.id] = shift(prev[r.id] ?? "light");
         return next;
       });

@@ -13,6 +13,8 @@
  */
 import { useEffect, useState } from "react";
 
+import { fetchRoadPath } from "@/lib/road-path";
+
 import {
   pickupPoints as rawPickupPoints,
   routes as rawRoutes,
@@ -21,58 +23,9 @@ import {
   type Route,
 } from "@/lib/mockData";
 
-const OSRM = "https://router.project-osrm.org/route/v1/driving";
-const memoryCache = new Map<string, LatLng[]>();
-
-function storageKey(id: string) {
-  return `ttn:osrm:${id}`;
-}
-
-function readSession(id: string): LatLng[] | null {
-  try {
-    const raw = sessionStorage.getItem(storageKey(id));
-    return raw ? (JSON.parse(raw) as LatLng[]) : null;
-  } catch {
-    return null;
-  }
-}
-
-function writeSession(id: string, path: LatLng[]) {
-  try {
-    sessionStorage.setItem(storageKey(id), JSON.stringify(path));
-  } catch {
-    /* quota / private mode — cache in memory only */
-  }
-}
-
 async function fetchCorridorGeometry(route: Route): Promise<LatLng[]> {
-  const cached = memoryCache.get(route.id) ?? readSession(route.id);
-  if (cached?.length) {
-    memoryCache.set(route.id, cached);
-    return cached;
-  }
-
-  const start = route.path[0]!;
-  const end = route.path[route.path.length - 1]!;
-  // Include the hand-placed mid points as via-waypoints so OSRM keeps the line
-  // on the intended corridor rather than picking a faster parallel road.
-  const coords = route.path.map((p) => `${p[1]},${p[0]}`).join(";");
-  const url = `${OSRM}/${coords}?overview=full&geometries=geojson`;
-
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`OSRM ${res.status}`);
-  const data = (await res.json()) as {
-    routes?: { geometry?: { coordinates?: [number, number][] } }[];
-  };
-  const line = data.routes?.[0]?.geometry?.coordinates;
-  if (!line?.length) throw new Error("OSRM returned no geometry");
-
-  const path: LatLng[] = line.map(([lng, lat]) => [lat, lng] as LatLng);
-  void start;
-  void end;
-  memoryCache.set(route.id, path);
-  writeSession(route.id, path);
-  return path;
+  // Single shared source of road geometry for the whole app.
+  return fetchRoadPath(route.path);
 }
 
 /** Nearest point on a polyline, so markers sit exactly on the drawn road. */
@@ -121,7 +74,7 @@ export function useSnappedCorridors() {
           nextRoutes.push(route); // fall back to the hand-placed path
         }
         // be a good citizen with the free demo server
-        if (!memoryCache.has(route.id)) await sleep(350);
+        await sleep(120);
       }
       if (cancelled) return;
 
