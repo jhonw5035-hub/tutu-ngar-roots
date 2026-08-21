@@ -70,7 +70,7 @@ export function LocationAutocomplete({
   const showLocateRow = showCurrentLocation && canLocate && !locateFailed;
 
   return (
-    <div className="relative">
+    <div className="relative z-[1200]">
       <Input
         id={id}
         autoComplete="off"
@@ -91,7 +91,7 @@ export function LocationAutocomplete({
       {open && (showLocateRow || results.length > 0 || (typing && value.trim().length >= 3)) ? (
         <ul
           className={cn(
-            "absolute z-50 mt-1 w-full overflow-hidden rounded-xl border border-border",
+            "absolute z-[1200] mt-1 w-full overflow-hidden rounded-xl border border-border",
             "bg-popover shadow-lg",
           )}
         >

@@ -143,7 +143,7 @@ function PassengerHome() {
           </div>
 
           {markers.length ? (
-            <div className="overflow-hidden rounded-xl border border-border">
+            <div className="relative z-0 overflow-hidden rounded-xl border border-border isolate">
               <MapView className="h-48" routes={[]} markers={markers} line={previewLine} />
             </div>
           ) : null}
