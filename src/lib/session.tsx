@@ -118,18 +118,33 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
       // Supabase Auth signs in by email only — phone numbers are contact data.
       const email = emailInput.trim().toLowerCase();
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error || !data.user) throw new Error(error?.message ?? "Could not sign in");
-      const { data: roleRows } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", data.user.id);
-      const roles = (roleRows ?? []).map((r) => r.role as Role);
-      const resolved: Role = roles.includes("admin")
-        ? "admin"
-        : roles.includes("driver")
-          ? "driver"
-          : "passenger";
-      await load(data.user);
+      if (error) {
+        const message = /invalid login credentials/i.test(error.message)
+          ? "Invalid email or password"
+          : /email not confirmed/i.test(error.message)
+            ? "Please confirm your email address first, then log in."
+            : error.message;
+        throw new Error(message);
+      }
+      if (!data.user) throw new Error("Could not sign in");
+      // Role/profile lookup must never turn a successful sign-in into a failure.
+      let resolved: Role = "passenger";
+      try {
+        const { data: roleRows } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", data.user.id);
+        const roles = (roleRows ?? []).map((r) => r.role as Role);
+        resolved = roles.includes("admin")
+          ? "admin"
+          : roles.includes("driver")
+            ? "driver"
+            : "passenger";
+        await load(data.user);
+      } catch (loadError) {
+        console.error(loadError);
+        setUser(data.user);
+      }
       return resolved;
     },
     [load],
@@ -155,7 +170,17 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
           },
         },
       });
-      if (error || !data.user) throw new Error(error?.message ?? "Could not create the account");
+      if (error) {
+        const message = /already registered|already been registered|user_already_exists/i.test(
+          error.message,
+        )
+          ? "That email already has an account — log in instead."
+          : /password/i.test(error.message) && /at least|short/i.test(error.message)
+            ? "Password must be at least 6 characters."
+            : error.message;
+        throw new Error(message);
+      }
+      if (!data.user) throw new Error("Could not create the account");
       if (!data.session) {
         const { error: signInError } = await supabase.auth.signInWithPassword({
           email,
@@ -163,11 +188,17 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
         });
         if (signInError) throw new Error(signInError.message);
       }
-      await load(data.user);
+      try {
+        await load(data.user);
+      } catch (loadError) {
+        console.error(loadError);
+        setUser(data.user);
+      }
       return input.role;
     },
     [load],
   );
+
 
   const signOut = React.useCallback(async () => {
     await supabase.auth.signOut();
