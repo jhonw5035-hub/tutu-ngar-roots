@@ -51,6 +51,8 @@ export type RouteMapProps = {
   vehicleLabel?: string | undefined;
   fitTo?: LatLng[];
   locateNonce?: number;
+  /** Per-route polyline colour override (used for the simulated traffic view). */
+  routeColors?: Record<string, string>;
 };
 
 /** Mock "locate me" — recentres on a Yangon location instead of real GPS. */
