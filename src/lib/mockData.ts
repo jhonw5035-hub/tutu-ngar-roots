@@ -591,6 +591,42 @@ export const getSlotDetail = (slotId: string | null) => {
 };
 
 /**
+ * Close-together named meeting points around each corridor's origin area.
+ * The nearest-point Haversine logic picks between these, so the demo shows
+ * a real choice being made rather than a single hardcoded stop.
+ */
+export type PickupCandidate = { id: string; name: string; lat: number; lng: number };
+
+export const pickupCandidates: Record<string, PickupCandidate[]> = {
+  "r-nokk-sule": [
+    { id: "c-nokk-market", name: "North Okkalapa Market", lat: 16.9006, lng: 96.172 },
+    { id: "c-nokk-thudhamma", name: "Thudhamma Junction", lat: 16.8974, lng: 96.1683 },
+    { id: "c-nokk-hospital", name: "North Okkalapa Hospital Gate", lat: 16.9042, lng: 96.1751 },
+  ],
+  "r-nokk-sokk": [
+    { id: "c-nokk-market-2", name: "North Okkalapa Market", lat: 16.9006, lng: 96.172 },
+    { id: "c-nokk-waizayanta", name: "Waizayanta Road Corner", lat: 16.8962, lng: 96.1748 },
+    { id: "c-nokk-no5", name: "No. 5 Ward Bus Stop", lat: 16.9031, lng: 96.1697 },
+  ],
+  "r-inya-sanchaung": [
+    { id: "c-inya-lake", name: "Inya Road (Inya Lake)", lat: 16.8283, lng: 96.1462 },
+    { id: "c-inya-myaing", name: "Inya Myaing Corner", lat: 16.8251, lng: 96.1433 },
+    { id: "c-inya-university", name: "University Avenue Gate", lat: 16.8309, lng: 96.1489 },
+  ],
+};
+
+/** Nearest of the corridor's candidate meeting points to a live location. */
+export function nearestPickupCandidate(routeId: string, location: LatLng | null) {
+  const list = pickupCandidates[routeId] ?? [];
+  if (!list.length) return null;
+  if (!location) return list[0]!;
+  return list.reduce((best, p) =>
+    distanceKm(location, [p.lat, p.lng]) < distanceKm(location, [best.lat, best.lng]) ? p : best,
+  );
+}
+
+
+/**
  * Nearest pickup point on a route, using the shared Haversine helper.
  * Applied silently on Ride Details — the passenger never picks a stop.
  */
