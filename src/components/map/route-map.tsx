@@ -155,6 +155,28 @@ export default function RouteMap({
         );
       })}
 
+      {line && line.length > 1 ? (
+        <Polyline
+          positions={line}
+          pathOptions={{ color: BRAND, weight: 4, opacity: 0.8, dashArray: "8 8" }}
+        />
+      ) : null}
+
+      {markers.map((m) => (
+        <Marker
+          key={m.id}
+          position={[m.lat, m.lng]}
+          icon={pinIcon({
+            color: m.color ?? MUTED,
+            size: m.size ?? 22,
+            label: m.label ?? "",
+            pulse: m.pulse ?? false,
+          })}
+          title={m.title ?? m.label ?? ""}
+        />
+      ))}
+
+
       {points.map((p) => {
         const isPickup = p.id === pickupId;
         const isDest = p.id === destinationId;
