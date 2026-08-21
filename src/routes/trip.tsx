@@ -133,10 +133,19 @@ function TripInProgress() {
         <div className="mt-4 rounded-xl border border-dashed border-border bg-card p-10 text-center text-sm text-muted-foreground">
           You don’t have an active grouped trip yet. Once your booking is grouped and a driver
           accepts, the live route appears here.
+          <div className="mt-6 flex flex-col items-center gap-2">
+            <Button onClick={() => void startDemo()} disabled={demoLoading}>
+              {demoLoading ? "Preparing demo trip…" : "Preview Demo Trip"}
+            </Button>
+            <p className="text-xs text-muted-foreground">
+              Instantly preview a live trip for demo purposes.
+            </p>
+          </div>
         </div>
       </AppShell>
     );
   }
+
 
   return (
     <AppShell portal="passenger" navItems={navItems}>
