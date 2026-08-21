@@ -129,7 +129,11 @@ export function usePlaceSearch(query: string, enabled = true, delay = 450) {
 }
 
 /** Real device coordinates + a readable label, or null when denied. */
-export async function locateAndLabel(): Promise<{ lat: number; lng: number; label: string } | null> {
+export async function locateAndLabel(): Promise<{
+  lat: number;
+  lng: number;
+  label: string;
+} | null> {
   if (typeof navigator === "undefined" || !navigator.geolocation) return null;
   const pos = await new Promise<GeolocationPosition | null>((resolve) => {
     navigator.geolocation.getCurrentPosition(

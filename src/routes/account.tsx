@@ -23,7 +23,10 @@ export const Route = createFileRoute("/account")({
         content: "Manage your Tu Tu Ngar passenger profile, photo and contact our support team.",
       },
       { property: "og:title", content: "Account — Tu Tu Ngar" },
-      { property: "og:description", content: "Your passenger profile, photo and support messages." },
+      {
+        property: "og:description",
+        content: "Your passenger profile, photo and support messages.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],

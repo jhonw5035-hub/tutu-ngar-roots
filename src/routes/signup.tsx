@@ -216,10 +216,7 @@ function SignupPage() {
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="gender">Gender (optional)</Label>
-                  <Select
-                    value={form.gender}
-                    onValueChange={(value) => update("gender", value)}
-                  >
+                  <Select value={form.gender} onValueChange={(value) => update("gender", value)}>
                     <SelectTrigger id="gender">
                       <SelectValue placeholder="Prefer not to say" />
                     </SelectTrigger>
@@ -246,10 +243,8 @@ function SignupPage() {
               <h1 className="text-lg font-bold tracking-tight">Your vehicle</h1>
               <p className="text-sm text-muted-foreground">
                 Plate number and seat capacity are{" "}
-                <span className="font-semibold text-foreground">
-                  locked after this step
-                </span>{" "}
-                — contact the team to change them later.
+                <span className="font-semibold text-foreground">locked after this step</span> —
+                contact the team to change them later.
               </p>
               <form className="mt-6 space-y-4" onSubmit={handleVehicleSubmit}>
                 <div className="space-y-1.5">
@@ -258,9 +253,7 @@ function SignupPage() {
                     id="plate"
                     placeholder="YGN 1A-2345"
                     value={vehicle.plateNumber}
-                    onChange={(e) =>
-                      setVehicle((v) => ({ ...v, plateNumber: e.target.value }))
-                    }
+                    onChange={(e) => setVehicle((v) => ({ ...v, plateNumber: e.target.value }))}
                     required
                   />
                 </div>
@@ -268,9 +261,7 @@ function SignupPage() {
                   <Label htmlFor="seats">Seat capacity</Label>
                   <Select
                     value={vehicle.seatCapacity}
-                    onValueChange={(value) =>
-                      setVehicle((v) => ({ ...v, seatCapacity: value }))
-                    }
+                    onValueChange={(value) => setVehicle((v) => ({ ...v, seatCapacity: value }))}
                   >
                     <SelectTrigger id="seats">
                       <SelectValue />

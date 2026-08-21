@@ -120,23 +120,26 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     };
   }, [load]);
 
-  const signIn = React.useCallback<SessionValue["signIn"]>(async (identifier, password) => {
-    const email = identifierToEmail(identifier);
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error || !data.user) throw new Error(error?.message ?? "Could not sign in");
-    const { data: roleRows } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", data.user.id);
-    const roles = (roleRows ?? []).map((r) => r.role as Role);
-    const resolved: Role = roles.includes("admin")
-      ? "admin"
-      : roles.includes("driver")
-        ? "driver"
-        : "passenger";
-    await load(data.user);
-    return resolved;
-  }, [load]);
+  const signIn = React.useCallback<SessionValue["signIn"]>(
+    async (identifier, password) => {
+      const email = identifierToEmail(identifier);
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error || !data.user) throw new Error(error?.message ?? "Could not sign in");
+      const { data: roleRows } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", data.user.id);
+      const roles = (roleRows ?? []).map((r) => r.role as Role);
+      const resolved: Role = roles.includes("admin")
+        ? "admin"
+        : roles.includes("driver")
+          ? "driver"
+          : "passenger";
+      await load(data.user);
+      return resolved;
+    },
+    [load],
+  );
 
   const signUp = React.useCallback<SessionValue["signUp"]>(
     async (input) => {

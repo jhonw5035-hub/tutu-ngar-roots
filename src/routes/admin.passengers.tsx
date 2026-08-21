@@ -41,9 +41,7 @@ function PassengersPage() {
   const filtered = rows.filter((p) => {
     const q = query.trim().toLowerCase();
     if (!q) return true;
-    return (
-      displayName(p).toLowerCase().includes(q) || (p.phone ?? "").toLowerCase().includes(q)
-    );
+    return displayName(p).toLowerCase().includes(q) || (p.phone ?? "").toLowerCase().includes(q);
   });
 
   return (

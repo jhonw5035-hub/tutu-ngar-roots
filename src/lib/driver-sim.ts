@@ -17,10 +17,7 @@ import type { Tables } from "@/integrations/supabase/types";
 /** Presentation start point: driver is "coming from North Okkalapa". */
 export const NORTH_OKKALAPA: { lat: number; lng: number } = { lat: 16.9105, lng: 96.1725 };
 
-export async function writeDriverLocation(
-  driverId: string,
-  pos: { lat: number; lng: number },
-) {
+export async function writeDriverLocation(driverId: string, pos: { lat: number; lng: number }) {
   const { error } = await supabase.from("driver_status").upsert(
     {
       driver_id: driverId,

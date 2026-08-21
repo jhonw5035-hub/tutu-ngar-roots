@@ -18,7 +18,13 @@ export function AppShell({
   children: ReactNode;
 }) {
   return (
-    <div className={fullBleed ? "h-screen overflow-hidden bg-background text-foreground" : "min-h-screen bg-background text-foreground"}>
+    <div
+      className={
+        fullBleed
+          ? "h-screen overflow-hidden bg-background text-foreground"
+          : "min-h-screen bg-background text-foreground"
+      }
+    >
       <AppHeader
         portal={portal}
         actions={

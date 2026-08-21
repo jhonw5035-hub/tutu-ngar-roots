@@ -9,7 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useBooking } from "@/lib/booking-store";
-import { formatTime12, getRoute, getSlotDetail, pastTrips, upcomingTrip } from "@/lib/mockData";
+import { formatTime12, getRoute, pastTrips, upcomingTrip } from "@/lib/mockData";
+import { resolveSlot } from "@/lib/departure";
 
 export const Route = createFileRoute("/trips")({
   head: () => ({
@@ -35,18 +36,19 @@ function TripsPage() {
   const navigate = useNavigate();
   const booking = useBooking();
 
-  const slot = getSlotDetail(booking.slotId);
+  const slot = resolveSlot(booking.slotId, booking.liveDeparture, booking.routeId);
   const route = getRoute(booking.routeId);
 
-  const upcoming = slot && route
-    ? {
-        label: `${route.from} → ${route.to}`,
-        when: `${booking.day === "today" ? "Today" : "Tomorrow"} · ${formatTime12(slot.time)}`,
-      }
-    : {
-        label: `${upcomingTrip.pickup} → ${upcomingTrip.destination}`,
-        when: `${upcomingTrip.date} · ${formatTime12(upcomingTrip.time)}`,
-      };
+  const upcoming =
+    slot && route
+      ? {
+          label: `${route.from} → ${route.to}`,
+          when: `${booking.day === "today" ? "Today" : "Tomorrow"} · ${formatTime12(slot.time)}`,
+        }
+      : {
+          label: `${upcomingTrip.pickup} → ${upcomingTrip.destination}`,
+          when: `${upcomingTrip.date} · ${formatTime12(upcomingTrip.time)}`,
+        };
 
   return (
     <AppShell portal="passenger" navItems={navItems}>
@@ -77,9 +79,7 @@ function TripsPage() {
                 <span className="text-sm font-semibold">
                   {trip.pickup} → {trip.destination}
                 </span>
-                <span className="num text-sm text-primary">
-                  {trip.fare.toLocaleString()} MMK
-                </span>
+                <span className="num text-sm text-primary">{trip.fare.toLocaleString()} MMK</span>
               </div>
               <p className="num text-xs text-muted-foreground">
                 {i === 0 ? "Yesterday" : trip.date} · {formatTime12(trip.time)}

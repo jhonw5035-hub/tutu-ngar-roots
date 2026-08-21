@@ -41,7 +41,10 @@ function VehiclesPage() {
   const load = React.useCallback(async () => {
     const [s, g] = await Promise.all([
       supabase.from("driver_status").select("*"),
-      supabase.from("trip_groups").select("*").in("status", ["forming", "pending_driver", "accepted"]),
+      supabase
+        .from("trip_groups")
+        .select("*")
+        .in("status", ["forming", "pending_driver", "accepted"]),
     ]);
     setStatus(Object.fromEntries((s.data ?? []).map((r) => [r.driver_id, r])));
     setGroups(g.data ?? []);
@@ -51,8 +54,16 @@ function VehiclesPage() {
     void load();
     const channel = supabase
       .channel("admin-fleet")
-      .on("postgres_changes", { event: "*", schema: "public", table: "driver_status" }, () => void load())
-      .on("postgres_changes", { event: "*", schema: "public", table: "trip_groups" }, () => void load())
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "driver_status" },
+        () => void load(),
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "trip_groups" },
+        () => void load(),
+      )
       .subscribe();
     return () => {
       void supabase.removeChannel(channel);
@@ -97,9 +108,7 @@ function VehiclesPage() {
             <article key={d.id} className="rounded-xl border border-border bg-card p-4">
               <div className="flex flex-wrap items-center gap-2">
                 <p className="font-bold">{displayName(d)}</p>
-                <Badge variant="outline">
-                  {online ? "🟢 Online" : "⚪ Offline"}
-                </Badge>
+                <Badge variant="outline">{online ? "🟢 Online" : "⚪ Offline"}</Badge>
                 {trip ? <Badge variant="outline">On trip · {trip.status}</Badge> : null}
               </div>
               <p className="mt-1 text-sm text-muted-foreground">

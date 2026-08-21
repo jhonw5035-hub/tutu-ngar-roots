@@ -21,13 +21,7 @@ export type TripChatProps = {
  * "I'm wearing a blue shirt"). Not a messaging product — it disappears with
  * the trip.
  */
-export function TripChat({
-  groupId,
-  senderId,
-  senderName,
-  senderRole,
-  className,
-}: TripChatProps) {
+export function TripChat({ groupId, senderId, senderName, senderRole, className }: TripChatProps) {
   const { messages, loading } = useGroupChat(groupId);
   const [text, setText] = React.useState("");
   const [sending, setSending] = React.useState(false);

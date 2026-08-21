@@ -40,8 +40,16 @@ export function useProfilesByRole(role: "passenger" | "driver" | "admin") {
     void load();
     const channel = supabase
       .channel(`admin-profiles-${role}`)
-      .on("postgres_changes", { event: "*", schema: "public", table: "profiles" }, () => void load())
-      .on("postgres_changes", { event: "*", schema: "public", table: "user_roles" }, () => void load())
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "profiles" },
+        () => void load(),
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "user_roles" },
+        () => void load(),
+      )
       .subscribe();
     return () => {
       void supabase.removeChannel(channel);
@@ -55,7 +63,13 @@ export const displayName = (p: Pick<ProfileRow, "full_name" | "first_name">) =>
   p.full_name || p.first_name || "Unnamed account";
 
 export const formatDate = (iso: string | null) =>
-  iso ? new Date(iso).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) : "—";
+  iso
+    ? new Date(iso).toLocaleDateString(undefined, {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      })
+    : "—";
 
 export const COMPLAINT_CATEGORIES = [
   { value: "cleanliness", label: "Vehicle cleanliness" },

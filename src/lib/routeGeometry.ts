@@ -90,10 +90,7 @@ export function snapToPath(point: LatLng, path: LatLng[]): LatLng {
     const t =
       len === 0
         ? 0
-        : Math.max(
-            0,
-            Math.min(1, ((point[0] - a[0]) * dx + (point[1] - a[1]) * dy) / len),
-          );
+        : Math.max(0, Math.min(1, ((point[0] - a[0]) * dx + (point[1] - a[1]) * dy) / len));
     const proj: LatLng = [a[0] + dx * t, a[1] + dy * t];
     const d = (proj[0] - point[0]) ** 2 + (proj[1] - point[1]) ** 2;
     if (d < bestDist) {

@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import type { TimeBand } from "@/lib/mockData";
+import type { LiveDeparture } from "@/lib/rides.functions";
 
 /**
  * Passenger booking draft — shared across Home → Route Discovery → Time
@@ -27,6 +28,8 @@ export type BookingDraft = {
   slotId: string | null;
   /** Confirmed pickup point on the selected route. */
   pickupPointId: string | null;
+  /** Live (Supabase-backed) departure the passenger tapped, when there is one. */
+  liveDeparture: LiveDeparture | null;
 };
 
 type BookingValue = BookingDraft & {
@@ -51,6 +54,7 @@ const initial: BookingDraft = {
   routeId: null,
   slotId: null,
   pickupPointId: null,
+  liveDeparture: null,
 };
 
 const BookingContext = React.createContext<BookingValue | null>(null);

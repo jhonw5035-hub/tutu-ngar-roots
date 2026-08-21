@@ -123,11 +123,18 @@ export function useMyLiveBooking(passengerId: string | null, bookingId?: string 
       .channel(`passenger-live-${passengerId}`)
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "bookings", filter: `passenger_id=eq.${passengerId}` },
+        {
+          event: "*",
+          schema: "public",
+          table: "bookings",
+          filter: `passenger_id=eq.${passengerId}`,
+        },
         () => void refresh(),
       )
-      .on("postgres_changes", { event: "*", schema: "public", table: "trip_groups" }, () =>
-        void refresh(),
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "trip_groups" },
+        () => void refresh(),
       )
       .subscribe();
     return () => {

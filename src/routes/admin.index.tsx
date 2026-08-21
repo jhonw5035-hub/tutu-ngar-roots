@@ -51,9 +51,21 @@ function useOpsStats() {
     void load();
     const channel = supabase
       .channel("admin-ops-stats")
-      .on("postgres_changes", { event: "*", schema: "public", table: "bookings" }, () => void load())
-      .on("postgres_changes", { event: "*", schema: "public", table: "trip_groups" }, () => void load())
-      .on("postgres_changes", { event: "*", schema: "public", table: "driver_status" }, () => void load())
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "bookings" },
+        () => void load(),
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "trip_groups" },
+        () => void load(),
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "driver_status" },
+        () => void load(),
+      )
       .subscribe();
     return () => {
       void supabase.removeChannel(channel);
@@ -104,10 +116,10 @@ function AdminDashboard() {
       <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-4">
         {todayStats.map((stat) => (
           <div key={stat.label} className="rounded-xl border border-border bg-card p-4">
-            <span aria-hidden className="text-base">{stat.icon}</span>
-            <p className="mt-2 text-3xl font-extrabold tabular-nums tracking-tight">
-              {stat.value}
-            </p>
+            <span aria-hidden className="text-base">
+              {stat.icon}
+            </span>
+            <p className="mt-2 text-3xl font-extrabold tabular-nums tracking-tight">{stat.value}</p>
             <p className="text-xs text-muted-foreground">{stat.label}</p>
           </div>
         ))}

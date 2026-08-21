@@ -84,8 +84,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "Tu Tu Ngar — Shared Rides in Yangon" },
       {
         name: "description",
-        content:
-          "Tu Tu Ngar (တူတူငှား) — pre-booked shared transportation across Yangon.",
+        content: "Tu Tu Ngar (တူတူငှား) — pre-booked shared transportation across Yangon.",
       },
       { property: "og:title", content: "Tu Tu Ngar — Shared Rides in Yangon" },
       {

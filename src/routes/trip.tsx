@@ -74,9 +74,7 @@ function TripInProgress() {
         isYou: false,
       },
     ];
-    const ordered = [...members].sort(
-      (a, b) => (a.drop_order ?? 99) - (b.drop_order ?? 99),
-    );
+    const ordered = [...members].sort((a, b) => (a.drop_order ?? 99) - (b.drop_order ?? 99));
     ordered.forEach((m, i) => {
       list.push({
         id: m.id,
@@ -93,9 +91,7 @@ function TripInProgress() {
   const nextIndex = Math.min(progress, Math.max(0, stops.length - 1));
   const nextStop = stops[nextIndex] ?? null;
 
-  const vehicle: LatLng | null = driverPosition
-    ? [driverPosition.lat, driverPosition.lng]
-    : null;
+  const vehicle: LatLng | null = driverPosition ? [driverPosition.lat, driverPosition.lng] : null;
 
   const markers = useMemo<MapMarker[]>(
     () =>
@@ -151,7 +147,9 @@ function TripInProgress() {
             {driverName} · {plate}
           </p>
         </div>
-        <Badge variant="confirmed">{group.status === "accepted" ? "On the way" : group.status}</Badge>
+        <Badge variant="confirmed">
+          {group.status === "accepted" ? "On the way" : group.status}
+        </Badge>
       </div>
 
       <div className="relative mt-3 overflow-hidden rounded-2xl border border-border shadow-card">

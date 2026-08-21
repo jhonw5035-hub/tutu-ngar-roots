@@ -176,7 +176,6 @@ export default function RouteMap({
         />
       ))}
 
-
       {points.map((p) => {
         const isPickup = p.id === pickupId;
         const isDest = p.id === destinationId;
