@@ -21,7 +21,14 @@ import { useBooking } from "@/lib/booking-store";
 import type { Suggestion } from "@/lib/geocode";
 import type { MapMarker } from "@/components/map/route-map";
 import type { LatLng } from "@/lib/mockData";
-import { timeWindows, trustSignals } from "@/lib/mockData";
+import {
+  formatTime12,
+  getSlotDetails,
+  routes,
+  timeWindows,
+  trustSignals,
+} from "@/lib/mockData";
+
 
 export const Route = createFileRoute("/home")({
   head: () => ({
@@ -163,6 +170,60 @@ function PassengerHome() {
       </Card>
 
       <section className="mt-6 space-y-3">
+        <div className="space-y-1">
+          <h2 className="text-lg">Or choose a fixed route</h2>
+          <p className="text-sm text-muted-foreground">
+            Tu Tu Ngar runs on fixed shared routes — pick one to see available rides instantly.
+          </p>
+        </div>
+
+        <div className="space-y-3">
+          {routes.map((route) => {
+            const start = route.path[0]!;
+            const end = route.path[route.path.length - 1]!;
+            const next = getSlotDetails(route.id).find((s) => s.seatsLeft > 0);
+            return (
+              <button
+                key={route.id}
+                type="button"
+                onClick={() => {
+                  booking.set({
+                    pickupText: route.from,
+                    destinationText: route.to,
+                    pickupCoord: { lat: start[0], lng: start[1] },
+                    destinationCoord: { lat: end[0], lng: end[1] },
+                    routeId: route.id,
+                    slotId: null,
+                    pickupPointId: null,
+                    liveDeparture: null,
+                  });
+                  navigate({ to: "/rides" });
+                }}
+                className="w-full cursor-pointer rounded-2xl border-2 border-primary/25 bg-card p-4 text-left shadow-card transition-all hover:border-primary hover:shadow-lg active:scale-[0.99]"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="space-y-1">
+                    <p className="text-base font-semibold">{route.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {next ? `Next departure ${formatTime12(next.time)} · ` : ""}
+                      K{route.fare.toLocaleString()} per seat
+                    </p>
+                  </div>
+                  <span className="shrink-0 rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-primary">
+                    Fixed route
+                  </span>
+                </div>
+                <span className="mt-3 flex items-center gap-1 text-sm font-semibold text-primary">
+                  See available rides <ArrowRight className="size-4" />
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="mt-6 space-y-3">
+
         <h2 className="text-lg">When are you travelling?</h2>
         <div className="flex gap-2">
           {(["today", "tomorrow"] as const).map((d) => (
