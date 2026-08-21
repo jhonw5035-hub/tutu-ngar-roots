@@ -119,21 +119,8 @@ function DriverHome() {
     <AppShell
       portal="driver"
       navItems={navItems}
-      headerActions={
-        <>
-          <NotificationBell />
-          <div className="hidden sm:block">
-            <Avatar className="size-8">
-              {profile?.photoDataUrl ? (
-                <AvatarImage src={profile.photoDataUrl} alt={displayName} />
-              ) : null}
-              <AvatarFallback className="bg-primary text-primary-foreground text-xs font-semibold">
-                {getInitials(displayName)}
-              </AvatarFallback>
-            </Avatar>
-          </div>
-        </>
-      }
+      {/* The shell already renders the single account avatar — only the bell here. */}
+      headerActions={<NotificationBell />}
     >
       <div className="space-y-6">
         {/* Status indicator */}
