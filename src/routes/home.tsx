@@ -1,12 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { ArrowRight, Bell, Flag, MapPin, UserRound } from "lucide-react";
+import { lazy, Suspense, useCallback, useMemo, useState } from "react";
+import { ArrowRight, Flag, MapPin } from "lucide-react";
 
 import { AppShell } from "@/components/layout/app-shell";
 import { usePassengerNav } from "@/components/layout/passenger-nav";
+import { LocationAutocomplete } from "@/components/booking/location-autocomplete";
+import { ClientOnly } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -16,9 +17,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { useBooking, useNearbyAreaLabel } from "@/lib/booking-store";
-import { useSession } from "@/lib/session";
-import { areas, timeWindows, trustSignals } from "@/lib/mockData";
+import { useBooking } from "@/lib/booking-store";
+import type { Suggestion } from "@/lib/geocode";
+import type { MapMarker } from "@/components/map/route-map";
+import type { LatLng } from "@/lib/mockData";
+import { timeWindows, trustSignals } from "@/lib/mockData";
+
+const RouteMap = lazy(() => import("@/components/map/route-map"));
 
 export const Route = createFileRoute("/home")({
   head: () => ({
