@@ -36,6 +36,18 @@ function FitBounds({ positions }: { positions: LatLng[] }) {
   return null;
 }
 
+/** Free-form pin, used by the location-search preview map. */
+export type MapMarker = {
+  id: string;
+  lat: number;
+  lng: number;
+  label?: string;
+  color?: string;
+  size?: number;
+  pulse?: boolean;
+  title?: string;
+};
+
 export type RouteMapProps = {
   routes: Route[];
   selectedRouteId?: string | null;
@@ -53,6 +65,10 @@ export type RouteMapProps = {
   locateNonce?: number;
   /** Per-route polyline colour override (used for the simulated traffic view). */
   routeColors?: Record<string, string>;
+  /** Ad-hoc pins (search suggestions, pickup/drop preview). */
+  markers?: MapMarker[] | undefined;
+  /** Straight connector drawn between arbitrary coordinates. */
+  line?: LatLng[] | undefined;
 };
 
 /** Mock "locate me" — recentres on a Yangon location instead of real GPS. */
@@ -81,12 +97,15 @@ export default function RouteMap({
   fitTo,
   locateNonce = 0,
   routeColors,
+  markers = [],
+  line,
 }: RouteMapProps) {
   const bounds = useMemo<LatLng[]>(() => {
     if (fitTo?.length) return fitTo;
+    if (markers.length) return markers.map((m) => [m.lat, m.lng] as LatLng);
     const active = routes.find((r) => r.id === selectedRouteId);
     return active ? active.path : routes.flatMap((r) => r.path);
-  }, [fitTo, routes, selectedRouteId]);
+  }, [fitTo, markers, routes, selectedRouteId]);
 
   return (
     <MapContainer
@@ -96,9 +115,12 @@ export default function RouteMap({
       className="h-full w-full"
       attributionControl
     >
+      {/* CARTO Positron: free, no API key, muted base so the brand-orange
+          route line and markers stay legible on small mobile maps. */}
       <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+        subdomains={["a", "b", "c", "d"]}
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
       />
       <FitBounds positions={bounds} />
       <LocateHandler nonce={locateNonce} />
@@ -132,6 +154,28 @@ export default function RouteMap({
           />
         );
       })}
+
+      {line && line.length > 1 ? (
+        <Polyline
+          positions={line}
+          pathOptions={{ color: BRAND, weight: 4, opacity: 0.8, dashArray: "8 8" }}
+        />
+      ) : null}
+
+      {markers.map((m) => (
+        <Marker
+          key={m.id}
+          position={[m.lat, m.lng]}
+          icon={pinIcon({
+            color: m.color ?? MUTED,
+            size: m.size ?? 22,
+            label: m.label ?? "",
+            pulse: m.pulse ?? false,
+          })}
+          title={m.title ?? m.label ?? ""}
+        />
+      ))}
+
 
       {points.map((p) => {
         const isPickup = p.id === pickupId;

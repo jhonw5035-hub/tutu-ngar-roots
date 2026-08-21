@@ -5,7 +5,14 @@ import { AlertTriangle } from "lucide-react";
 import { AdminShell } from "@/components/admin/admin-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  replyToSupportMessage,
+  resolveSupportMessage,
+  useAllSupportMessages,
+} from "@/lib/support";
 import {
   COMPLAINT_CATEGORIES,
   categoryLabel,
@@ -101,10 +108,17 @@ function SupportPage() {
     <AdminShell>
       <h1 className="text-2xl font-extrabold tracking-tight">Customer Support</h1>
       <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-        Passenger reports about vehicles and drivers. Repeat reports are flagged so patterns stand
-        out from one-offs.
+        Trip complaints about vehicles and drivers, plus general messages passengers send the team
+        directly. Repeat reports are flagged so patterns stand out from one-offs.
       </p>
 
+      <Tabs defaultValue="complaints" className="mt-5">
+        <TabsList>
+          <TabsTrigger value="complaints">Trip complaints ({rows.length})</TabsTrigger>
+          <TabsTrigger value="messages">Direct messages</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="complaints">
       <div className="mt-5 flex flex-wrap gap-2">
         <FilterChip active={category === "all"} onClick={() => setCategory("all")}>
           All categories ({rows.length})
@@ -169,7 +183,71 @@ function SupportPage() {
           );
         })}
       </section>
+        </TabsContent>
+
+        <TabsContent value="messages">
+          <SupportInbox />
+        </TabsContent>
+      </Tabs>
     </AdminShell>
+  );
+}
+
+/** General passenger → admin messages (separate from per-trip complaints). */
+function SupportInbox() {
+  const { messages } = useAllSupportMessages();
+  const [replies, setReplies] = React.useState<Record<string, string>>({});
+
+  if (messages.length === 0) {
+    return (
+      <div className="mt-4 rounded-xl border border-dashed border-border bg-card p-10 text-center text-sm text-muted-foreground">
+        No direct support messages yet. Anything a passenger sends from “Contact Support” lands
+        here instantly.
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-4 space-y-3">
+      {messages.map((m) => (
+        <article key={m.id} className="rounded-xl border border-border bg-card p-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant={m.status === "resolved" ? "outline" : "default"}>{m.status}</Badge>
+            <span className="text-sm font-semibold">{m.sender_name ?? "Passenger"}</span>
+            <span className="ml-auto text-xs text-muted-foreground">{formatDate(m.created_at)}</span>
+          </div>
+          <p className="mt-2 text-sm">{m.message}</p>
+          {m.admin_reply ? (
+            <p className="mt-2 rounded-lg bg-muted p-2 text-xs">
+              <span className="font-semibold">Your reply:</span> {m.admin_reply}
+            </p>
+          ) : (
+            <div className="mt-3 space-y-2">
+              <Textarea
+                rows={2}
+                placeholder="Reply to this passenger…"
+                value={replies[m.id] ?? ""}
+                onChange={(e) => setReplies((r) => ({ ...r, [m.id]: e.target.value }))}
+              />
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  disabled={!(replies[m.id] ?? "").trim()}
+                  onClick={() => void replyToSupportMessage(m.id, replies[m.id] ?? "")}
+                >
+                  Send reply
+                </Button>
+                {m.status !== "resolved" ? (
+                  <Button size="sm" variant="outline" onClick={() => void resolveSupportMessage(m.id)}>
+                    Mark resolved
+                  </Button>
+                ) : null}
+              </div>
+            </div>
+          )}
+        </article>
+      ))}
+    </div>
   );
 }
 

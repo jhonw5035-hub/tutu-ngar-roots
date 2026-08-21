@@ -7,9 +7,14 @@ import type { TimeBand } from "@/lib/mockData";
  * Selection → the existing map booking flow. Same state model as before,
  * just lifted so the new card screens can hand off to each other.
  */
+export type Coord = { lat: number; lng: number } | null;
+
 export type BookingDraft = {
   pickupText: string;
   destinationText: string;
+  /** Geocoded coordinates for the chosen pickup / destination, when picked. */
+  pickupCoord: Coord;
+  destinationCoord: Coord;
   /** ISO yyyy-mm-dd */
   date: string;
   /** Today / Tomorrow toggle on Passenger Home. */
@@ -36,9 +41,11 @@ function todayISO() {
 const initial: BookingDraft = {
   pickupText: "",
   destinationText: "",
+  pickupCoord: null,
+  destinationCoord: null,
   date: todayISO(),
   day: "today",
-  windowId: "w-1",
+  windowId: "w-16",
   band: "any",
   query: "",
   routeId: null,

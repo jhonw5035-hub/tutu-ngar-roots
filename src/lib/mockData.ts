@@ -424,11 +424,24 @@ export const areas = [
 
 export type TimeWindow = { id: string; label: string; from: string; to: string };
 
-export const timeWindows: TimeWindow[] = [
-  { id: "w-any", label: "Any time", from: "00:00", to: "23:59" },
-  { id: "w-1", label: "08:00 AM – 08:30 AM", from: "08:00", to: "08:30" },
-  { id: "w-2", label: "08:30 AM – 09:00 AM", from: "08:30", to: "09:00" },
-];
+const pad = (n: number) => String(n).padStart(2, "0");
+const to12 = (h: number, m: number) =>
+  `${h % 12 === 0 ? 12 : h % 12}:${pad(m)} ${h < 12 ? "AM" : "PM"}`;
+
+/** Full 24-hour day in 30-minute departure windows (48 slots). */
+export const timeWindows: TimeWindow[] = Array.from({ length: 48 }, (_, i) => {
+  const h = Math.floor(i / 2);
+  const m = i % 2 === 0 ? 0 : 30;
+  const endTotal = i * 30 + 30;
+  const eh = Math.floor(endTotal / 60) % 24;
+  const em = endTotal % 60;
+  return {
+    id: `w-${i}`,
+    label: `${to12(h, m)} – ${to12(eh, em)}`,
+    from: `${pad(h)}:${pad(m)}`,
+    to: endTotal >= 1440 ? "23:59" : `${pad(eh)}:${pad(em)}`,
+  };
+});
 
 /** "08:15" -> "8:15 AM" */
 export function formatTime12(time: string) {

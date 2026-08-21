@@ -5,22 +5,15 @@ import { Check, CircleDot, Flag, Navigation } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
 import { usePassengerNav } from "@/components/layout/passenger-nav";
 import { MapView } from "@/components/map/map-view";
+import type { MapMarker } from "@/components/map/route-map";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { useBooking } from "@/lib/booking-store";
-import { useSnappedCorridors } from "@/lib/routeGeometry";
-import { useVehicleAnimation } from "@/lib/use-vehicle-animation";
 import { useSession } from "@/lib/session";
-import {
-  distanceKm,
-  getPassengers,
-  getSlotsForRoute,
-  getTripStops,
-  mockDriver,
-  type LatLng,
-} from "@/lib/mockData";
+import { useMyLiveBooking } from "@/lib/live";
+import { useDriverLocation } from "@/lib/driver-sim";
+import { distanceKm, type LatLng } from "@/lib/mockData";
 
 export const Route = createFileRoute("/trip")({
   head: () => ({
@@ -36,6 +29,8 @@ export const Route = createFileRoute("/trip")({
         property: "og:description",
         content: "Live vehicle position and stop-by-stop progress for your shared ride.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: TripInProgress,
@@ -43,34 +38,109 @@ export const Route = createFileRoute("/trip")({
 
 const AVG_SPEED_KMH = 22;
 
+type Stop = {
+  id: string;
+  name: string;
+  lat: number | null;
+  lng: number | null;
+  isDestination: boolean;
+  /** True when this drop belongs to the signed-in passenger. */
+  isYou: boolean;
+};
+
 function TripInProgress() {
   const navItems = usePassengerNav("trips");
-  const booking = useBooking();
-  const { routes, points } = useSnappedCorridors();
-  const { profile } = useSession();
+  const { profile, userId } = useSession();
+  const { booking, group, members, driver } = useMyLiveBooking(userId);
+  const { position: driverPosition } = useDriverLocation(group?.driver_id ?? null);
 
-  // Demo progress: how many stops the van has already served.
-  const [progress, setProgress] = useState(1);
+  /** Demo progress: how many stops the van has already served. */
+  const [progress, setProgress] = useState(0);
 
-  const route = routes.find((r) => r.id === booking.routeId) ?? routes[0] ?? null;
-  const stops = useMemo(() => getTripStops(route?.id ?? null, progress), [route?.id, progress]);
-  const routePoints = points
-    .filter((p) => p.routeId === route?.id)
-    .sort((a, b) => a.sequence - b.sequence);
+  /**
+   * Single source of truth for both the map markers and the checklist below:
+   * the real trip_groups pickup point plus the ordered trip_group_members
+   * drop points for this passenger's actual group.
+   */
+  const stops = useMemo<Stop[]>(() => {
+    if (!group) return [];
+    const list: Stop[] = [
+      {
+        id: `pickup-${group.id}`,
+        name: group.pickup_point_label ?? booking?.pickup_label ?? "Pickup point",
+        lat: group.pickup_lat != null ? Number(group.pickup_lat) : null,
+        lng: group.pickup_lng != null ? Number(group.pickup_lng) : null,
+        isDestination: false,
+        isYou: false,
+      },
+    ];
+    const ordered = [...members].sort(
+      (a, b) => (a.drop_order ?? 99) - (b.drop_order ?? 99),
+    );
+    ordered.forEach((m, i) => {
+      list.push({
+        id: m.id,
+        name: m.drop_label ?? `Drop ${i + 1}`,
+        lat: m.drop_lat != null ? Number(m.drop_lat) : null,
+        lng: m.drop_lng != null ? Number(m.drop_lng) : null,
+        isDestination: i === ordered.length - 1,
+        isYou: m.booking_id === booking?.id,
+      });
+    });
+    return list;
+  }, [group, members, booking]);
 
-  const vehicle = useVehicleAnimation(route?.path ?? null, true);
-  const nextStop = stops.find((s) => !s.pickedUp) ?? stops[stops.length - 1] ?? null;
-  const nextPoint = routePoints.find((p) => p.id === nextStop?.id) ?? null;
+  const nextIndex = Math.min(progress, Math.max(0, stops.length - 1));
+  const nextStop = stops[nextIndex] ?? null;
+
+  const vehicle: LatLng | null = driverPosition
+    ? [driverPosition.lat, driverPosition.lng]
+    : null;
+
+  const markers = useMemo<MapMarker[]>(
+    () =>
+      stops
+        .filter((s): s is Stop & { lat: number; lng: number } => s.lat != null && s.lng != null)
+        .map((s, i) => ({
+          id: s.id,
+          lat: s.lat,
+          lng: s.lng,
+          label: i === 0 ? "P" : String(i),
+          color: s.id === nextStop?.id ? "#F75514" : i === 0 ? "#0B2942" : "#334155",
+          size: s.id === nextStop?.id ? 28 : 22,
+          pulse: s.id === nextStop?.id,
+          title: s.name,
+        })),
+    [stops, nextStop],
+  );
+
+  const line = useMemo<LatLng[] | undefined>(() => {
+    const pts = stops
+      .filter((s) => s.lat != null && s.lng != null)
+      .map((s) => [s.lat as number, s.lng as number] as LatLng);
+    return pts.length > 1 ? pts : undefined;
+  }, [stops]);
 
   const remainingKm =
-    vehicle && nextPoint ? distanceKm(vehicle, [nextPoint.lat, nextPoint.lng]) : null;
+    vehicle && nextStop?.lat != null && nextStop.lng != null
+      ? distanceKm(vehicle, [nextStop.lat, nextStop.lng])
+      : null;
   const etaMin = remainingKm ? Math.max(1, Math.round((remainingKm / AVG_SPEED_KMH) * 60)) : null;
 
-  const slotId = booking.slotId ?? getSlotsForRoute(route?.id ?? null)[0]?.id ?? null;
-  const riders = getPassengers(slotId);
-  const capacity = getSlotsForRoute(route?.id ?? null).find((s) => s.id === slotId)?.seatsCapacity ?? 4;
+  const driverName = driver?.full_name ?? driver?.first_name ?? "Your driver";
+  const plate = driver?.plate_number ?? "—";
 
-  const fitTo: LatLng[] = route?.path ?? [];
+  if (!group) {
+    return (
+      <AppShell portal="passenger" navItems={navItems}>
+        <h1 className="text-xl">Trip in progress</h1>
+        <div className="mt-4 rounded-xl border border-dashed border-border bg-card p-10 text-center text-sm text-muted-foreground">
+          You don’t have an active grouped trip yet. Once your booking is grouped and a driver
+          accepts, the live route appears here.
+        </div>
+      </AppShell>
+    );
+  }
 
   return (
     <AppShell portal="passenger" navItems={navItems}>
@@ -78,22 +148,20 @@ function TripInProgress() {
         <div>
           <h1 className="text-xl">Trip in progress</h1>
           <p className="text-sm text-muted-foreground">
-            {mockDriver.name} · {mockDriver.plate}
+            {driverName} · {plate}
           </p>
         </div>
-        <Badge variant="confirmed">On the way</Badge>
+        <Badge variant="confirmed">{group.status === "accepted" ? "On the way" : group.status}</Badge>
       </div>
 
       <div className="relative mt-3 overflow-hidden rounded-2xl border border-border shadow-card">
         <MapView
           className="h-64"
-          routes={route ? [route] : []}
-          selectedRouteId={route?.id ?? null}
-          points={routePoints}
-          pickupId={nextPoint?.id ?? null}
+          routes={[]}
+          markers={markers}
+          line={line}
           vehicle={vehicle}
           vehicleLabel={nextStop ? `Heading to ${nextStop.name}` : undefined}
-          fitTo={fitTo}
         />
       </div>
 
@@ -113,7 +181,8 @@ function TripInProgress() {
 
           <ol className="mt-3 space-y-0">
             {stops.map((stop, i) => {
-              const isNext = stop.id === nextStop?.id && !stop.pickedUp;
+              const done = i < progress;
+              const isNext = i === nextIndex && !done;
               const last = i === stops.length - 1;
               return (
                 <li key={stop.id} className="flex gap-3">
@@ -121,14 +190,14 @@ function TripInProgress() {
                     <span
                       className={cn(
                         "flex size-7 items-center justify-center rounded-full border",
-                        stop.pickedUp
+                        done
                           ? "border-primary bg-primary text-primary-foreground"
                           : isNext
                             ? "border-primary bg-primary/10 text-primary"
                             : "border-border bg-muted text-muted-foreground",
                       )}
                     >
-                      {stop.pickedUp ? (
+                      {done ? (
                         <Check className="size-3.5" />
                       ) : stop.isDestination ? (
                         <Flag className="size-3.5" />
@@ -137,27 +206,24 @@ function TripInProgress() {
                       )}
                     </span>
                     {!last ? (
-                      <span
-                        className={cn(
-                          "w-0.5 flex-1",
-                          stop.pickedUp ? "bg-primary/50" : "bg-border",
-                        )}
-                      />
+                      <span className={cn("w-0.5 flex-1", done ? "bg-primary/50" : "bg-border")} />
                     ) : null}
                   </div>
 
                   <div className={cn("min-w-0 flex-1", last ? "pb-0" : "pb-5")}>
-                    <p
-                      className={cn(
-                        "text-sm font-semibold",
-                        isNext ? "text-primary" : stop.pickedUp ? "" : "text-foreground",
-                      )}
-                    >
+                    <p className={cn("text-sm font-semibold", isNext ? "text-primary" : "")}>
                       {stop.name}
+                      {stop.isYou ? (
+                        <span className="ml-2 text-xs font-normal text-muted-foreground">
+                          Your drop-off
+                        </span>
+                      ) : null}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {stop.pickedUp
-                        ? "Picked Up"
+                      {done
+                        ? i === 0
+                          ? "Picked Up"
+                          : "Dropped off"
                         : isNext
                           ? `${etaMin ?? "—"} min · ${remainingKm ? remainingKm.toFixed(1) : "—"} km`
                           : stop.isDestination
@@ -175,23 +241,19 @@ function TripInProgress() {
       <Card className="mt-4 shadow-card">
         <CardContent className="pt-6">
           <h2 className="text-lg">Passengers onboard</h2>
-          {/* Privacy: first name only. Never surface full profiles or photos of
-              other passengers here — only your own avatar can use your photo. */}
+          {/* Privacy: co-riders are shown as anonymous seats — never full
+              profiles or photos. Only your own avatar may use your photo. */}
           <div className="mt-3 flex flex-wrap gap-4">
             <Rider
               name={profile?.firstName || profile?.fullName?.split(" ")[0] || "You"}
               photo={profile?.photoDataUrl}
               you
             />
-            {riders.map((r) => (
-              <Rider key={r.id} name={r.firstName} />
-            ))}
-            {Array.from({ length: Math.max(0, capacity - riders.length - 1) }, (_, i) => (
-              <div key={i} className="w-14 text-center">
-                <div className="mx-auto size-12 rounded-full border-2 border-dashed border-border" />
-                <p className="mt-1 text-xs text-muted-foreground">Open</p>
-              </div>
-            ))}
+            {members
+              .filter((m) => m.booking_id !== booking?.id)
+              .map((m, i) => (
+                <Rider key={m.id} name={`Rider ${i + 1}`} />
+              ))}
           </div>
         </CardContent>
       </Card>
