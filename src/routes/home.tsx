@@ -48,53 +48,65 @@ function PassengerHome() {
   const navItems = usePassengerNav("home");
   const navigate = useNavigate();
   const booking = useBooking();
-  const { profile } = useSession();
-  const [askLocation, setAskLocation] = useState(false);
-  const nearby = useNearbyAreaLabel(askLocation);
+  const [pickupHints, setPickupHints] = useState<Suggestion[]>([]);
+  const [destHints, setDestHints] = useState<Suggestion[]>([]);
 
-  useEffect(() => {
-    if (!booking.pickupText) setAskLocation(true);
-  }, [booking.pickupText]);
+  const onPickupSuggestions = useCallback((s: Suggestion[]) => setPickupHints(s), []);
+  const onDestSuggestions = useCallback((s: Suggestion[]) => setDestHints(s), []);
 
-  useEffect(() => {
-    if (nearby && !booking.pickupText) booking.set({ pickupText: nearby.replace("Near ", "") });
-  }, [nearby, booking]);
+  const { pickupCoord, destinationCoord } = booking;
 
-  const initials = (profile?.firstName || profile?.fullName || "You").slice(0, 2).toUpperCase();
+  /** Live preview pins: chosen points win, otherwise show the suggestion set. */
+  const markers = useMemo<MapMarker[]>(() => {
+    const list: MapMarker[] = [];
+    if (pickupCoord) {
+      list.push({
+        id: "pickup",
+        lat: pickupCoord.lat,
+        lng: pickupCoord.lng,
+        color: "#F75514",
+        size: 26,
+        label: "P",
+        pulse: true,
+        title: booking.pickupText,
+      });
+    } else {
+      pickupHints.forEach((s) =>
+        list.push({ id: `ph-${s.id}`, lat: s.lat, lng: s.lng, color: "#94a3b8", title: s.primary }),
+      );
+    }
+    if (destinationCoord) {
+      list.push({
+        id: "dest",
+        lat: destinationCoord.lat,
+        lng: destinationCoord.lng,
+        color: "#0B2942",
+        size: 26,
+        label: "D",
+        pulse: true,
+        title: booking.destinationText,
+      });
+    } else if (pickupCoord) {
+      destHints.forEach((s) =>
+        list.push({ id: `dh-${s.id}`, lat: s.lat, lng: s.lng, color: "#94a3b8", title: s.primary }),
+      );
+    }
+    return list;
+  }, [pickupCoord, destinationCoord, pickupHints, destHints, booking.pickupText, booking.destinationText]);
+
+  const previewLine = useMemo<LatLng[] | undefined>(
+    () =>
+      pickupCoord && destinationCoord
+        ? [
+            [pickupCoord.lat, pickupCoord.lng],
+            [destinationCoord.lat, destinationCoord.lng],
+          ]
+        : undefined,
+    [pickupCoord, destinationCoord],
+  );
 
   return (
-    <AppShell
-      portal="passenger"
-      navItems={navItems}
-      headerActions={
-        <>
-          <Button variant="ghost" size="icon" aria-label="Notifications" className="relative">
-            <Bell className="size-5" />
-            <span className="absolute top-2 right-2 size-2 rounded-full bg-primary" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Profile"
-            onClick={() => navigate({ to: "/account" })}
-          >
-            {profile?.photoDataUrl ? (
-              <img
-                src={profile.photoDataUrl}
-                alt="Your profile"
-                className="size-7 rounded-full object-cover"
-              />
-            ) : profile ? (
-              <span className="num flex size-7 items-center justify-center rounded-full bg-primary text-[11px] text-primary-foreground">
-                {initials}
-              </span>
-            ) : (
-              <UserRound className="size-5" />
-            )}
-          </Button>
-        </>
-      }
-    >
+    <AppShell portal="passenger" navItems={navItems}>
       <h1 className="text-2xl">Where are you going?</h1>
 
       <Card className="mt-4 shadow-card">
@@ -103,12 +115,14 @@ function PassengerHome() {
             <Label htmlFor="pickup">
               <MapPin className="size-4 text-primary" /> Pickup point
             </Label>
-            <Input
+            <LocationAutocomplete
               id="pickup"
-              list="ttn-areas"
-              placeholder="Your area — e.g. Hledan"
+              placeholder="Search a place — e.g. Hledan Junction"
               value={booking.pickupText}
-              onChange={(e) => booking.set({ pickupText: e.target.value })}
+              onValueChange={(pickupText) => booking.set({ pickupText, pickupCoord: null })}
+              onPick={(p) => booking.set({ pickupText: p.label, pickupCoord: { lat: p.lat, lng: p.lng } })}
+              onSuggestions={onPickupSuggestions}
+              showCurrentLocation
             />
           </div>
 
@@ -116,22 +130,32 @@ function PassengerHome() {
             <Label htmlFor="destination">
               <Flag className="size-4 text-muted-foreground" /> Destination
             </Label>
-            <Input
+            <LocationAutocomplete
               id="destination"
-              list="ttn-areas"
-              placeholder="Where to — e.g. Downtown Yangon"
+              placeholder="Where to — e.g. Sule Pagoda"
               value={booking.destinationText}
-              onChange={(e) => booking.set({ destinationText: e.target.value })}
+              onValueChange={(destinationText) =>
+                booking.set({ destinationText, destinationCoord: null })
+              }
+              onPick={(p) =>
+                booking.set({ destinationText: p.label, destinationCoord: { lat: p.lat, lng: p.lng } })
+              }
+              onSuggestions={onDestSuggestions}
             />
           </div>
 
-          <datalist id="ttn-areas">
-            {areas.map((a) => (
-              <option key={a} value={a} />
-            ))}
-          </datalist>
+          {markers.length ? (
+            <div className="h-48 overflow-hidden rounded-xl border border-border">
+              <ClientOnly fallback={<div className="size-full animate-pulse bg-muted" />}>
+                <Suspense fallback={<div className="size-full animate-pulse bg-muted" />}>
+                  <RouteMap routes={[]} markers={markers} line={previewLine} />
+                </Suspense>
+              </ClientOnly>
+            </div>
+          ) : null}
         </CardContent>
       </Card>
+
 
       <section className="mt-6 space-y-3">
         <h2 className="text-lg">When are you travelling?</h2>
