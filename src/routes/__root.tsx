@@ -15,6 +15,7 @@ import { ThemeProvider } from "@/components/theme/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { SessionProvider } from "@/lib/session";
 import { BookingProvider } from "@/lib/booking-store";
+import { LanguageProvider } from "@/lib/i18n";
 
 function NotFoundComponent() {
   return (
@@ -134,13 +135,15 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <SessionProvider>
-          <BookingProvider>
-            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-            <Outlet />
-            <Toaster position="top-center" />
-          </BookingProvider>
-        </SessionProvider>
+        <LanguageProvider>
+          <SessionProvider>
+            <BookingProvider>
+              {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+              <Outlet />
+              <Toaster position="top-center" />
+            </BookingProvider>
+          </SessionProvider>
+        </LanguageProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );
