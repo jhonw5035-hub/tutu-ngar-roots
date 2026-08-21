@@ -124,9 +124,9 @@ export default function RouteMap({
             key={route.id}
             positions={route.path}
             pathOptions={{
-              color: active ? BRAND : MUTED,
-              weight: active ? 6 : 4,
-              opacity: active ? 1 : 0.55,
+              color: routeColors?.[route.id] ?? (active ? BRAND : MUTED),
+              weight: routeColors ? 5 : active ? 6 : 4,
+              opacity: routeColors ? 0.9 : active ? 1 : 0.55,
             }}
             eventHandlers={{ click: () => onSelectRoute?.(route.id) }}
           />
