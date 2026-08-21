@@ -70,7 +70,7 @@ export function LocationAutocomplete({
   const showLocateRow = showCurrentLocation && canLocate && !locateFailed;
 
   return (
-    <div className="relative z-[1200]">
+    <div className={cn("relative", open ? "z-[1400]" : "z-[1200]")}>
       <Input
         id={id}
         autoComplete="off"
