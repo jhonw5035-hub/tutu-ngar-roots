@@ -51,8 +51,10 @@ function PaymentPage() {
     }
     setPaying(true);
     try {
-      const position = await getCurrentPosition();
-      if (!position) {
+      const device = await getCurrentPosition();
+      // Fall back to the geocoded pickup the passenger searched for on Home.
+      const position = device ?? booking.pickupCoord;
+      if (!device && !position) {
         toast.message("Location unavailable — using your selected pickup area");
       }
       const created = await createBooking({
@@ -63,6 +65,7 @@ function PaymentPage() {
         destinationLabel: booking.destinationText || route?.to || "Destination",
         requestedTime: slot ? new Date().toISOString() : null,
         pickup: position,
+        destination: booking.destinationCoord,
       });
       navigate({ to: "/confirmed", search: { booking: created.id } });
     } catch (err) {
