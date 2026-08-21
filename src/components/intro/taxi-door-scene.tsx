@@ -46,7 +46,10 @@ export function TaxiDoorScene() {
         <h1 className="text-4xl font-extrabold tracking-tight text-[oklch(0.991_0.006_62)]">
           Tu Tu<span className="text-primary"> Ngar</span>
         </h1>
-        <p className="mm mt-1 text-lg text-[oklch(0.991_0.006_62/0.72)]">တူတူငှား</p>
+        <p className="mm mt-1 text-lg">
+          <span className="text-[oklch(0.991_0.006_62)]">တူတူ</span>
+          <span className="text-primary">ငှား</span>
+        </p>
         <p className="mt-4 max-w-xs text-sm text-[oklch(0.991_0.006_62/0.66)]">
           Shared rides across Yangon — booked ahead, priced upfront, and safer together.
         </p>
