@@ -17,6 +17,8 @@ import { TripChat } from "@/components/chat/trip-chat";
 import { useDriverLocation } from "@/lib/driver-sim";
 import { useMyLiveBooking } from "@/lib/live";
 import { useSession } from "@/lib/session";
+import { useRoadPath } from "@/lib/road-path";
+import type { LatLng } from "@/lib/mockData";
 
 export const Route = createFileRoute("/confirmed")({
   validateSearch: z.object({ booking: z.string().optional() }),
@@ -56,6 +58,16 @@ function ConfirmationPage() {
     live.group?.pickup_lat != null && live.group?.pickup_lng != null
       ? { lat: Number(live.group.pickup_lat), lng: Number(live.group.pickup_lng) }
       : null;
+
+  // Road-snapped approach path (driver → pickup), same source as every map.
+  const approachLine = useRoadPath(
+    driverLive.position && groupPickup
+      ? ([
+          [driverLive.position.lat, driverLive.position.lng],
+          [groupPickup.lat, groupPickup.lng],
+        ] as LatLng[])
+      : null,
+  );
 
   const slot = resolveSlot(booking.slotId, booking.liveDeparture, booking.routeId);
   const route = getRoute(booking.routeId);
@@ -191,6 +203,7 @@ function ConfirmationPage() {
                   vehicleLabel={
                     live.group?.eta_to_pickup ? `Driver · ${live.group.eta_to_pickup}` : "Driver"
                   }
+                  line={approachLine}
                   userLocation={groupPickup ? [groupPickup.lat, groupPickup.lng] : null}
                   fitTo={
                     driverLive.position && groupPickup
