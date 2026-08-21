@@ -21,7 +21,14 @@ import { useBooking } from "@/lib/booking-store";
 import type { Suggestion } from "@/lib/geocode";
 import type { MapMarker } from "@/components/map/route-map";
 import type { LatLng } from "@/lib/mockData";
-import { timeWindows, trustSignals } from "@/lib/mockData";
+import {
+  formatTime12,
+  getSlotDetails,
+  routes,
+  timeWindows,
+  trustSignals,
+} from "@/lib/mockData";
+
 
 export const Route = createFileRoute("/home")({
   head: () => ({
