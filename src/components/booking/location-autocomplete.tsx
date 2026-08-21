@@ -53,7 +53,7 @@ export function LocationAutocomplete({
     setOpen(false);
   }
 
-  async function useCurrent() {
+  async function locateNow() {
     setLocating(true);
     const found = await locateAndLabel();
     setLocating(false);
@@ -101,7 +101,7 @@ export function LocationAutocomplete({
                 type="button"
                 className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-sm font-semibold text-primary hover:bg-muted"
                 onMouseDown={(e) => e.preventDefault()}
-                onClick={() => void useCurrent()}
+                onClick={() => void locateNow()}
               >
                 {locating ? (
                   <Loader2 className="size-4 animate-spin" />
