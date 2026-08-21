@@ -368,6 +368,7 @@ export type Database = {
           driver_id: string | null
           eta_to_pickup: string | null
           id: string
+          is_demo: boolean
           pickup_lat: number | null
           pickup_lng: number | null
           pickup_point_label: string | null
@@ -380,6 +381,7 @@ export type Database = {
           driver_id?: string | null
           eta_to_pickup?: string | null
           id?: string
+          is_demo?: boolean
           pickup_lat?: number | null
           pickup_lng?: number | null
           pickup_point_label?: string | null
@@ -392,6 +394,7 @@ export type Database = {
           driver_id?: string | null
           eta_to_pickup?: string | null
           id?: string
+          is_demo?: boolean
           pickup_lat?: number | null
           pickup_lng?: number | null
           pickup_point_label?: string | null

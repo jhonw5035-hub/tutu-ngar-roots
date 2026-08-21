@@ -63,7 +63,7 @@ type Stop = {
 function TripInProgress() {
   const navItems = usePassengerNav("trips");
   const { profile, userId } = useSession();
-  const { booking, group, members, driver, refresh } = useMyLiveBooking(userId);
+  const { booking, group, members, driver, loading, refresh } = useMyLiveBooking(userId);
   const { position: driverPosition } = useDriverLocation(group?.driver_id ?? null);
   const runDemoTrip = useServerFn(startDemoTrip);
   const [demoLoading, setDemoLoading] = useState(false);
@@ -177,6 +177,21 @@ function TripInProgress() {
   const driverName = driver?.full_name ?? driver?.first_name ?? "Your driver";
   const plate = driver?.plate_number ?? "—";
 
+  if (loading || demoLoading) {
+    return (
+      <AppShell portal="passenger" navItems={navItems}>
+        <h1 className="text-xl">Trip in progress</h1>
+        <div className="mt-4 space-y-3">
+          <div className="h-64 animate-pulse rounded-2xl bg-muted" />
+          <div className="h-28 animate-pulse rounded-2xl bg-muted" />
+          <p className="text-center text-sm text-muted-foreground">
+            {demoLoading ? "Preparing demo trip…" : "Checking for your active trip…"}
+          </p>
+        </div>
+      </AppShell>
+    );
+  }
+
   if (!group) {
     return (
       <AppShell portal="passenger" navItems={navItems}>
@@ -196,6 +211,7 @@ function TripInProgress() {
       </AppShell>
     );
   }
+
 
   return (
     <AppShell portal="passenger" navItems={navItems}>
