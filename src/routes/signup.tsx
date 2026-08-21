@@ -79,7 +79,7 @@ function SignupPage() {
         firstName: profile.firstName ?? "",
         phone: profile.phone ?? "",
         password: form.password,
-        ...(form.email.trim() ? { email: form.email.trim() } : {}),
+        email: form.email.trim(),
         ...(profile.gender ? { gender: profile.gender } : {}),
         ...(profile.plateNumber ? { plateNumber: profile.plateNumber } : {}),
         ...(profile.seatCapacity ? { seatCapacity: profile.seatCapacity } : {}),
@@ -193,7 +193,7 @@ function SignupPage() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="email">Email (optional)</Label>
+                  <Label htmlFor="email">Email</Label>
                   <Input
                     id="email"
                     type="email"
@@ -201,7 +201,12 @@ function SignupPage() {
                     placeholder="you@example.com"
                     value={form.email}
                     onChange={(e) => update("email", e.target.value)}
+                    required
                   />
+                  <p className="text-xs text-muted-foreground">
+                    You&apos;ll log in with this email — your phone number is only used for
+                    ride contact.
+                  </p>
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="password">Password</Label>
