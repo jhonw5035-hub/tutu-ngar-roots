@@ -40,146 +40,87 @@ export type MockPassenger = {
 
 export const YANGON_CENTER: LatLng = [16.8409, 96.1735];
 
+/* ------------------------------------------------------------------ */
+/* DEMO SCOPE: exactly 3 corridors.                                     */
+/* The competition demo deliberately narrows the network to three       */
+/* corridors so AI Matching, Routes and Available Shared Rides all tell */
+/* one story. The wider corridor set (Pyay Road, Kabar Aye Pagoda Road, */
+/* University Avenue, Strand Road, Insein Road) lived here before and   */
+/* can be restored post-hackathon by appending those Route entries to   */
+/* `routes` and their stops to `pickupPoints` — nothing else in the app */
+/* hardcodes corridor ids.                                              */
+/* Paths below are endpoint + via guesses; useSnappedCorridors() runs   */
+/* them through OSRM so the drawn lines follow real streets.            */
+/* ------------------------------------------------------------------ */
+
 export const routes: Route[] = [
   {
-    id: "r-pyay",
-    name: "Pyay Road Corridor",
-    roadName: "Pyay Road",
-    from: "Hlaing",
-    to: "Downtown",
-    fare: 2500,
+    id: "r-nokk-sule",
+    name: "North Okkalapa ↔ Sule",
+    roadName: "Thudhamma / Kabar Aye Pagoda Road",
+    from: "North Okkalapa",
+    to: "Sule",
+    fare: 3000,
     path: [
-      [16.8712, 96.1281],
-      [16.8544, 96.1319],
-      [16.8318, 96.1355],
-      [16.8135, 96.1401],
-      [16.7992, 96.1462],
-      [16.7861, 96.1544],
-      [16.7762, 96.1596],
-    ],
-    pickupPointIds: ["p-pyay-1", "p-pyay-2", "p-pyay-3", "p-pyay-4", "p-pyay-5"],
-  },
-  {
-    id: "r-inya",
-    name: "Inya Road Corridor",
-    roadName: "Inya Road",
-    from: "Inya Lake",
-    to: "Downtown",
-    fare: 2300,
-    path: [
-      [16.8305, 96.1521],
-      [16.8221, 96.1462],
-      [16.8138, 96.1418],
-      [16.8009, 96.1481],
-      [16.7885, 96.1549],
-      [16.7773, 96.1604],
-    ],
-    pickupPointIds: ["p-inya-1", "p-inya-2", "p-inya-3", "p-inya-4"],
-  },
-  {
-    id: "r-kabaraye",
-    name: "Kabar Aye Pagoda Road Corridor",
-    roadName: "Kabar Aye Pagoda Road",
-    from: "Mayangone",
-    to: "Downtown",
-    fare: 2800,
-    path: [
-      [16.8721, 96.1548],
-      [16.8562, 96.1571],
+      [16.9006, 96.172],
+      [16.8688, 96.1662],
       [16.8382, 96.1596],
-      [16.8212, 96.1611],
       [16.8021, 96.1601],
-      [16.7861, 96.1601],
-      [16.7769, 96.1612],
+      [16.776, 96.1595],
     ],
-    pickupPointIds: ["p-kbr-1", "p-kbr-2", "p-kbr-3", "p-kbr-4", "p-kbr-5"],
+    pickupPointIds: ["p-nsu-1", "p-nsu-2", "p-nsu-3", "p-nsu-4", "p-nsu-5"],
   },
   {
-    id: "r-univ",
-    name: "University Avenue Corridor",
-    roadName: "University Avenue Road",
-    from: "Kamayut",
-    to: "Shwedagon",
+    id: "r-inya-sanchaung",
+    name: "Inya Road ↔ Sanchaung",
+    roadName: "Inya Road",
+    from: "Inya Road",
+    to: "Sanchaung",
     fare: 2000,
     path: [
-      [16.8244, 96.1352],
-      [16.8231, 96.1451],
-      [16.8203, 96.1548],
-      [16.8148, 96.1638],
-      [16.8054, 96.1691],
-      [16.7981, 96.1495],
+      [16.8283, 96.1462],
+      [16.8206, 96.1399],
+      [16.8149, 96.1358],
+      [16.8094, 96.133],
     ],
-    pickupPointIds: ["p-univ-1", "p-univ-2", "p-univ-3", "p-univ-4"],
+    pickupPointIds: ["p-isa-1", "p-isa-2", "p-isa-3", "p-isa-4"],
   },
   {
-    id: "r-strand",
-    name: "Strand Road Waterfront",
-    roadName: "Strand Road",
-    from: "Lanmadaw",
-    to: "Botahtaung",
+    id: "r-nokk-sokk",
+    name: "North Okkalapa ↔ South Okkalapa",
+    roadName: "Waizayanta Road",
+    from: "North Okkalapa",
+    to: "South Okkalapa",
     fare: 1800,
     path: [
-      [16.7742, 96.1439],
-      [16.7728, 96.1521],
-      [16.7715, 96.1594],
-      [16.7708, 96.1668],
-      [16.7703, 96.1742],
-      [16.7699, 96.1801],
+      [16.9006, 96.172],
+      [16.8836, 96.1786],
+      [16.8681, 96.1841],
+      [16.854, 96.1885],
     ],
-    pickupPointIds: ["p-str-1", "p-str-2", "p-str-3", "p-str-4"],
-  },
-  {
-    id: "r-insein",
-    name: "Insein Road Corridor",
-    roadName: "Insein Road",
-    from: "Insein",
-    to: "Hledan",
-    fare: 2600,
-    path: [
-      [16.8951, 96.1121],
-      [16.8761, 96.1189],
-      [16.8592, 96.1251],
-      [16.8431, 96.1301],
-      [16.8299, 96.1341],
-    ],
-    pickupPointIds: ["p-ins-1", "p-ins-2", "p-ins-3", "p-ins-4"],
+    pickupPointIds: ["p-nso-1", "p-nso-2", "p-nso-3", "p-nso-4"],
   },
 ];
 
 export const pickupPoints: PickupPoint[] = [
-  // Pyay Road
-  { id: "p-pyay-1", routeId: "r-pyay", name: "Hlaing Campus", lat: 16.8712, lng: 96.1281, sequence: 1, isDestination: false },
-  { id: "p-pyay-2", routeId: "r-pyay", name: "Hledan Junction", lat: 16.8318, lng: 96.1355, sequence: 2, isDestination: false },
-  { id: "p-pyay-3", routeId: "r-pyay", name: "Myaynigone", lat: 16.8135, lng: 96.1401, sequence: 3, isDestination: true },
-  { id: "p-pyay-4", routeId: "r-pyay", name: "Hledan / Pyay Rd South", lat: 16.7992, lng: 96.1462, sequence: 4, isDestination: true },
-  { id: "p-pyay-5", routeId: "r-pyay", name: "Sule Pagoda Road", lat: 16.7762, lng: 96.1596, sequence: 5, isDestination: true },
-  // Inya Road
-  { id: "p-inya-1", routeId: "r-inya", name: "Inya Lake View", lat: 16.8305, lng: 96.1521, sequence: 1, isDestination: false },
-  { id: "p-inya-2", routeId: "r-inya", name: "Inya Road Mid Block", lat: 16.8138, lng: 96.1418, sequence: 2, isDestination: true },
-  { id: "p-inya-3", routeId: "r-inya", name: "Dagon Township", lat: 16.7885, lng: 96.1549, sequence: 3, isDestination: true },
-  { id: "p-inya-4", routeId: "r-inya", name: "Downtown Maha Bandula", lat: 16.7773, lng: 96.1604, sequence: 4, isDestination: true },
-  // Kabar Aye
-  { id: "p-kbr-1", routeId: "r-kabaraye", name: "Mayangone Market", lat: 16.8721, lng: 96.1548, sequence: 1, isDestination: false },
-  { id: "p-kbr-2", routeId: "r-kabaraye", name: "Kabar Aye Pagoda", lat: 16.8562, lng: 96.1571, sequence: 2, isDestination: false },
-  { id: "p-kbr-3", routeId: "r-kabaraye", name: "Yankin Centre", lat: 16.8382, lng: 96.1596, sequence: 3, isDestination: true },
-  { id: "p-kbr-4", routeId: "r-kabaraye", name: "Tamwe Junction", lat: 16.8021, lng: 96.1601, sequence: 4, isDestination: true },
-  { id: "p-kbr-5", routeId: "r-kabaraye", name: "Botahtaung", lat: 16.7769, lng: 96.1612, sequence: 5, isDestination: true },
-  // University Ave
-  { id: "p-univ-1", routeId: "r-univ", name: "Kamayut Junction", lat: 16.8244, lng: 96.1352, sequence: 1, isDestination: false },
-  { id: "p-univ-2", routeId: "r-univ", name: "Yangon University", lat: 16.8231, lng: 96.1451, sequence: 2, isDestination: false },
-  { id: "p-univ-3", routeId: "r-univ", name: "Inya Myaing", lat: 16.8203, lng: 96.1548, sequence: 3, isDestination: true },
-  { id: "p-univ-4", routeId: "r-univ", name: "Shwedagon East Gate", lat: 16.7981, lng: 96.1495, sequence: 4, isDestination: true },
-  // Strand
-  { id: "p-str-1", routeId: "r-strand", name: "Lanmadaw Jetty", lat: 16.7742, lng: 96.1439, sequence: 1, isDestination: false },
-  { id: "p-str-2", routeId: "r-strand", name: "Pansodan Jetty", lat: 16.7715, lng: 96.1594, sequence: 2, isDestination: true },
-  { id: "p-str-3", routeId: "r-strand", name: "Strand Hotel", lat: 16.7708, lng: 96.1668, sequence: 3, isDestination: true },
-  { id: "p-str-4", routeId: "r-strand", name: "Botahtaung Jetty", lat: 16.7699, lng: 96.1801, sequence: 4, isDestination: true },
-  // Insein
-  { id: "p-ins-1", routeId: "r-insein", name: "Insein Market", lat: 16.8951, lng: 96.1121, sequence: 1, isDestination: false },
-  { id: "p-ins-2", routeId: "r-insein", name: "Mingaladon Gate", lat: 16.8761, lng: 96.1189, sequence: 2, isDestination: false },
-  { id: "p-ins-3", routeId: "r-insein", name: "Thamaing Junction", lat: 16.8592, lng: 96.1251, sequence: 3, isDestination: true },
-  { id: "p-ins-4", routeId: "r-insein", name: "Hledan Centre", lat: 16.8299, lng: 96.1341, sequence: 4, isDestination: true },
+  // North Okkalapa ↔ Sule
+  { id: "p-nsu-1", routeId: "r-nokk-sule", name: "North Okkalapa Market", lat: 16.9006, lng: 96.172, sequence: 1, isDestination: false },
+  { id: "p-nsu-2", routeId: "r-nokk-sule", name: "Thudhamma Road", lat: 16.8688, lng: 96.1662, sequence: 2, isDestination: false },
+  { id: "p-nsu-3", routeId: "r-nokk-sule", name: "Yankin Centre", lat: 16.8382, lng: 96.1596, sequence: 3, isDestination: true },
+  { id: "p-nsu-4", routeId: "r-nokk-sule", name: "Tamwe Junction", lat: 16.8021, lng: 96.1601, sequence: 4, isDestination: true },
+  { id: "p-nsu-5", routeId: "r-nokk-sule", name: "Sule Pagoda", lat: 16.776, lng: 96.1595, sequence: 5, isDestination: true },
+  // Inya Road ↔ Sanchaung
+  { id: "p-isa-1", routeId: "r-inya-sanchaung", name: "Inya Road (Inya Lake)", lat: 16.8283, lng: 96.1462, sequence: 1, isDestination: false },
+  { id: "p-isa-2", routeId: "r-inya-sanchaung", name: "Inya Myaing", lat: 16.8206, lng: 96.1399, sequence: 2, isDestination: false },
+  { id: "p-isa-3", routeId: "r-inya-sanchaung", name: "Hledan Junction", lat: 16.8149, lng: 96.1358, sequence: 3, isDestination: true },
+  { id: "p-isa-4", routeId: "r-inya-sanchaung", name: "Sanchaung Market", lat: 16.8094, lng: 96.133, sequence: 4, isDestination: true },
+  // North Okkalapa ↔ South Okkalapa
+  { id: "p-nso-1", routeId: "r-nokk-sokk", name: "North Okkalapa Market", lat: 16.9006, lng: 96.172, sequence: 1, isDestination: false },
+  { id: "p-nso-2", routeId: "r-nokk-sokk", name: "Waizayanta Road", lat: 16.8836, lng: 96.1786, sequence: 2, isDestination: false },
+  { id: "p-nso-3", routeId: "r-nokk-sokk", name: "Thingangyun", lat: 16.8681, lng: 96.1841, sequence: 3, isDestination: true },
+  { id: "p-nso-4", routeId: "r-nokk-sokk", name: "South Okkalapa Market", lat: 16.854, lng: 96.1885, sequence: 4, isDestination: true },
 ];
+
 
 export const timeSlots: TimeSlot[] = routes.flatMap((r) => [
   { id: `${r.id}-t1`, routeId: r.id, time: "08:00", seatsFilled: 2, seatsCapacity: 4 },
