@@ -6,7 +6,10 @@ export function Wordmark({ className }: { className?: string }) {
       <span className="text-lg font-extrabold tracking-tight text-foreground">
         Tu Tu<span className="text-primary"> Ngar</span>
       </span>
-      <span className="mm text-sm text-muted-foreground">တူတူငှား</span>
+      <span className="mm text-sm">
+        <span className="text-foreground">တူတူ</span>
+        <span className="text-primary">ငှား</span>
+      </span>
     </span>
   );
 }
