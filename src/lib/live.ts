@@ -157,6 +157,12 @@ export function useMyLiveBooking(passengerId: string | null, bookingId?: string 
         { event: "*", schema: "public", table: "trip_groups" },
         () => void refresh(),
       )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "trip_group_members" },
+        () => void refresh(),
+      )
+
       .subscribe();
     return () => {
       void supabase.removeChannel(channel);
