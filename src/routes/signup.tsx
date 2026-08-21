@@ -14,10 +14,12 @@ import {
 } from "@/components/ui/select";
 import { Wordmark } from "@/components/layout/wordmark";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { RolePortalTabs } from "@/components/auth/role-portal-tabs";
 import { ProfilePhotoField } from "@/components/auth/profile-photo-field";
+import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
-import { portalHome, useSession, type Role, type SessionProfile } from "@/lib/session";
+import { portalHome, useSession, type SessionProfile } from "@/lib/session";
+
+type SignupRole = "passenger" | "driver";
 
 const searchSchema = z.object({
   role: z.enum(["passenger", "driver"]).catch("passenger"),
