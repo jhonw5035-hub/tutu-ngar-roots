@@ -22,9 +22,7 @@ export function BottomNav({ items }: { items: BottomNavItem[] }) {
                 aria-current={item.active ? "page" : undefined}
                 className={cn(
                   "flex min-h-14 w-full cursor-pointer flex-col items-center justify-center gap-1 py-2 text-xs font-medium transition-colors",
-                  item.active
-                    ? "text-primary"
-                    : "text-muted-foreground hover:text-foreground",
+                  item.active ? "text-primary" : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 <Icon className="size-5" />

@@ -90,7 +90,14 @@ function PassengerHome() {
       );
     }
     return list;
-  }, [pickupCoord, destinationCoord, pickupHints, destHints, booking.pickupText, booking.destinationText]);
+  }, [
+    pickupCoord,
+    destinationCoord,
+    pickupHints,
+    destHints,
+    booking.pickupText,
+    booking.destinationText,
+  ]);
 
   const previewLine = useMemo<LatLng[] | undefined>(
     () =>
@@ -118,7 +125,9 @@ function PassengerHome() {
               placeholder="Search a place — e.g. Hledan Junction"
               value={booking.pickupText}
               onValueChange={(pickupText) => booking.set({ pickupText, pickupCoord: null })}
-              onPick={(p) => booking.set({ pickupText: p.label, pickupCoord: { lat: p.lat, lng: p.lng } })}
+              onPick={(p) =>
+                booking.set({ pickupText: p.label, pickupCoord: { lat: p.lat, lng: p.lng } })
+              }
               onSuggestions={onPickupSuggestions}
               showCurrentLocation
             />
@@ -136,7 +145,10 @@ function PassengerHome() {
                 booking.set({ destinationText, destinationCoord: null })
               }
               onPick={(p) =>
-                booking.set({ destinationText: p.label, destinationCoord: { lat: p.lat, lng: p.lng } })
+                booking.set({
+                  destinationText: p.label,
+                  destinationCoord: { lat: p.lat, lng: p.lng },
+                })
               }
               onSuggestions={onDestSuggestions}
             />
@@ -149,7 +161,6 @@ function PassengerHome() {
           ) : null}
         </CardContent>
       </Card>
-
 
       <section className="mt-6 space-y-3">
         <h2 className="text-lg">When are you travelling?</h2>

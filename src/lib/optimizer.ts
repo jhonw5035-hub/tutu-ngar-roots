@@ -22,8 +22,7 @@ export function haversineKm(
   const dLng = ((b.lng - a.lng) * Math.PI) / 180;
   const la1 = (a.lat * Math.PI) / 180;
   const la2 = (b.lat * Math.PI) / 180;
-  const h =
-    Math.sin(dLat / 2) ** 2 + Math.sin(dLng / 2) ** 2 * Math.cos(la1) * Math.cos(la2);
+  const h = Math.sin(dLat / 2) ** 2 + Math.sin(dLng / 2) ** 2 * Math.cos(la1) * Math.cos(la2);
   return 2 * R * Math.asin(Math.sqrt(h));
 }
 
@@ -77,7 +76,8 @@ export function planGroups(
     let bestNeighbours = -1;
     for (const candidate of remaining) {
       const n = remaining.filter(
-        (o) => o.id !== candidate.id && haversineKm(coordsOf(candidate), coordsOf(o)) <= MAX_CLUSTER_KM,
+        (o) =>
+          o.id !== candidate.id && haversineKm(coordsOf(candidate), coordsOf(o)) <= MAX_CLUSTER_KM,
       ).length;
       if (n > bestNeighbours) {
         bestNeighbours = n;

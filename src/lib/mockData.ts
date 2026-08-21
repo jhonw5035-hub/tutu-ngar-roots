@@ -104,23 +104,126 @@ export const routes: Route[] = [
 
 export const pickupPoints: PickupPoint[] = [
   // North Okkalapa ↔ Sule
-  { id: "p-nsu-1", routeId: "r-nokk-sule", name: "North Okkalapa Market", lat: 16.9006, lng: 96.172, sequence: 1, isDestination: false },
-  { id: "p-nsu-2", routeId: "r-nokk-sule", name: "Thudhamma Road", lat: 16.8688, lng: 96.1662, sequence: 2, isDestination: false },
-  { id: "p-nsu-3", routeId: "r-nokk-sule", name: "Yankin Centre", lat: 16.8382, lng: 96.1596, sequence: 3, isDestination: true },
-  { id: "p-nsu-4", routeId: "r-nokk-sule", name: "Tamwe Junction", lat: 16.8021, lng: 96.1601, sequence: 4, isDestination: true },
-  { id: "p-nsu-5", routeId: "r-nokk-sule", name: "Sule Pagoda", lat: 16.776, lng: 96.1595, sequence: 5, isDestination: true },
+  {
+    id: "p-nsu-1",
+    routeId: "r-nokk-sule",
+    name: "North Okkalapa Market",
+    lat: 16.9006,
+    lng: 96.172,
+    sequence: 1,
+    isDestination: false,
+  },
+  {
+    id: "p-nsu-2",
+    routeId: "r-nokk-sule",
+    name: "Thudhamma Road",
+    lat: 16.8688,
+    lng: 96.1662,
+    sequence: 2,
+    isDestination: false,
+  },
+  {
+    id: "p-nsu-3",
+    routeId: "r-nokk-sule",
+    name: "Yankin Centre",
+    lat: 16.8382,
+    lng: 96.1596,
+    sequence: 3,
+    isDestination: true,
+  },
+  {
+    id: "p-nsu-4",
+    routeId: "r-nokk-sule",
+    name: "Tamwe Junction",
+    lat: 16.8021,
+    lng: 96.1601,
+    sequence: 4,
+    isDestination: true,
+  },
+  {
+    id: "p-nsu-5",
+    routeId: "r-nokk-sule",
+    name: "Sule Pagoda",
+    lat: 16.776,
+    lng: 96.1595,
+    sequence: 5,
+    isDestination: true,
+  },
   // Inya Road ↔ Sanchaung
-  { id: "p-isa-1", routeId: "r-inya-sanchaung", name: "Inya Road (Inya Lake)", lat: 16.8283, lng: 96.1462, sequence: 1, isDestination: false },
-  { id: "p-isa-2", routeId: "r-inya-sanchaung", name: "Inya Myaing", lat: 16.8206, lng: 96.1399, sequence: 2, isDestination: false },
-  { id: "p-isa-3", routeId: "r-inya-sanchaung", name: "Hledan Junction", lat: 16.8149, lng: 96.1358, sequence: 3, isDestination: true },
-  { id: "p-isa-4", routeId: "r-inya-sanchaung", name: "Sanchaung Market", lat: 16.8094, lng: 96.133, sequence: 4, isDestination: true },
+  {
+    id: "p-isa-1",
+    routeId: "r-inya-sanchaung",
+    name: "Inya Road (Inya Lake)",
+    lat: 16.8283,
+    lng: 96.1462,
+    sequence: 1,
+    isDestination: false,
+  },
+  {
+    id: "p-isa-2",
+    routeId: "r-inya-sanchaung",
+    name: "Inya Myaing",
+    lat: 16.8206,
+    lng: 96.1399,
+    sequence: 2,
+    isDestination: false,
+  },
+  {
+    id: "p-isa-3",
+    routeId: "r-inya-sanchaung",
+    name: "Hledan Junction",
+    lat: 16.8149,
+    lng: 96.1358,
+    sequence: 3,
+    isDestination: true,
+  },
+  {
+    id: "p-isa-4",
+    routeId: "r-inya-sanchaung",
+    name: "Sanchaung Market",
+    lat: 16.8094,
+    lng: 96.133,
+    sequence: 4,
+    isDestination: true,
+  },
   // North Okkalapa ↔ South Okkalapa
-  { id: "p-nso-1", routeId: "r-nokk-sokk", name: "North Okkalapa Market", lat: 16.9006, lng: 96.172, sequence: 1, isDestination: false },
-  { id: "p-nso-2", routeId: "r-nokk-sokk", name: "Waizayanta Road", lat: 16.8836, lng: 96.1786, sequence: 2, isDestination: false },
-  { id: "p-nso-3", routeId: "r-nokk-sokk", name: "Thingangyun", lat: 16.8681, lng: 96.1841, sequence: 3, isDestination: true },
-  { id: "p-nso-4", routeId: "r-nokk-sokk", name: "South Okkalapa Market", lat: 16.854, lng: 96.1885, sequence: 4, isDestination: true },
+  {
+    id: "p-nso-1",
+    routeId: "r-nokk-sokk",
+    name: "North Okkalapa Market",
+    lat: 16.9006,
+    lng: 96.172,
+    sequence: 1,
+    isDestination: false,
+  },
+  {
+    id: "p-nso-2",
+    routeId: "r-nokk-sokk",
+    name: "Waizayanta Road",
+    lat: 16.8836,
+    lng: 96.1786,
+    sequence: 2,
+    isDestination: false,
+  },
+  {
+    id: "p-nso-3",
+    routeId: "r-nokk-sokk",
+    name: "Thingangyun",
+    lat: 16.8681,
+    lng: 96.1841,
+    sequence: 3,
+    isDestination: true,
+  },
+  {
+    id: "p-nso-4",
+    routeId: "r-nokk-sokk",
+    name: "South Okkalapa Market",
+    lat: 16.854,
+    lng: 96.1885,
+    sequence: 4,
+    isDestination: true,
+  },
 ];
-
 
 export const timeSlots: TimeSlot[] = routes.flatMap((r) => [
   { id: `${r.id}-t1`, routeId: r.id, time: "08:00", seatsFilled: 2, seatsCapacity: 4 },
@@ -201,12 +304,9 @@ export const pastTrips: PastTrip[] = [
   },
 ];
 
-
 export const getRoute = (id: string | null) => routes.find((r) => r.id === id) ?? null;
 export const getPointsForRoute = (routeId: string | null) =>
-  pickupPoints
-    .filter((p) => p.routeId === routeId)
-    .sort((a, b) => a.sequence - b.sequence);
+  pickupPoints.filter((p) => p.routeId === routeId).sort((a, b) => a.sequence - b.sequence);
 export const getPoint = (id: string | null) => pickupPoints.find((p) => p.id === id) ?? null;
 export const getSlotsForRoute = (routeId: string | null) =>
   timeSlots.filter((s) => s.routeId === routeId);
@@ -232,8 +332,7 @@ function haversineKm(a: LatLng, b: LatLng) {
   const dLng = ((b[1] - a[1]) * Math.PI) / 180;
   const lat1 = (a[0] * Math.PI) / 180;
   const lat2 = (b[0] * Math.PI) / 180;
-  const h =
-    Math.sin(dLat / 2) ** 2 + Math.sin(dLng / 2) ** 2 * Math.cos(lat1) * Math.cos(lat2);
+  const h = Math.sin(dLat / 2) ** 2 + Math.sin(dLng / 2) ** 2 * Math.cos(lat1) * Math.cos(lat2);
   return 2 * R * Math.asin(Math.sqrt(h));
 }
 
@@ -324,7 +423,6 @@ export const upcomingTrip = {
   time: "08:15",
   fare: 3000,
 };
-
 
 /** Great-circle distance in km between two [lat, lng] pairs. */
 export const distanceKm = (a: LatLng, b: LatLng) => haversineKm(a, b);
@@ -450,9 +548,7 @@ export function nearestCorridor(
     return best;
   }
 
-  const byText = routes.find(
-    (r) => matchesArea(r, pickupText) && matchesArea(r, destinationText),
-  );
+  const byText = routes.find((r) => matchesArea(r, pickupText) && matchesArea(r, destinationText));
   if (!byText || (!pickupText.trim() && !destinationText.trim())) return null;
   return { route: byText, pickupKm: 0, destinationKm: 0 };
 }
@@ -487,7 +583,6 @@ export function getDepartures(
   const pool = target.flatMap(build);
   return pool.sort((a, b) => a.slot.time.localeCompare(b.slot.time)).slice(0, 5);
 }
-
 
 export const getSlotDetail = (slotId: string | null) => {
   const slot = timeSlots.find((s) => s.id === slotId);

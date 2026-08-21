@@ -55,11 +55,7 @@ export function ProfilePhotoField({
         )}
       >
         {value ? (
-          <img
-            src={value}
-            alt="Your profile photo preview"
-            className="size-full object-cover"
-          />
+          <img src={value} alt="Your profile photo preview" className="size-full object-cover" />
         ) : (
           <span className="flex size-full items-center justify-center bg-primary text-lg font-bold text-primary-foreground">
             {initials}
@@ -72,9 +68,7 @@ export function ProfilePhotoField({
 
       <div className="min-w-0">
         <p className="text-sm font-medium">Profile photo (optional)</p>
-        <p className="text-xs text-muted-foreground">
-          Helps your driver recognize you at pickup.
-        </p>
+        <p className="text-xs text-muted-foreground">Helps your driver recognize you at pickup.</p>
         {value ? (
           <button
             type="button"

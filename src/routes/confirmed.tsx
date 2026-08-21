@@ -11,13 +11,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { SeatBar } from "@/components/booking/seat-bar";
 import { resolveSlot } from "@/lib/departure";
 import { useBooking } from "@/lib/booking-store";
-import {
-  formatTime12,
-  getPoint,
-  getPointsForRoute,
-  getRoute,
-  mockDriver,
-} from "@/lib/mockData";
+import { formatTime12, getPoint, getPointsForRoute, getRoute, mockDriver } from "@/lib/mockData";
 import { MapView } from "@/components/map/map-view";
 import { TripChat } from "@/components/chat/trip-chat";
 import { useDriverLocation } from "@/lib/driver-sim";
@@ -35,7 +29,10 @@ export const Route = createFileRoute("/confirmed")({
           "Your Yangon shared seat is confirmed: pickup stop, departure time, driver and plate, with live tracking on demand.",
       },
       { property: "og:title", content: "You're Booked — Tu Tu Ngar" },
-      { property: "og:description", content: "Shared seat confirmed with driver and pickup details." },
+      {
+        property: "og:description",
+        content: "Shared seat confirmed with driver and pickup details.",
+      },
     ],
   }),
   component: ConfirmationPage,
@@ -102,7 +99,10 @@ function ConfirmationPage() {
             <Badge variant="confirmed">Confirmed</Badge>
           </div>
           <p className="text-muted-foreground">
-            Departs <span className="num text-foreground">{slot ? formatTime12(slot.time) : "8:00 AM"}</span>{" "}
+            Departs{" "}
+            <span className="num text-foreground">
+              {slot ? formatTime12(slot.time) : "8:00 AM"}
+            </span>{" "}
             · <span className="capitalize">{booking.day}</span>
           </p>
           <p className="flex items-center gap-1.5 text-muted-foreground">
@@ -186,9 +186,7 @@ function ConfirmationPage() {
                   routes={[]}
                   points={[]}
                   vehicle={
-                    driverLive.position
-                      ? [driverLive.position.lat, driverLive.position.lng]
-                      : null
+                    driverLive.position ? [driverLive.position.lat, driverLive.position.lng] : null
                   }
                   vehicleLabel={
                     live.group?.eta_to_pickup ? `Driver · ${live.group.eta_to_pickup}` : "Driver"
@@ -217,9 +215,7 @@ function ConfirmationPage() {
               className="mt-4"
               groupId={live.group.id}
               senderId={userId}
-              senderName={
-                profile?.firstName || profile?.fullName?.split(" ")[0] || "Passenger"
-              }
+              senderName={profile?.firstName || profile?.fullName?.split(" ")[0] || "Passenger"}
               senderRole="passenger"
             />
           ) : null}

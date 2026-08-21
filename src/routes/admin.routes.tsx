@@ -54,7 +54,8 @@ function RoutesPage() {
     const id = window.setInterval(() => {
       setTraffic((prev) => {
         const next = { ...prev };
-        for (const r of corridors) if (Math.random() < 0.6) next[r.id] = shift(prev[r.id] ?? "light");
+        for (const r of corridors)
+          if (Math.random() < 0.6) next[r.id] = shift(prev[r.id] ?? "light");
         return next;
       });
     }, 20000);
@@ -76,8 +77,16 @@ function RoutesPage() {
     void load();
     const channel = supabase
       .channel("admin-routes")
-      .on("postgres_changes", { event: "*", schema: "public", table: "bookings" }, () => void load())
-      .on("postgres_changes", { event: "*", schema: "public", table: "trip_groups" }, () => void load())
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "bookings" },
+        () => void load(),
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "trip_groups" },
+        () => void load(),
+      )
       .subscribe();
     return () => {
       void supabase.removeChannel(channel);
@@ -106,8 +115,8 @@ function RoutesPage() {
     <AdminShell>
       <h1 className="text-2xl font-extrabold tracking-tight">Routes</h1>
       <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-        Corridor definitions and today&rsquo;s live load. Traffic shading is simulated for the demo —
-        it is not real traffic data.
+        Corridor definitions and today&rsquo;s live load. Traffic shading is simulated for the demo
+        — it is not real traffic data.
       </p>
 
       <section className="mt-5 overflow-hidden rounded-xl border border-border bg-card">

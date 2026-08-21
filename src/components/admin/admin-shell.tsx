@@ -62,7 +62,9 @@ export function AdminShell({ children }: { children: ReactNode }) {
                 inactiveProps={{ className: "text-muted-foreground" }}
                 className="shrink-0 rounded-lg px-3 py-1.5 text-xs transition-colors"
               >
-                <span aria-hidden className="mr-1">{item.icon}</span>
+                <span aria-hidden className="mr-1">
+                  {item.icon}
+                </span>
                 {item.label}
               </Link>
             ))}

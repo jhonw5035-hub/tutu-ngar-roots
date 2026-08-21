@@ -105,11 +105,7 @@ function DriverHome() {
   const current = statusMeta[status];
 
   return (
-    <AppShell
-      portal="driver"
-      navItems={navItems}
-      headerActions={<NotificationBell />}
-    >
+    <AppShell portal="driver" navItems={navItems} headerActions={<NotificationBell />}>
       <div className="space-y-6">
         {/* Status indicator */}
         <div className="flex flex-col items-center text-center transition-all duration-300 ease-out">
@@ -174,7 +170,8 @@ function DriverHome() {
                 </p>
                 <p className="flex items-center gap-2">
                   <Users className="size-4 text-primary" />
-                  {trip?.bookings.length ?? 0} passengers · {profile?.seatCapacity ?? 4}-seat vehicle
+                  {trip?.bookings.length ?? 0} passengers · {profile?.seatCapacity ?? 4}-seat
+                  vehicle
                 </p>
               </div>
               {awaitingAccept ? (
@@ -293,7 +290,6 @@ function DriverHome() {
               : "Going online makes you eligible for AI trip assignment."}
           </p>
         </div>
-
       </div>
     </AppShell>
   );

@@ -98,9 +98,7 @@ function AvailableRides() {
         ) : !corridor || departures.length === 0 ? (
           <EmptyState hasCorridor={Boolean(corridor)} />
         ) : (
-          departures.map((d) => (
-            <DepartureCard key={d.groupId} departure={d} corridor={corridor} />
-          ))
+          departures.map((d) => <DepartureCard key={d.groupId} departure={d} corridor={corridor} />)
         )}
       </div>
     </AppShell>
@@ -126,13 +124,7 @@ function EmptyState({ hasCorridor }: { hasCorridor: boolean }) {
   );
 }
 
-function DepartureCard({
-  departure,
-  corridor,
-}: {
-  departure: LiveDeparture;
-  corridor: Corridor;
-}) {
+function DepartureCard({ departure, corridor }: { departure: LiveDeparture; corridor: Corridor }) {
   const navigate = useNavigate();
   const booking = useBooking();
   const seatsLeft = Math.max(0, departure.seatsCapacity - departure.seatsFilled);

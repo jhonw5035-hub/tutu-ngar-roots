@@ -32,7 +32,6 @@ export type BookingDraft = {
   liveDeparture: LiveDeparture | null;
 };
 
-
 type BookingValue = BookingDraft & {
   set: (patch: Partial<BookingDraft>) => void;
   reset: () => void;

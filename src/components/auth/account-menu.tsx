@@ -46,7 +46,12 @@ export function AccountMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label="Account menu" className="relative rounded-full">
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label="Account menu"
+          className="relative rounded-full"
+        >
           <Avatar className="size-8">
             {profile?.photoDataUrl ? (
               <AvatarImage src={profile.photoDataUrl} alt={displayName} />

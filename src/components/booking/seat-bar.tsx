@@ -19,10 +19,7 @@ export function SeatBar({
       {Array.from({ length: capacity }, (_, i) => (
         <span
           key={i}
-          className={cn(
-            "h-1.5 flex-1 rounded-full",
-            i < filled ? "bg-primary" : "bg-muted",
-          )}
+          className={cn("h-1.5 flex-1 rounded-full", i < filled ? "bg-primary" : "bg-muted")}
         />
       ))}
     </div>

@@ -22,7 +22,8 @@ export const Route = createFileRoute("/admin/ai-matching")({
       { property: "og:title", content: "AI Matching Center — Tu Tu Ngar Admin" },
       {
         property: "og:description",
-        content: "Cluster waiting passengers into optimized shared trips with recommended meeting points.",
+        content:
+          "Cluster waiting passengers into optimized shared trips with recommended meeting points.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -76,8 +77,10 @@ function AiMatchingPage() {
     void loadPending();
     const channel = supabase
       .channel("admin-pending-bookings")
-      .on("postgres_changes", { event: "*", schema: "public", table: "bookings" }, () =>
-        void loadPending(),
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "bookings" },
+        () => void loadPending(),
       )
       .subscribe();
     return () => {
@@ -175,7 +178,10 @@ function AiMatchingPage() {
           <p className="text-muted-foreground">Analyzing bookings…</p>
           <ul className="mt-3 space-y-1.5">
             {optimizationSteps.slice(0, visibleSteps).map((step) => (
-              <li key={step} className="flex animate-in fade-in slide-in-from-left-2 items-center gap-2">
+              <li
+                key={step}
+                className="flex animate-in fade-in slide-in-from-left-2 items-center gap-2"
+              >
                 <Check className="size-4 text-emerald-500" />
                 {step}
               </li>
@@ -190,9 +196,7 @@ function AiMatchingPage() {
       {/* Real groups */}
       {phase === "done" ? (
         <section className="mt-4 space-y-3">
-          <h2 className="text-base font-bold tracking-tight">
-            Optimized groups ({groups.length})
-          </h2>
+          <h2 className="text-base font-bold tracking-tight">Optimized groups ({groups.length})</h2>
           {groups.map((g, index) => (
             <div key={g.id} className="rounded-xl border border-border bg-card p-4">
               <div className="flex flex-wrap items-center gap-2">
