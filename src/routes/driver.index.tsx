@@ -12,9 +12,12 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { MapView } from "@/components/map/map-view";
 import { TripChat } from "@/components/chat/trip-chat";
 import { NORTH_OKKALAPA, useDriverSimulation } from "@/lib/driver-sim";
+import { useRoadPath } from "@/lib/road-path";
+import type { LatLng } from "@/lib/mockData";
 import { useSession } from "@/lib/session";
 import { acceptTrip, useAssignedTrip, useDriverStatus } from "@/lib/driver-live";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/driver/")({
   head: () => ({
@@ -42,6 +45,7 @@ function formatMmk(amount: number) {
 function DriverHome() {
   const { profile, userId } = useSession();
   const navItems = useDriverNav("home");
+  const t = useT();
 
   // Real availability + dispatch, live from Supabase.
   const { isOnline, saving, setOnline } = useDriverStatus(userId);
@@ -72,7 +76,17 @@ function DriverHome() {
 
   // DEMO: only the driver's position is simulated (starting in North
   // Okkalapa). Passenger locations come from real device geolocation.
-  const sim = useDriverSimulation(userId, pickupTarget, etaMinutes);
+  // One shared source of route geometry: OSRM road-snapped path from the
+  // driver's start point to the group's pickup point.
+  const routeToPickup = useRoadPath(
+    pickupTarget
+      ? ([
+          [NORTH_OKKALAPA.lat, NORTH_OKKALAPA.lng],
+          [pickupTarget.lat, pickupTarget.lng],
+        ] as LatLng[])
+      : null,
+  );
+  const sim = useDriverSimulation(userId, pickupTarget, etaMinutes, NORTH_OKKALAPA, routeToPickup);
 
   const displayName = profile?.firstName || profile?.fullName || "Driver";
   const earnings = 35000;
@@ -85,7 +99,7 @@ function DriverHome() {
     online: {
       dot: "bg-emerald-500",
       ring: "ring-emerald-500/20",
-      label: "Online",
+      label: t("online"),
       sub: "You're ready for trips",
     },
     "on-trip": {
@@ -97,7 +111,7 @@ function DriverHome() {
     offline: {
       dot: "bg-slate-400",
       ring: "ring-slate-400/20",
-      label: "Offline",
+      label: t("offline"),
       sub: "Not accepting trips",
     },
   } as const;
@@ -221,6 +235,7 @@ function DriverHome() {
                     points={[]}
                     vehicle={sim.position ? [sim.position.lat, sim.position.lng] : null}
                     vehicleLabel="You"
+                    line={routeToPickup}
                     userLocation={pickupTarget ? [pickupTarget.lat, pickupTarget.lng] : null}
                     fitTo={
                       pickupTarget

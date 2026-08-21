@@ -17,6 +17,7 @@ import { useSession } from "@/lib/session";
 import { useMyLiveBooking, getCurrentPosition } from "@/lib/live";
 import { useDriverLocation } from "@/lib/driver-sim";
 import { startDemoTrip } from "@/lib/demo-trip.functions";
+import { useRoadPath } from "@/lib/road-path";
 import {
   distanceKm,
   getPointsForRoute,
@@ -25,7 +26,6 @@ import {
   pickupCandidates,
   type LatLng,
 } from "@/lib/mockData";
-
 
 export const Route = createFileRoute("/trip")({
   head: () => ({
@@ -106,7 +106,6 @@ function TripInProgress() {
   /** Demo progress: how many stops the van has already served. */
   const [progress, setProgress] = useState(0);
 
-
   /**
    * Single source of truth for both the map markers and the checklist below:
    * the real trip_groups pickup point plus the ordered trip_group_members
@@ -160,12 +159,14 @@ function TripInProgress() {
     [stops, nextStop],
   );
 
-  const line = useMemo<LatLng[] | undefined>(() => {
+  // Shared source: the stop sequence is snapped to real roads via OSRM.
+  const stopWaypoints = useMemo<LatLng[] | null>(() => {
     const pts = stops
       .filter((s) => s.lat != null && s.lng != null)
       .map((s) => [s.lat as number, s.lng as number] as LatLng);
-    return pts.length > 1 ? pts : undefined;
+    return pts.length > 1 ? pts : null;
   }, [stops]);
+  const line = useRoadPath(stopWaypoints);
 
   const remainingKm =
     vehicle && nextStop?.lat != null && nextStop.lng != null
@@ -195,7 +196,6 @@ function TripInProgress() {
       </AppShell>
     );
   }
-
 
   return (
     <AppShell portal="passenger" navItems={navItems}>
@@ -324,8 +324,6 @@ function TripInProgress() {
           senderRole="passenger"
         />
       ) : null}
-
-
 
       <div className="safe-bottom fixed inset-x-0 bottom-14 z-30 border-t border-border bg-background/95 px-4 py-3 backdrop-blur">
         <div className="mx-auto w-full max-w-3xl">

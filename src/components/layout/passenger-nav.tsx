@@ -1,6 +1,7 @@
 import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { CalendarClock, Home, UserRound } from "lucide-react";
 import type { BottomNavItem } from "./bottom-nav";
+import { useT } from "@/lib/i18n";
 
 type Tab = "home" | "trips" | "account";
 
@@ -8,25 +9,26 @@ type Tab = "home" | "trips" | "account";
 export function usePassengerNav(activeTab?: Tab): BottomNavItem[] {
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const t = useT();
 
   const isActive = (tab: Tab, paths: string[]) =>
     activeTab ? activeTab === tab : paths.includes(pathname);
 
   return [
     {
-      label: "Home",
+      label: t("home"),
       icon: Home,
       active: isActive("home", ["/home"]),
       onSelect: () => navigate({ to: "/home" }),
     },
     {
-      label: "Trips",
+      label: t("trips"),
       icon: CalendarClock,
       active: isActive("trips", ["/trips", "/rides", "/pay", "/confirmed", "/trip"]),
       onSelect: () => navigate({ to: "/trips" }),
     },
     {
-      label: "Profile",
+      label: t("profile"),
       icon: UserRound,
       active: isActive("account", ["/account"]),
       onSelect: () => navigate({ to: "/account" }),

@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Wordmark } from "@/components/layout/wordmark";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { LanguageToggle } from "@/components/layout/language-toggle";
 
 import { portalHome, useSession } from "@/lib/session";
 import { provisionDemoAccounts } from "@/lib/demo.functions";
@@ -75,7 +76,10 @@ function LoginPage() {
     <div className="flex min-h-screen flex-col bg-background text-foreground">
       <div className="safe-top flex items-center justify-between px-4 py-4">
         <Wordmark />
-        <ThemeToggle />
+        <>
+          <LanguageToggle />
+          <ThemeToggle />
+        </>
       </div>
 
       <main className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center px-5 pb-16">

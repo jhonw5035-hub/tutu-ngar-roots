@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { AdminShell } from "@/components/admin/admin-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MapView } from "@/components/map/map-view";
+import { RouteToPickupMap } from "@/components/map/route-to-pickup-map";
 import { supabase } from "@/integrations/supabase/client";
 import {
   displayName,
@@ -149,26 +149,19 @@ function VehiclesPage() {
 
               {routeFor === d.id && trip ? (
                 <div className="mt-3 overflow-hidden rounded-lg border border-border">
-                  <MapView
+                  <RouteToPickupMap
                     className="h-56"
-                    routes={[]}
-                    {...(trip.pickup_lat != null && trip.pickup_lng != null
-                      ? {
-                          fitTo: [[Number(trip.pickup_lat), Number(trip.pickup_lng)]] as [
-                            number,
-                            number,
-                          ][],
-                        }
-                      : {})}
-                    {...(hasLocation
-                      ? {
-                          vehicle: [Number(s?.current_lat), Number(s?.current_lng)] as [
-                            number,
-                            number,
-                          ],
-                          vehicleLabel: d.plate_number ?? "Driver",
-                        }
-                      : {})}
+                    vehicle={
+                      hasLocation
+                        ? ([Number(s?.current_lat), Number(s?.current_lng)] as [number, number])
+                        : null
+                    }
+                    pickup={
+                      trip.pickup_lat != null && trip.pickup_lng != null
+                        ? ([Number(trip.pickup_lat), Number(trip.pickup_lng)] as [number, number])
+                        : null
+                    }
+                    vehicleLabel={d.plate_number ?? "Driver"}
                   />
                 </div>
               ) : null}

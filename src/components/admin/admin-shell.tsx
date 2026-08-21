@@ -4,6 +4,7 @@ import { Link } from "@tanstack/react-router";
 import { AccountMenu } from "@/components/auth/account-menu";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Wordmark } from "@/components/layout/wordmark";
+import { LanguageToggle } from "@/components/layout/language-toggle";
 
 const navItems = [
   { to: "/admin", label: "Dashboard", icon: "📊" },
@@ -26,8 +27,9 @@ export function AdminShell({ children }: { children: ReactNode }) {
             </span>
           </div>
           <div className="flex items-center gap-1">
-            <ThemeToggle />
+            <LanguageToggle />
             <AccountMenu />
+            <ThemeToggle />
           </div>
         </div>
       </header>

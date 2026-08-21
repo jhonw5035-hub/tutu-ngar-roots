@@ -21,14 +21,9 @@ import { useBooking } from "@/lib/booking-store";
 import type { Suggestion } from "@/lib/geocode";
 import type { MapMarker } from "@/components/map/route-map";
 import type { LatLng } from "@/lib/mockData";
-import {
-  formatTime12,
-  getSlotDetails,
-  routes,
-  timeWindows,
-  trustSignals,
-} from "@/lib/mockData";
-
+import { useRoadPath } from "@/lib/road-path";
+import { useT } from "@/lib/i18n";
+import { formatTime12, getSlotDetails, routes, timeWindows, trustSignals } from "@/lib/mockData";
 
 export const Route = createFileRoute("/home")({
   head: () => ({
@@ -53,6 +48,7 @@ function PassengerHome() {
   const navItems = usePassengerNav("home");
   const navigate = useNavigate();
   const booking = useBooking();
+  const t = useT();
   const [pickupHints, setPickupHints] = useState<Suggestion[]>([]);
   const [destHints, setDestHints] = useState<Suggestion[]>([]);
 
@@ -106,26 +102,28 @@ function PassengerHome() {
     booking.destinationText,
   ]);
 
-  const previewLine = useMemo<LatLng[] | undefined>(
+  // Shared road-snapped geometry: never draw a raw 2-point straight line.
+  const previewWaypoints = useMemo<LatLng[] | null>(
     () =>
       pickupCoord && destinationCoord
         ? [
             [pickupCoord.lat, pickupCoord.lng],
             [destinationCoord.lat, destinationCoord.lng],
           ]
-        : undefined,
+        : null,
     [pickupCoord, destinationCoord],
   );
+  const previewLine = useRoadPath(previewWaypoints);
 
   return (
     <AppShell portal="passenger" navItems={navItems}>
-      <h1 className="text-2xl">Where are you going?</h1>
+      <h1 className="text-2xl">{t("whereAreYouGoing")}</h1>
 
       <Card className="mt-4 shadow-card">
         <CardContent className="space-y-4 pt-6">
           <div className="space-y-1.5">
             <Label htmlFor="pickup">
-              <MapPin className="size-4 text-primary" /> Pickup point
+              <MapPin className="size-4 text-primary" /> {t("pickupPoint")}
             </Label>
             <LocationAutocomplete
               id="pickup"
@@ -142,7 +140,7 @@ function PassengerHome() {
 
           <div className="space-y-1.5">
             <Label htmlFor="destination">
-              <Flag className="size-4 text-muted-foreground" /> Destination
+              <Flag className="size-4 text-muted-foreground" /> {t("destination")}
             </Label>
             <LocationAutocomplete
               id="destination"
@@ -171,10 +169,8 @@ function PassengerHome() {
 
       <section className="mt-6 space-y-3">
         <div className="space-y-1">
-          <h2 className="text-lg">Or choose a fixed route</h2>
-          <p className="text-sm text-muted-foreground">
-            Tu Tu Ngar runs on fixed shared routes — pick one to see available rides instantly.
-          </p>
+          <h2 className="text-lg">{t("orChooseFixedRoute")}</h2>
+          <p className="text-sm text-muted-foreground">{t("fixedRouteSubtext")}</p>
         </div>
 
         <div className="space-y-3">
@@ -205,16 +201,16 @@ function PassengerHome() {
                   <div className="space-y-1">
                     <p className="text-base font-semibold">{route.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {next ? `Next departure ${formatTime12(next.time)} · ` : ""}
-                      K{route.fare.toLocaleString()} per seat
+                      {next ? `Next departure ${formatTime12(next.time)} · ` : ""}K
+                      {route.fare.toLocaleString()} per seat
                     </p>
                   </div>
                   <span className="shrink-0 rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-primary">
-                    Fixed route
+                    {t("fixedRoute")}
                   </span>
                 </div>
                 <span className="mt-3 flex items-center gap-1 text-sm font-semibold text-primary">
-                  See available rides <ArrowRight className="size-4" />
+                  {t("seeAvailableRides")} <ArrowRight className="size-4" />
                 </span>
               </button>
             );
@@ -223,8 +219,7 @@ function PassengerHome() {
       </section>
 
       <section className="mt-6 space-y-3">
-
-        <h2 className="text-lg">When are you travelling?</h2>
+        <h2 className="text-lg">{t("whenAreYouTravelling")}</h2>
         <div className="flex gap-2">
           {(["today", "tomorrow"] as const).map((d) => (
             <button
@@ -270,7 +265,7 @@ function PassengerHome() {
           navigate({ to: "/rides" });
         }}
       >
-        Find Shared Rides <ArrowRight className="size-4" />
+        {t("findSharedRides")} <ArrowRight className="size-4" />
       </Button>
 
       <ul className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground">

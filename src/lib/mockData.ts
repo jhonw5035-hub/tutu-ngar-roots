@@ -625,7 +625,6 @@ export function nearestPickupCandidate(routeId: string, location: LatLng | null)
   );
 }
 
-
 /**
  * Nearest pickup point on a route, using the shared Haversine helper.
  * Applied silently on Ride Details — the passenger never picks a stop.

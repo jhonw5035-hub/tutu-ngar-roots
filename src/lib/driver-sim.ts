@@ -2,6 +2,8 @@ import * as React from "react";
 
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
+import { pointAlongPath } from "@/lib/road-path";
+import type { LatLng } from "@/lib/mockData";
 
 /**
  * DEMO ONLY — simulated driver movement.
@@ -42,14 +44,17 @@ export type DriverSim = {
 };
 
 /**
- * Steps the driver marker along a straight path from North Okkalapa to the
- * pickup point over roughly `etaMinutes`, writing each step to Supabase.
+ * Steps the driver marker toward the pickup point over roughly `etaMinutes`,
+ * writing each step to Supabase. When a road-snapped `path` is supplied (from
+ * `useRoadPath`), the marker follows that real street geometry instead of
+ * interpolating a straight line between the two endpoints.
  */
 export function useDriverSimulation(
   driverId: string | null,
   target: { lat: number; lng: number } | null,
   etaMinutes = 8,
   start: { lat: number; lng: number } = NORTH_OKKALAPA,
+  path?: LatLng[] | undefined,
 ): DriverSim {
   const STEPS = 20;
   const intervalMs = Math.max(800, (etaMinutes * 60 * 1000) / STEPS);
@@ -60,11 +65,15 @@ export function useDriverSimulation(
   const position = React.useMemo(() => {
     if (!target) return null;
     const t = Math.min(1, progress / STEPS);
+    if (path && path.length > 1) {
+      const p = pointAlongPath(path, t);
+      if (p) return { lat: p[0], lng: p[1] };
+    }
     return {
       lat: start.lat + (target.lat - start.lat) * t,
       lng: start.lng + (target.lng - start.lng) * t,
     };
-  }, [progress, target, start.lat, start.lng]);
+  }, [progress, target, start.lat, start.lng, path]);
 
   // Push every simulated position to driver_status so passengers see it live.
   React.useEffect(() => {
