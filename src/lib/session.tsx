@@ -32,6 +32,7 @@ export type SignUpInput = {
   fullName: string;
   firstName: string;
   phone: string;
+  email?: string;
   password: string;
   gender?: string;
   plateNumber?: string;
