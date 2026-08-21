@@ -80,6 +80,7 @@ export default function RouteMap({
   vehicleLabel,
   fitTo,
   locateNonce = 0,
+  routeColors,
 }: RouteMapProps) {
   const bounds = useMemo<LatLng[]>(() => {
     if (fitTo?.length) return fitTo;
