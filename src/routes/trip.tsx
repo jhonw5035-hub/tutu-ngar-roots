@@ -315,6 +315,18 @@ function TripInProgress() {
         </CardContent>
       </Card>
 
+      {userId ? (
+        <TripChat
+          className="mt-4 mb-24"
+          groupId={group.id}
+          senderId={userId}
+          senderName={profile?.firstName || profile?.fullName || "You"}
+          senderRole="passenger"
+        />
+      ) : null}
+
+
+
       <div className="safe-bottom fixed inset-x-0 bottom-14 z-30 border-t border-border bg-background/95 px-4 py-3 backdrop-blur">
         <div className="mx-auto w-full max-w-3xl">
           <Button className="w-full" size="lg">
