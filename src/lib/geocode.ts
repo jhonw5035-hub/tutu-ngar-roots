@@ -60,7 +60,7 @@ export async function searchPlaces(query: string, signal?: AbortSignal): Promise
     `&viewbox=${YANGON_VIEWBOX}&bounded=1&limit=5&addressdetails=0` +
     `&accept-language=en&email=${encodeURIComponent(CONTACT)}`;
 
-  const res = await fetch(url, { signal, headers: { Accept: "application/json" } });
+  const res = await fetch(url, { signal: signal ?? null, headers: { Accept: "application/json" } });
   if (!res.ok) throw new Error(`Nominatim search failed (${res.status})`);
   const json = (await res.json()) as NominatimPlace[];
   const results = json.map(toSuggestion);
