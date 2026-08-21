@@ -96,9 +96,12 @@ export default function RouteMap({
       className="h-full w-full"
       attributionControl
     >
+      {/* CARTO Positron: free, no API key, muted base so the brand-orange
+          route line and markers stay legible on small mobile maps. */}
       <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+        subdomains={["a", "b", "c", "d"]}
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
       />
       <FitBounds positions={bounds} />
       <LocateHandler nonce={locateNonce} />
