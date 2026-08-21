@@ -1,5 +1,5 @@
 import { useNavigate } from "@tanstack/react-router";
-import { Bell, LogOut, UserRound } from "lucide-react";
+import { Bell, LogOut, Settings, UserRound } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,13 @@ const roleLabel = {
   admin: "Admin",
 } as const;
 
+/** Where "Settings" / "View profile" go for each signed-in role. */
+const settingsPath = {
+  passenger: "/account",
+  driver: "/driver/profile",
+  admin: "/account",
+} as const;
+
 function getInitials(name?: string | null) {
   if (!name) return "?";
   return name
@@ -34,11 +41,12 @@ export function AccountMenu() {
   const navigate = useNavigate();
 
   const displayName = profile?.firstName || profile?.fullName || "Guest";
+  const target = settingsPath[role ?? "passenger"];
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label="Account" className="relative rounded-full">
+        <Button variant="ghost" size="icon" aria-label="Account menu" className="relative rounded-full">
           <Avatar className="size-8">
             {profile?.photoDataUrl ? (
               <AvatarImage src={profile.photoDataUrl} alt={displayName} />
@@ -56,6 +64,15 @@ export function AccountMenu() {
             {role ? `Signed in as ${roleLabel[role]}` : "Not signed in"}
           </span>
         </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onSelect={() => void navigate({ to: target })}>
+          <UserRound className="size-4" />
+          View profile
+        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => void navigate({ to: target })}>
+          <Settings className="size-4" />
+          Settings
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onSelect={() => {
