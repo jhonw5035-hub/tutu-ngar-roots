@@ -184,7 +184,8 @@ function PassengerHome() {
             <SelectTrigger id="window" className="w-full">
               <SelectValue placeholder="Pick a window" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="max-h-72">
+              {/* 48 half-hour windows — scrollable picker, not a wall of buttons. */}
               {timeWindows.map((w) => (
                 <SelectItem key={w.id} value={w.id}>
                   {w.label}
