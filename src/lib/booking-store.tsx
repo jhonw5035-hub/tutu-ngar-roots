@@ -27,7 +27,10 @@ export type BookingDraft = {
   slotId: string | null;
   /** Confirmed pickup point on the selected route. */
   pickupPointId: string | null;
+  /** Live (Supabase-backed) departure the passenger tapped, when there is one. */
+  liveDeparture: LiveDeparture | null;
 };
+
 
 type BookingValue = BookingDraft & {
   set: (patch: Partial<BookingDraft>) => void;
