@@ -63,7 +63,7 @@ type Stop = {
 function TripInProgress() {
   const navItems = usePassengerNav("trips");
   const { profile, userId } = useSession();
-  const { booking, group, members, driver, refresh } = useMyLiveBooking(userId);
+  const { booking, group, members, driver, loading, refresh } = useMyLiveBooking(userId);
   const { position: driverPosition } = useDriverLocation(group?.driver_id ?? null);
   const runDemoTrip = useServerFn(startDemoTrip);
   const [demoLoading, setDemoLoading] = useState(false);
