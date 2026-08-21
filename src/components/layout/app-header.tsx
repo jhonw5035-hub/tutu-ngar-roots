@@ -26,10 +26,11 @@ export function AppHeader({
       <div className="mx-auto flex h-14 w-full max-w-3xl items-center justify-between gap-3 px-4">
         <div className="flex items-center gap-2">
           <Wordmark />
-          {portal ? <Badge variant="outline">{portalLabel[portal]}</Badge> : null}
+          {portal ? <Badge variant="outline">{t(portalLabel[portal])}</Badge> : null}
         </div>
         <div className="flex items-center gap-1">
           {actions}
+          <LanguageToggle />
           <ThemeToggle />
         </div>
       </div>
