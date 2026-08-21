@@ -119,7 +119,7 @@ function DriverHome() {
     <AppShell
       portal="driver"
       navItems={navItems}
-      {/* The shell already renders the single account avatar — only the bell here. */}
+      // The shell already renders the single account avatar — only the bell here.
       headerActions={<NotificationBell />}
     >
       <div className="space-y-6">
