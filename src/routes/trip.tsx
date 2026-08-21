@@ -1,19 +1,31 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
 import { Check, CircleDot, Flag, Navigation } from "lucide-react";
+import { toast } from "sonner";
 
 import { AppShell } from "@/components/layout/app-shell";
 import { usePassengerNav } from "@/components/layout/passenger-nav";
 import { MapView } from "@/components/map/map-view";
 import type { MapMarker } from "@/components/map/route-map";
+import { TripChat } from "@/components/chat/trip-chat";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useSession } from "@/lib/session";
-import { useMyLiveBooking } from "@/lib/live";
+import { useMyLiveBooking, getCurrentPosition } from "@/lib/live";
 import { useDriverLocation } from "@/lib/driver-sim";
-import { distanceKm, type LatLng } from "@/lib/mockData";
+import { startDemoTrip } from "@/lib/demo-trip.functions";
+import {
+  distanceKm,
+  getPointsForRoute,
+  getRoute,
+  nearestPickupCandidate,
+  pickupCandidates,
+  type LatLng,
+} from "@/lib/mockData";
+
 
 export const Route = createFileRoute("/trip")({
   head: () => ({
