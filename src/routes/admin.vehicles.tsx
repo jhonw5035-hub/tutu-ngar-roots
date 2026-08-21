@@ -5,7 +5,6 @@ import { toast } from "sonner";
 import { AdminShell } from "@/components/admin/admin-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MapView } from "@/components/map/map-view";
 import { RouteToPickupMap } from "@/components/map/route-to-pickup-map";
 import { supabase } from "@/integrations/supabase/client";
 import {

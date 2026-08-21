@@ -27,7 +27,6 @@ import {
   type LatLng,
 } from "@/lib/mockData";
 
-
 export const Route = createFileRoute("/trip")({
   head: () => ({
     meta: [
@@ -106,7 +105,6 @@ function TripInProgress() {
 
   /** Demo progress: how many stops the van has already served. */
   const [progress, setProgress] = useState(0);
-
 
   /**
    * Single source of truth for both the map markers and the checklist below:
@@ -198,7 +196,6 @@ function TripInProgress() {
       </AppShell>
     );
   }
-
 
   return (
     <AppShell portal="passenger" navItems={navItems}>
@@ -327,8 +324,6 @@ function TripInProgress() {
           senderRole="passenger"
         />
       ) : null}
-
-
 
       <div className="safe-bottom fixed inset-x-0 bottom-14 z-30 border-t border-border bg-background/95 px-4 py-3 backdrop-blur">
         <div className="mx-auto w-full max-w-3xl">

@@ -24,9 +24,7 @@ export function LanguageToggle() {
           className="relative gap-1 px-2"
         >
           <Globe className="size-4" />
-          <span className="text-[11px] font-semibold uppercase">
-            {lang === "en" ? "EN" : "MY"}
-          </span>
+          <span className="text-[11px] font-semibold uppercase">{lang === "en" ? "EN" : "MY"}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-36">

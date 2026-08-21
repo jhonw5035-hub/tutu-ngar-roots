@@ -23,14 +23,7 @@ import type { MapMarker } from "@/components/map/route-map";
 import type { LatLng } from "@/lib/mockData";
 import { useRoadPath } from "@/lib/road-path";
 import { useT } from "@/lib/i18n";
-import {
-  formatTime12,
-  getSlotDetails,
-  routes,
-  timeWindows,
-  trustSignals,
-} from "@/lib/mockData";
-
+import { formatTime12, getSlotDetails, routes, timeWindows, trustSignals } from "@/lib/mockData";
 
 export const Route = createFileRoute("/home")({
   head: () => ({
@@ -177,9 +170,7 @@ function PassengerHome() {
       <section className="mt-6 space-y-3">
         <div className="space-y-1">
           <h2 className="text-lg">{t("orChooseFixedRoute")}</h2>
-          <p className="text-sm text-muted-foreground">
-            {t("fixedRouteSubtext")}
-          </p>
+          <p className="text-sm text-muted-foreground">{t("fixedRouteSubtext")}</p>
         </div>
 
         <div className="space-y-3">
@@ -210,8 +201,8 @@ function PassengerHome() {
                   <div className="space-y-1">
                     <p className="text-base font-semibold">{route.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {next ? `Next departure ${formatTime12(next.time)} · ` : ""}
-                      K{route.fare.toLocaleString()} per seat
+                      {next ? `Next departure ${formatTime12(next.time)} · ` : ""}K
+                      {route.fare.toLocaleString()} per seat
                     </p>
                   </div>
                   <span className="shrink-0 rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-primary">
@@ -228,7 +219,6 @@ function PassengerHome() {
       </section>
 
       <section className="mt-6 space-y-3">
-
         <h2 className="text-lg">{t("whenAreYouTravelling")}</h2>
         <div className="flex gap-2">
           {(["today", "tomorrow"] as const).map((d) => (
