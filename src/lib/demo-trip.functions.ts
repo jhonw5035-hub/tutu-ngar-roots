@@ -33,37 +33,33 @@ export const startDemoTrip = createServerFn({ method: "POST" })
       .maybeSingle();
     const driverId = botDriver?.id ?? null;
 
-    // Reuse this user's previous demo trip when there is one.
-    const { data: myBookings } = await supabaseAdmin
+    // Deterministic: exactly one demo group per user. Find the user's existing
+    // demo group first; otherwise create one. Never leaves ambiguous rows.
+    const { data: demoBookings } = await supabaseAdmin
       .from("bookings")
       .select("id, group_id")
       .eq("passenger_id", data.userId)
       .not("group_id", "is", null)
       .order("created_at", { ascending: false })
-      .limit(10);
+      .limit(20);
 
+    const candidateIds = (demoBookings ?? []).map((b) => b.group_id!) as string[];
     let groupId: string | null = null;
-    for (const b of myBookings ?? []) {
-      const { data: g } = await supabaseAdmin
+    if (candidateIds.length) {
+      const { data: demoGroups } = await supabaseAdmin
         .from("trip_groups")
-        .select("id, driver_id, status")
-        .eq("id", b.group_id!)
-        .maybeSingle();
-      if (g && g.driver_id === driverId && g.status === "accepted") {
-        groupId = g.id;
-        break;
+        .select("id, created_at")
+        .in("id", candidateIds)
+        .eq("is_demo", true)
+        .order("created_at", { ascending: true });
+      groupId = demoGroups?.[0]?.id ?? null;
+      // Clean up any accidental extra demo groups for this user.
+      for (const extra of (demoGroups ?? []).slice(1)) {
+        await supabaseAdmin.from("trip_group_messages").delete().eq("group_id", extra.id);
+        await supabaseAdmin.from("trip_group_members").delete().eq("group_id", extra.id);
+        await supabaseAdmin.from("bookings").update({ group_id: null }).eq("group_id", extra.id);
+        await supabaseAdmin.from("trip_groups").delete().eq("id", extra.id);
       }
-    }
-
-    // Otherwise take a seeded bot group on this corridor, or create one.
-    if (!groupId) {
-      const { data: seeded } = await supabaseAdmin
-        .from("trip_groups")
-        .select("id")
-        .eq("corridor_label", data.routeId)
-        .order("created_at", { ascending: true })
-        .limit(1);
-      groupId = seeded?.[0]?.id ?? null;
     }
 
     const groupPatch = {
@@ -72,6 +68,7 @@ export const startDemoTrip = createServerFn({ method: "POST" })
       pickup_lat: data.pickupLat,
       pickup_lng: data.pickupLng,
       status: "accepted",
+      is_demo: true,
       driver_id: driverId,
       eta_to_pickup: "8 min",
       updated_at: new Date().toISOString(),
@@ -88,6 +85,7 @@ export const startDemoTrip = createServerFn({ method: "POST" })
       if (error) throw new Error(error.message);
       groupId = created.id;
     }
+
 
     // This user's booking on the demo group (reuse the existing one).
     const existingBooking = (myBookings ?? []).find((b) => b.group_id === groupId);
