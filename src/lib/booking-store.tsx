@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import type { TimeBand } from "@/lib/mockData";
+import type { LiveDeparture } from "@/lib/rides.functions";
 
 /**
  * Passenger booking draft — shared across Home → Route Discovery → Time
@@ -54,6 +55,7 @@ const initial: BookingDraft = {
   routeId: null,
   slotId: null,
   pickupPointId: null,
+  liveDeparture: null,
 };
 
 const BookingContext = React.createContext<BookingValue | null>(null);
