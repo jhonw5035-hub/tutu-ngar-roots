@@ -88,7 +88,7 @@ export const startDemoTrip = createServerFn({ method: "POST" })
 
 
     // This user's booking on the demo group (reuse the existing one).
-    const existingBooking = (myBookings ?? []).find((b) => b.group_id === groupId);
+    const existingBooking = (demoBookings ?? []).find((b) => b.group_id === groupId);
     const bookingPatch = {
       passenger_id: data.userId,
       passenger_name: data.passengerName ?? "You",
