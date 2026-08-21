@@ -70,7 +70,6 @@ function SignupPage() {
   }
 
   async function complete(profile: SessionProfile) {
-    if (role === "admin") return;
     setLoading(true);
     setError(null);
     try {
@@ -80,6 +79,7 @@ function SignupPage() {
         firstName: profile.firstName ?? "",
         phone: profile.phone ?? "",
         password: form.password,
+        ...(form.email.trim() ? { email: form.email.trim() } : {}),
         ...(profile.gender ? { gender: profile.gender } : {}),
         ...(profile.plateNumber ? { plateNumber: profile.plateNumber } : {}),
         ...(profile.seatCapacity ? { seatCapacity: profile.seatCapacity } : {}),
