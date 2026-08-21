@@ -51,13 +51,14 @@ function SignupPage() {
   const { signUp } = useSession();
   const [error, setError] = React.useState<string | null>(null);
 
-  const [role, setRole] = React.useState<Role>(search.role);
+  const [role, setRole] = React.useState<SignupRole>(search.role);
   const [step, setStep] = React.useState<"account" | "vehicle">("account");
   const [loading, setLoading] = React.useState(false);
   const [form, setForm] = React.useState({
     fullName: "",
     firstName: "",
     phone: "",
+    email: "",
     password: "",
     gender: "",
   });
