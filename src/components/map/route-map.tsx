@@ -66,9 +66,9 @@ export type RouteMapProps = {
   /** Per-route polyline colour override (used for the simulated traffic view). */
   routeColors?: Record<string, string>;
   /** Ad-hoc pins (search suggestions, pickup/drop preview). */
-  markers?: MapMarker[];
+  markers?: MapMarker[] | undefined;
   /** Straight connector drawn between arbitrary coordinates. */
-  line?: LatLng[];
+  line?: LatLng[] | undefined;
 };
 
 /** Mock "locate me" — recentres on a Yangon location instead of real GPS. */
