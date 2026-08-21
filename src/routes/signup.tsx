@@ -14,10 +14,12 @@ import {
 } from "@/components/ui/select";
 import { Wordmark } from "@/components/layout/wordmark";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { RolePortalTabs } from "@/components/auth/role-portal-tabs";
 import { ProfilePhotoField } from "@/components/auth/profile-photo-field";
+import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
-import { portalHome, useSession, type Role, type SessionProfile } from "@/lib/session";
+import { portalHome, useSession, type SessionProfile } from "@/lib/session";
+
+type SignupRole = "passenger" | "driver";
 
 const searchSchema = z.object({
   role: z.enum(["passenger", "driver"]).catch("passenger"),
@@ -49,13 +51,14 @@ function SignupPage() {
   const { signUp } = useSession();
   const [error, setError] = React.useState<string | null>(null);
 
-  const [role, setRole] = React.useState<Role>(search.role);
+  const [role, setRole] = React.useState<SignupRole>(search.role);
   const [step, setStep] = React.useState<"account" | "vehicle">("account");
   const [loading, setLoading] = React.useState(false);
   const [form, setForm] = React.useState({
     fullName: "",
     firstName: "",
     phone: "",
+    email: "",
     password: "",
     gender: "",
   });
@@ -67,7 +70,6 @@ function SignupPage() {
   }
 
   async function complete(profile: SessionProfile) {
-    if (role === "admin") return;
     setLoading(true);
     setError(null);
     try {
@@ -77,6 +79,7 @@ function SignupPage() {
         firstName: profile.firstName ?? "",
         phone: profile.phone ?? "",
         password: form.password,
+        ...(form.email.trim() ? { email: form.email.trim() } : {}),
         ...(profile.gender ? { gender: profile.gender } : {}),
         ...(profile.plateNumber ? { plateNumber: profile.plateNumber } : {}),
         ...(profile.seatCapacity ? { seatCapacity: profile.seatCapacity } : {}),
@@ -128,11 +131,24 @@ function SignupPage() {
         <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
           {step === "account" ? (
             <>
-              <RolePortalTabs
-                value={role}
-                onChange={setRole}
-                options={["passenger", "driver"]}
-              />
+              <div className="grid grid-cols-2 gap-1 rounded-xl bg-muted p-1">
+                {(["passenger", "driver"] as SignupRole[]).map((option) => (
+                  <button
+                    key={option}
+                    type="button"
+                    aria-pressed={role === option}
+                    onClick={() => setRole(option)}
+                    className={cn(
+                      "rounded-lg px-3 py-2 text-sm font-medium capitalize transition-colors",
+                      role === option
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground",
+                    )}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
               <h1 className="mt-5 text-lg font-bold tracking-tight">
                 Create your {role === "driver" ? "driver" : "passenger"} account
               </h1>
@@ -174,6 +190,17 @@ function SignupPage() {
                     value={form.phone}
                     onChange={(e) => update("phone", e.target.value)}
                     required
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="email">Email (optional)</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    autoComplete="email"
+                    placeholder="you@example.com"
+                    value={form.email}
+                    onChange={(e) => update("email", e.target.value)}
                   />
                 </div>
                 <div className="space-y-1.5">

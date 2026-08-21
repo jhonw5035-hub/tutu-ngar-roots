@@ -32,6 +32,7 @@ export type SignUpInput = {
   fullName: string;
   firstName: string;
   phone: string;
+  email?: string;
   password: string;
   gender?: string;
   plateNumber?: string;
@@ -139,7 +140,9 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = React.useCallback<SessionValue["signUp"]>(
     async (input) => {
-      const email = identifierToEmail(input.phone);
+      const email = input.email?.trim()
+        ? input.email.trim().toLowerCase()
+        : identifierToEmail(input.phone);
       const { data, error } = await supabase.auth.signUp({
         email,
         password: input.password,
