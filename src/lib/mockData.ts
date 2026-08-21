@@ -308,7 +308,7 @@ export function getRouteSummary(route: Route): RouteSummary {
 export const routeSummaries = (): RouteSummary[] => routes.map(getRouteSummary);
 
 /** Quick-select cards on Passenger Home. */
-export const popularRouteIds = ["r-pyay", "r-inya"];
+export const popularRouteIds = ["r-nokk-sule", "r-inya-sanchaung"];
 
 /** All pickup/destination names, for lightweight input suggestions. */
 export const allPointNames = Array.from(new Set(pickupPoints.map((p) => p.name)));
@@ -317,13 +317,14 @@ export const allPointNames = Array.from(new Set(pickupPoints.map((p) => p.name))
 export const upcomingTrip = {
   id: "t-2001",
   status: "Confirmed",
-  routeName: "Pyay Road Corridor",
-  pickup: "Hledan Junction",
-  destination: "Sule Pagoda Road",
+  routeName: "North Okkalapa ↔ Sule",
+  pickup: "North Okkalapa Market",
+  destination: "Sule Pagoda",
   date: "Tomorrow",
   time: "08:15",
-  fare: 2500,
+  fare: 3000,
 };
+
 
 /** Great-circle distance in km between two [lat, lng] pairs. */
 export const distanceKm = (a: LatLng, b: LatLng) => haversineKm(a, b);
