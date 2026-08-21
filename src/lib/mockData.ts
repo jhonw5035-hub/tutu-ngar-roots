@@ -416,14 +416,56 @@ const matchesArea = (route: Route, text: string) => {
   );
 };
 
+/** Distance from a point to the closest vertex of a corridor path. */
+function distanceToCorridorKm(point: LatLng, route: Route) {
+  return route.path.reduce((best, p) => Math.min(best, haversineKm(point, p)), Infinity);
+}
+
+/** How far from a corridor a search may sit and still count as "on it". */
+export const CORRIDOR_MATCH_KM = 5;
+
+export type CorridorMatch = { route: Route; pickupKm: number; destinationKm: number } | null;
+
 /**
- * Shared departures matching the passenger's area pair + time window.
- * Falls back to every departure so the demo never shows an empty screen.
+ * Resolve a free-text / geocoded search to one of the 3 demo corridors.
+ * Geography wins when both points are geocoded; otherwise we fall back to
+ * matching the typed text against corridor and stop names.
+ */
+export function nearestCorridor(
+  pickup: LatLng | null,
+  destination: LatLng | null,
+  pickupText = "",
+  destinationText = "",
+): CorridorMatch {
+  if (pickup && destination) {
+    const scored = routes
+      .map((route) => ({
+        route,
+        pickupKm: distanceToCorridorKm(pickup, route),
+        destinationKm: distanceToCorridorKm(destination, route),
+      }))
+      .sort((a, b) => a.pickupKm + a.destinationKm - (b.pickupKm + b.destinationKm));
+    const best = scored[0]!;
+    if (best.pickupKm > CORRIDOR_MATCH_KM || best.destinationKm > CORRIDOR_MATCH_KM) return null;
+    return best;
+  }
+
+  const byText = routes.find(
+    (r) => matchesArea(r, pickupText) && matchesArea(r, destinationText),
+  );
+  if (!byText || (!pickupText.trim() && !destinationText.trim())) return null;
+  return { route: byText, pickupKm: 0, destinationKm: 0 };
+}
+
+/**
+ * Shared departures on a single corridor within the chosen time window.
+ * Used as the offline fallback when live (Supabase) departures are absent.
  */
 export function getDepartures(
   pickup: string,
   destination: string,
   windowId: string,
+  routeId?: string | null,
 ): Departure[] {
   const win = timeWindows.find((w) => w.id === windowId) ?? timeWindows[0]!;
 
@@ -438,12 +480,14 @@ export function getDepartures(
         riders: getPassengers(slot.id),
       }));
 
-  const matched = routes.filter((r) => matchesArea(r, pickup) && matchesArea(r, destination));
-  // A couple of corridors, all their departures — so the demo shows both a
-  // nearly-full van (social proof) and one that is just starting to fill.
-  const pool = (matched.length ? matched : routes).slice(0, 2).flatMap(build);
+  const target = routeId
+    ? routes.filter((r) => r.id === routeId)
+    : routes.filter((r) => matchesArea(r, pickup) && matchesArea(r, destination));
+  if (!target.length) return [];
+  const pool = target.flatMap(build);
   return pool.sort((a, b) => a.slot.time.localeCompare(b.slot.time)).slice(0, 5);
 }
+
 
 export const getSlotDetail = (slotId: string | null) => {
   const slot = timeSlots.find((s) => s.id === slotId);
