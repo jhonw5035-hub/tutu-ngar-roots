@@ -26,8 +26,9 @@ export function AdminShell({ children }: { children: ReactNode }) {
             </span>
           </div>
           <div className="flex items-center gap-1">
-            <ThemeToggle />
+            <LanguageToggle />
             <AccountMenu />
+            <ThemeToggle />
           </div>
         </div>
       </header>
