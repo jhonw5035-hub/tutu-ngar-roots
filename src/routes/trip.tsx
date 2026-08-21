@@ -51,11 +51,49 @@ type Stop = {
 function TripInProgress() {
   const navItems = usePassengerNav("trips");
   const { profile, userId } = useSession();
-  const { booking, group, members, driver } = useMyLiveBooking(userId);
+  const { booking, group, members, driver, refresh } = useMyLiveBooking(userId);
   const { position: driverPosition } = useDriverLocation(group?.driver_id ?? null);
+  const runDemoTrip = useServerFn(startDemoTrip);
+  const [demoLoading, setDemoLoading] = useState(false);
+
+  /** DEMO ONLY: materialise an accepted bot trip for the signed-in user. */
+  const startDemo = async () => {
+    if (!userId || demoLoading) return;
+    setDemoLoading(true);
+    try {
+      const here = await getCurrentPosition();
+      const routeId = "r-nokk-sule";
+      const corridor = getRoute(routeId);
+      const pickup =
+        nearestPickupCandidate(routeId, here ? [here.lat, here.lng] : null) ??
+        pickupCandidates[routeId]![0]!;
+      const stops = getPointsForRoute(routeId);
+      const drop = stops[stops.length - 1]!;
+      await runDemoTrip({
+        data: {
+          userId,
+          passengerName: profile?.firstName ?? profile?.fullName ?? "You",
+          routeId,
+          corridorName: corridor?.name ?? routeId,
+          pickupLabel: pickup.name,
+          pickupLat: pickup.lat,
+          pickupLng: pickup.lng,
+          dropLabel: drop.name,
+          dropLat: drop.lat,
+          dropLng: drop.lng,
+        },
+      });
+      await refresh();
+      toast.success(`Demo trip ready — pickup at ${pickup.name}`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not start the demo trip");
+    }
+    setDemoLoading(false);
+  };
 
   /** Demo progress: how many stops the van has already served. */
   const [progress, setProgress] = useState(0);
+
 
   /**
    * Single source of truth for both the map markers and the checklist below:
