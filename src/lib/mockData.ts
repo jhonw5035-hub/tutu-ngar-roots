@@ -168,38 +168,39 @@ export type PastTrip = {
 export const pastTrips: PastTrip[] = [
   {
     id: "t-1001",
-    routeName: "Pyay Road Corridor",
-    pickup: "Hledan Junction",
-    destination: "Sule Pagoda Road",
+    routeName: "North Okkalapa ↔ Sule",
+    pickup: "North Okkalapa Market",
+    destination: "Sule Pagoda",
     date: "18 Aug 2026",
     time: "08:15",
-    fare: 2500,
+    fare: 3000,
     driverName: "U Myo Thant",
     plate: "YGN 4C-8821",
   },
   {
     id: "t-1002",
-    routeName: "Inya Road Corridor",
-    pickup: "Inya Lake View",
-    destination: "Downtown Maha Bandula",
+    routeName: "Inya Road ↔ Sanchaung",
+    pickup: "Inya Road (Inya Lake)",
+    destination: "Sanchaung Market",
     date: "16 Aug 2026",
     time: "08:00",
-    fare: 2300,
+    fare: 2000,
     driverName: "Daw Khin Aye",
     plate: "YGN 2A-1174",
   },
   {
     id: "t-1003",
-    routeName: "Insein Road Corridor",
-    pickup: "Insein Market",
-    destination: "Hledan Centre",
+    routeName: "North Okkalapa ↔ South Okkalapa",
+    pickup: "North Okkalapa Market",
+    destination: "South Okkalapa Market",
     date: "12 Aug 2026",
     time: "08:30",
-    fare: 2600,
+    fare: 1800,
     driverName: "U Zaw Win",
     plate: "YGN 7B-3390",
   },
 ];
+
 
 export const getRoute = (id: string | null) => routes.find((r) => r.id === id) ?? null;
 export const getPointsForRoute = (routeId: string | null) =>
