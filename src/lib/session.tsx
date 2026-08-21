@@ -117,15 +117,19 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     async (emailInput, password) => {
       // Supabase Auth signs in by email only — phone numbers are contact data.
       const email = emailInput.trim().toLowerCase();
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error } = await withNetworkRetry(() =>
+        supabase.auth.signInWithPassword({ email, password }),
+      );
       if (error) {
         const message = /invalid login credentials/i.test(error.message)
           ? "Invalid email or password"
           : /email not confirmed/i.test(error.message)
             ? "Please confirm your email address first, then log in."
-            : error.message;
+            : friendlyNetworkMessage(error.message);
         throw new Error(message);
       }
+      if (!data.user) throw new Error("Could not sign in");
+
       if (!data.user) throw new Error("Could not sign in");
       // Role/profile lookup must never turn a successful sign-in into a failure.
       let resolved: Role = "passenger";
