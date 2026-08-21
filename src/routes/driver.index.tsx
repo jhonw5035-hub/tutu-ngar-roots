@@ -6,7 +6,6 @@ import { Banknote, Bell, Car, MapPin, Power, Users } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
 import { useDriverNav } from "@/components/layout/driver-nav";
 import { NotificationBell } from "@/components/auth/account-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -35,16 +34,6 @@ export const Route = createFileRoute("/driver/")({
   }),
   component: DriverHome,
 });
-
-function getInitials(name?: string | null) {
-  if (!name) return "?";
-  return name
-    .split(" ")
-    .map((n) => n[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
-}
 
 function formatMmk(amount: number) {
   return `${amount.toLocaleString()} MMK`;
