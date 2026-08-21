@@ -53,6 +53,46 @@ type SessionValue = {
 
 const SessionContext = React.createContext<SessionValue | null>(null);
 
+/** True for browser-level connectivity failures (offline, dropped request, CORS reset). */
+function isNetworkMessage(message: string) {
+  return /failed to fetch|network ?error|load failed|fetch failed|networkrequestfailed/i.test(
+    message,
+  );
+}
+
+function friendlyNetworkMessage(message: string) {
+  return isNetworkMessage(message)
+    ? "Can't reach the server right now — check your connection and try again."
+    : message;
+}
+
+/**
+ * Auth calls occasionally fail with a transient "Failed to fetch" (flaky mobile
+ * network, sleeping tab). Retry those once before surfacing an error.
+ */
+async function withNetworkRetry<T extends { error: { message: string } | null }>(
+  run: () => Promise<T>,
+): Promise<T> {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const result = await run();
+      if (result.error && isNetworkMessage(result.error.message) && attempt === 0) {
+        await new Promise((resolve) => setTimeout(resolve, 600));
+        continue;
+      }
+      return result;
+    } catch (thrown) {
+      const message = thrown instanceof Error ? thrown.message : String(thrown);
+      if (!isNetworkMessage(message) || attempt === 1) {
+        throw new Error(friendlyNetworkMessage(message));
+      }
+      await new Promise((resolve) => setTimeout(resolve, 600));
+    }
+  }
+  return run();
+}
+
+
 export function SessionProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = React.useState<User | null>(null);
   const [role, setRole] = React.useState<Role | null>(null);
