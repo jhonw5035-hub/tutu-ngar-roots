@@ -52,7 +52,7 @@ function TripInProgress() {
   const navItems = usePassengerNav("trips");
   const { profile, userId } = useSession();
   const { booking, group, members, driver } = useMyLiveBooking(userId);
-  const driverStatus = useDriverLocation(group?.driver_id ?? null);
+  const { position: driverPosition } = useDriverLocation(group?.driver_id ?? null);
 
   /** Demo progress: how many stops the van has already served. */
   const [progress, setProgress] = useState(0);
@@ -93,10 +93,9 @@ function TripInProgress() {
   const nextIndex = Math.min(progress, Math.max(0, stops.length - 1));
   const nextStop = stops[nextIndex] ?? null;
 
-  const vehicle: LatLng | null =
-    driverStatus?.current_lat != null && driverStatus?.current_lng != null
-      ? [Number(driverStatus.current_lat), Number(driverStatus.current_lng)]
-      : null;
+  const vehicle: LatLng | null = driverPosition
+    ? [driverPosition.lat, driverPosition.lng]
+    : null;
 
   const markers = useMemo<MapMarker[]>(
     () =>
