@@ -78,16 +78,36 @@ export function useMyLiveBooking(passengerId: string | null, bookingId?: string 
       setLoading(false);
       return;
     }
-    let query = supabase
-      .from("bookings")
-      .select("*")
-      .eq("passenger_id", passengerId)
-      .order("created_at", { ascending: false })
-      .limit(1);
-    if (bookingId) query = supabase.from("bookings").select("*").eq("id", bookingId).limit(1);
 
-    const { data } = await query;
-    const row = data?.[0] ?? null;
+    // Deterministic pick: the newest booking that is attached to a still-active
+    // group wins, so a later stray "pending" booking can never hide a live trip.
+    let row: BookingRow | null = null;
+    if (bookingId) {
+      const { data } = await supabase.from("bookings").select("*").eq("id", bookingId).limit(1);
+      row = data?.[0] ?? null;
+    } else {
+      const { data } = await supabase
+        .from("bookings")
+        .select("*")
+        .eq("passenger_id", passengerId)
+        .order("created_at", { ascending: false })
+        .limit(10);
+      const rows = data ?? [];
+      const grouped = rows.filter((b) => b.group_id);
+      if (grouped.length) {
+        const { data: groups } = await supabase
+          .from("trip_groups")
+          .select("id, status")
+          .in("id", grouped.map((b) => b.group_id!));
+        const active = new Set(
+          (groups ?? [])
+            .filter((g) => ["forming", "accepted", "in_progress"].includes(g.status))
+            .map((g) => g.id),
+        );
+        row = grouped.find((b) => active.has(b.group_id!)) ?? null;
+      }
+      row = row ?? rows[0] ?? null;
+    }
     setBooking(row);
 
     if (row?.group_id) {
@@ -112,6 +132,7 @@ export function useMyLiveBooking(passengerId: string | null, bookingId?: string 
     }
     setLoading(false);
   }, [passengerId, bookingId]);
+
 
   React.useEffect(() => {
     void refresh();
