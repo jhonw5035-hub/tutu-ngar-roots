@@ -193,6 +193,17 @@ function SignupPage() {
                   />
                 </div>
                 <div className="space-y-1.5">
+                  <Label htmlFor="email">Email (optional)</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    autoComplete="email"
+                    placeholder="you@example.com"
+                    value={form.email}
+                    onChange={(e) => update("email", e.target.value)}
+                  />
+                </div>
+                <div className="space-y-1.5">
                   <Label htmlFor="password">Password</Label>
                   <Input
                     id="password"
