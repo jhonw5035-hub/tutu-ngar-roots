@@ -1,19 +1,31 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
 import { Check, CircleDot, Flag, Navigation } from "lucide-react";
+import { toast } from "sonner";
 
 import { AppShell } from "@/components/layout/app-shell";
 import { usePassengerNav } from "@/components/layout/passenger-nav";
 import { MapView } from "@/components/map/map-view";
 import type { MapMarker } from "@/components/map/route-map";
+import { TripChat } from "@/components/chat/trip-chat";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useSession } from "@/lib/session";
-import { useMyLiveBooking } from "@/lib/live";
+import { useMyLiveBooking, getCurrentPosition } from "@/lib/live";
 import { useDriverLocation } from "@/lib/driver-sim";
-import { distanceKm, type LatLng } from "@/lib/mockData";
+import { startDemoTrip } from "@/lib/demo-trip.functions";
+import {
+  distanceKm,
+  getPointsForRoute,
+  getRoute,
+  nearestPickupCandidate,
+  pickupCandidates,
+  type LatLng,
+} from "@/lib/mockData";
+
 
 export const Route = createFileRoute("/trip")({
   head: () => ({
@@ -51,11 +63,49 @@ type Stop = {
 function TripInProgress() {
   const navItems = usePassengerNav("trips");
   const { profile, userId } = useSession();
-  const { booking, group, members, driver } = useMyLiveBooking(userId);
+  const { booking, group, members, driver, refresh } = useMyLiveBooking(userId);
   const { position: driverPosition } = useDriverLocation(group?.driver_id ?? null);
+  const runDemoTrip = useServerFn(startDemoTrip);
+  const [demoLoading, setDemoLoading] = useState(false);
+
+  /** DEMO ONLY: materialise an accepted bot trip for the signed-in user. */
+  const startDemo = async () => {
+    if (!userId || demoLoading) return;
+    setDemoLoading(true);
+    try {
+      const here = await getCurrentPosition();
+      const routeId = "r-nokk-sule";
+      const corridor = getRoute(routeId);
+      const pickup =
+        nearestPickupCandidate(routeId, here ? [here.lat, here.lng] : null) ??
+        pickupCandidates[routeId]![0]!;
+      const stops = getPointsForRoute(routeId);
+      const drop = stops[stops.length - 1]!;
+      await runDemoTrip({
+        data: {
+          userId,
+          passengerName: profile?.firstName ?? profile?.fullName ?? "You",
+          routeId,
+          corridorName: corridor?.name ?? routeId,
+          pickupLabel: pickup.name,
+          pickupLat: pickup.lat,
+          pickupLng: pickup.lng,
+          dropLabel: drop.name,
+          dropLat: drop.lat,
+          dropLng: drop.lng,
+        },
+      });
+      await refresh();
+      toast.success(`Demo trip ready — pickup at ${pickup.name}`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not start the demo trip");
+    }
+    setDemoLoading(false);
+  };
 
   /** Demo progress: how many stops the van has already served. */
   const [progress, setProgress] = useState(0);
+
 
   /**
    * Single source of truth for both the map markers and the checklist below:
@@ -133,10 +183,19 @@ function TripInProgress() {
         <div className="mt-4 rounded-xl border border-dashed border-border bg-card p-10 text-center text-sm text-muted-foreground">
           You don’t have an active grouped trip yet. Once your booking is grouped and a driver
           accepts, the live route appears here.
+          <div className="mt-6 flex flex-col items-center gap-2">
+            <Button onClick={() => void startDemo()} disabled={demoLoading}>
+              {demoLoading ? "Preparing demo trip…" : "Preview Demo Trip"}
+            </Button>
+            <p className="text-xs text-muted-foreground">
+              Instantly preview a live trip for demo purposes.
+            </p>
+          </div>
         </div>
       </AppShell>
     );
   }
+
 
   return (
     <AppShell portal="passenger" navItems={navItems}>
@@ -255,6 +314,18 @@ function TripInProgress() {
           </div>
         </CardContent>
       </Card>
+
+      {userId ? (
+        <TripChat
+          className="mt-4 mb-24"
+          groupId={group.id}
+          senderId={userId}
+          senderName={profile?.firstName || profile?.fullName || "You"}
+          senderRole="passenger"
+        />
+      ) : null}
+
+
 
       <div className="safe-bottom fixed inset-x-0 bottom-14 z-30 border-t border-border bg-background/95 px-4 py-3 backdrop-blur">
         <div className="mx-auto w-full max-w-3xl">
