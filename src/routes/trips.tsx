@@ -9,7 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useBooking } from "@/lib/booking-store";
-import { formatTime12, getRoute, getSlotDetail, pastTrips, upcomingTrip } from "@/lib/mockData";
+import { formatTime12, getRoute, pastTrips, upcomingTrip } from "@/lib/mockData";
+import { resolveSlot } from "@/lib/departure";
 
 export const Route = createFileRoute("/trips")({
   head: () => ({
@@ -35,7 +36,7 @@ function TripsPage() {
   const navigate = useNavigate();
   const booking = useBooking();
 
-  const slot = getSlotDetail(booking.slotId);
+  const slot = resolveSlot(booking.slotId, booking.liveDeparture, booking.routeId);
   const route = getRoute(booking.routeId);
 
   const upcoming = slot && route

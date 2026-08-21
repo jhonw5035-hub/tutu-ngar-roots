@@ -12,7 +12,7 @@ import { resolveSlot } from "@/lib/departure";
 import { useBooking } from "@/lib/booking-store";
 import { createBooking, getCurrentPosition } from "@/lib/live";
 import { useSession } from "@/lib/session";
-import { formatTime12, getRoute, getSlotDetail } from "@/lib/mockData";
+import { formatTime12, getRoute } from "@/lib/mockData";
 
 export const Route = createFileRoute("/pay")({
   head: () => ({

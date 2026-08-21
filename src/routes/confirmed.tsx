@@ -16,7 +16,6 @@ import {
   getPoint,
   getPointsForRoute,
   getRoute,
-  getSlotDetail,
   mockDriver,
 } from "@/lib/mockData";
 import { MapView } from "@/components/map/map-view";

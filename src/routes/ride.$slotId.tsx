@@ -16,7 +16,6 @@ import {
   getPassengers,
   getPointsForRoute,
   getRoute,
-  getSlotDetail,
   mockDriver,
   nearestPickupPoint,
   type LatLng,
