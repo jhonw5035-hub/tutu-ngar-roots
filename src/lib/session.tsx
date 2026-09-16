@@ -120,7 +120,10 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
         access_token: result.session.access_token,
         refresh_token: result.session.refresh_token,
       });
-      if (error) throw new Error("Could not save your login. Please try again.");
+      if (error) {
+        console.error("setSession failed", error);
+        throw new Error("Could not save your login. Please try again.");
+      }
       setUser(result.user);
       setRole(result.role);
       setProfile(result.profile);
