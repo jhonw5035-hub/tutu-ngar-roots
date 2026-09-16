@@ -182,11 +182,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
         } as const;
         throw new Error(messages[result.code]);
       }
-      const { error } = await supabase.auth.setSession({
-        access_token: result.session.access_token,
-        refresh_token: result.session.refresh_token,
-      });
-      if (error) throw new Error("Could not save your new login. Please log in.");
+      await persistSession(result.session, result.user);
       setUser(result.user);
       setRole(result.role);
       setProfile(result.profile);
