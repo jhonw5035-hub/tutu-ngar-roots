@@ -55,6 +55,46 @@ type SessionValue = {
 
 const SessionContext = React.createContext<SessionValue | null>(null);
 
+/**
+ * `supabase.auth.setSession()` makes a direct browser → Supabase call to
+ * /auth/v1/user. On networks where that host is blocked or flaky the login
+ * would fail even though the server already authenticated the user. When that
+ * happens we persist the verified session straight into the client's auth
+ * storage, which needs no network at all.
+ */
+async function persistSession(session: Session, user: User) {
+  const { error } = await supabase.auth.setSession({
+    access_token: session.access_token,
+    refresh_token: session.refresh_token,
+  });
+  if (!error) return;
+  console.warn("setSession failed, persisting session locally instead", error);
+
+  const url = (import.meta.env["VITE_SUPABASE_URL"] as string | undefined) ?? "";
+  const ref = url.replace(/^https?:\/\//, "").split(".")[0];
+  if (!ref) throw new Error("Could not save your login. Please try again.");
+
+  const expiresAt =
+    session.expires_at ?? Math.floor(Date.now() / 1000) + (session.expires_in ?? 3600);
+  const payload = JSON.stringify({
+    access_token: session.access_token,
+    refresh_token: session.refresh_token,
+    token_type: "bearer",
+    expires_in: Math.max(60, expiresAt - Math.floor(Date.now() / 1000)),
+    expires_at: expiresAt,
+    user,
+  });
+
+  try {
+    const storage = (supabase.auth as unknown as { storage?: Storage }).storage ?? window.localStorage;
+    await storage.setItem(`sb-${ref}-auth-token`, payload);
+    await supabase.auth.getSession();
+  } catch (storageError) {
+    console.error("Could not persist session locally", storageError);
+    throw new Error("Could not save your login. Please try again.");
+  }
+}
+
 export function SessionProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = React.useState<User | null>(null);
   const [role, setRole] = React.useState<Role | null>(null);
