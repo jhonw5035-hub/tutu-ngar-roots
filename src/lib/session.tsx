@@ -1,7 +1,9 @@
 import * as React from "react";
 import type { Session, User } from "@supabase/supabase-js";
+import { useServerFn } from "@tanstack/react-start";
 
 import { supabase } from "@/integrations/supabase/client";
+import { getMyIdentity, loginWithEmail, signupWithEmail } from "@/lib/auth.functions";
 
 /**
  * Real Supabase Auth session store. The shape (role, profile, signIn, signUp,
@@ -53,51 +55,14 @@ type SessionValue = {
 
 const SessionContext = React.createContext<SessionValue | null>(null);
 
-/** True for browser-level connectivity failures (offline, dropped request, CORS reset). */
-function isNetworkMessage(message: string) {
-  return /failed to fetch|network ?error|load failed|fetch failed|networkrequestfailed/i.test(
-    message,
-  );
-}
-
-function friendlyNetworkMessage(message: string) {
-  return isNetworkMessage(message)
-    ? "Can't reach the server right now — check your connection and try again."
-    : message;
-}
-
-/**
- * Auth calls occasionally fail with a transient "Failed to fetch" (flaky mobile
- * network, sleeping tab). Retry those once before surfacing an error.
- */
-async function withNetworkRetry<T extends { error: { message: string } | null }>(
-  run: () => Promise<T>,
-): Promise<T> {
-  for (let attempt = 0; attempt < 2; attempt++) {
-    try {
-      const result = await run();
-      if (result.error && isNetworkMessage(result.error.message) && attempt === 0) {
-        await new Promise((resolve) => setTimeout(resolve, 600));
-        continue;
-      }
-      return result;
-    } catch (thrown) {
-      const message = thrown instanceof Error ? thrown.message : String(thrown);
-      if (!isNetworkMessage(message) || attempt === 1) {
-        throw new Error(friendlyNetworkMessage(message));
-      }
-      await new Promise((resolve) => setTimeout(resolve, 600));
-    }
-  }
-  return run();
-}
-
-
 export function SessionProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = React.useState<User | null>(null);
   const [role, setRole] = React.useState<Role | null>(null);
   const [profile, setProfile] = React.useState<SessionProfile | null>(null);
   const [loading, setLoading] = React.useState(true);
+  const loginFn = useServerFn(loginWithEmail);
+  const signupFn = useServerFn(signupWithEmail);
+  const identityFn = useServerFn(getMyIdentity);
 
   const load = React.useCallback(async (nextUser: User | null) => {
     setUser(nextUser);
@@ -107,35 +72,17 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
       return;
     }
-    const [{ data: roleRows }, { data: profileRow }] = await Promise.all([
-      supabase.from("user_roles").select("role").eq("user_id", nextUser.id),
-      supabase.from("profiles").select("*").eq("id", nextUser.id).maybeSingle(),
-    ]);
-    const roles = (roleRows ?? []).map((r) => r.role as Role);
-    setRole(
-      roles.includes("admin")
-        ? "admin"
-        : roles.includes("driver")
-          ? "driver"
-          : roles.includes("passenger")
-            ? "passenger"
-            : null,
-    );
-    setProfile(
-      profileRow
-        ? {
-            ...(profileRow.full_name ? { fullName: profileRow.full_name } : {}),
-            ...(profileRow.first_name ? { firstName: profileRow.first_name } : {}),
-            ...(profileRow.phone ? { phone: profileRow.phone } : {}),
-            ...(profileRow.gender ? { gender: profileRow.gender } : {}),
-            ...(profileRow.photo_url ? { photoDataUrl: profileRow.photo_url } : {}),
-            ...(profileRow.plate_number ? { plateNumber: profileRow.plate_number } : {}),
-            ...(profileRow.seat_capacity ? { seatCapacity: profileRow.seat_capacity } : {}),
-          }
-        : {},
-    );
+    try {
+      const identity = await identityFn();
+      setRole(identity.role);
+      setProfile(identity.profile);
+    } catch (error) {
+      console.error(error);
+      setRole("passenger");
+      setProfile({});
+    }
     setLoading(false);
-  }, []);
+  }, [identityFn]);
 
   React.useEffect(() => {
     let active = true;
@@ -157,94 +104,60 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     async (emailInput, password) => {
       // Supabase Auth signs in by email only — phone numbers are contact data.
       const email = emailInput.trim().toLowerCase();
-      const { data, error } = await withNetworkRetry(() =>
-        supabase.auth.signInWithPassword({ email, password }),
-      );
-      if (error) {
-        const message = /invalid login credentials/i.test(error.message)
-          ? "Invalid email or password"
-          : /email not confirmed/i.test(error.message)
-            ? "Please confirm your email address first, then log in."
-            : friendlyNetworkMessage(error.message);
-        throw new Error(message);
+      const result = await loginFn({ data: { email, password } });
+      if (!result.ok) {
+        const messages = {
+          invalid_credentials: "Invalid email or password",
+          email_unconfirmed: "Please confirm your email address first, then log in.",
+          duplicate_email: "That email already has an account — log in instead.",
+          weak_password: "Password must be at least 6 characters.",
+          unavailable: "Login service is temporarily unavailable. Please try again shortly.",
+          unknown: "Could not log in. Please try again.",
+        } as const;
+        throw new Error(messages[result.code]);
       }
-      if (!data.user) throw new Error("Could not sign in");
-
-      if (!data.user) throw new Error("Could not sign in");
-      // Role/profile lookup must never turn a successful sign-in into a failure.
-      let resolved: Role = "passenger";
-      try {
-        const { data: roleRows } = await supabase
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", data.user.id);
-        const roles = (roleRows ?? []).map((r) => r.role as Role);
-        resolved = roles.includes("admin")
-          ? "admin"
-          : roles.includes("driver")
-            ? "driver"
-            : "passenger";
-        await load(data.user);
-      } catch (loadError) {
-        console.error(loadError);
-        setUser(data.user);
-      }
-      return resolved;
+      const { error } = await supabase.auth.setSession({
+        access_token: result.session.access_token,
+        refresh_token: result.session.refresh_token,
+      });
+      if (error) throw new Error("Could not save your login. Please try again.");
+      setUser(result.user);
+      setRole(result.role);
+      setProfile(result.profile);
+      setLoading(false);
+      return result.role;
     },
-    [load],
+    [loginFn],
   );
 
   const signUp = React.useCallback<SessionValue["signUp"]>(
     async (input) => {
       const email = input.email.trim().toLowerCase();
       if (!email) throw new Error("An email address is required to create an account");
-      const { data, error } = await withNetworkRetry(() =>
-        supabase.auth.signUp({
-          email,
-          password: input.password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/login`,
-            data: {
-              role: input.role,
-              full_name: input.fullName,
-              first_name: input.firstName,
-              phone: input.phone,
-              gender: ["male", "female", "other"].includes(input.gender ?? "")
-                ? input.gender
-                : null,
-              plate_number: input.plateNumber ?? null,
-              seat_capacity: input.seatCapacity ?? null,
-            },
-          },
-        }),
-      );
-      if (error) {
-        const message = /already registered|already been registered|user_already_exists/i.test(
-          error.message,
-        )
-          ? "That email already has an account — log in instead."
-          : /password/i.test(error.message) && /at least|short/i.test(error.message)
-            ? "Password must be at least 6 characters."
-            : friendlyNetworkMessage(error.message);
-        throw new Error(message);
+      const result = await signupFn({ data: { ...input, email } });
+      if (!result.ok) {
+        const messages = {
+          invalid_credentials: "Could not create the account.",
+          email_unconfirmed: "Check your email to confirm your account, then log in.",
+          duplicate_email: "That email already has an account — log in instead.",
+          weak_password: "Password must be at least 6 characters.",
+          unavailable: "Signup service is temporarily unavailable. Please try again shortly.",
+          unknown: "Could not create the account. Please try again.",
+        } as const;
+        throw new Error(messages[result.code]);
       }
-      if (!data.user) throw new Error("Could not create the account");
-      if (!data.session) {
-        const { error: signInError } = await withNetworkRetry(() =>
-          supabase.auth.signInWithPassword({ email, password: input.password }),
-        );
-        if (signInError) throw new Error(friendlyNetworkMessage(signInError.message));
-      }
-
-      try {
-        await load(data.user);
-      } catch (loadError) {
-        console.error(loadError);
-        setUser(data.user);
-      }
-      return input.role;
+      const { error } = await supabase.auth.setSession({
+        access_token: result.session.access_token,
+        refresh_token: result.session.refresh_token,
+      });
+      if (error) throw new Error("Could not save your new login. Please log in.");
+      setUser(result.user);
+      setRole(result.role);
+      setProfile(result.profile);
+      setLoading(false);
+      return result.role;
     },
-    [load],
+    [signupFn],
   );
 
 
