@@ -115,12 +115,12 @@ export default function RouteMap({
       className="h-full w-full"
       attributionControl
     >
-      {/* CARTO Positron: free, no API key, muted base so the brand-orange
-          route line and markers stay legible on small mobile maps. */}
+      {/* OpenStreetMap standard tiles: free, no API key, so maps always load.
+          The brand-orange route line and markers stay legible on this base. */}
       <TileLayer
-        url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-        subdomains={["a", "b", "c", "d"]}
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        subdomains={["a", "b", "c"]}
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
       <FitBounds positions={bounds} />
       <LocateHandler nonce={locateNonce} />
