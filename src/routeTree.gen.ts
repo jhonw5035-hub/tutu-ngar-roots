@@ -18,7 +18,6 @@ import { Route as HomeRouteImport } from './routes/home'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PayRouteImport } from './routes/pay'
 import { Route as RidesRouteImport } from './routes/rides'
-import { Route as SignupRouteImport } from './routes/signup'
 import { Route as TripRouteImport } from './routes/trip'
 import { Route as TripsRouteImport } from './routes/trips'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
@@ -76,11 +75,6 @@ const PayRoute = PayRouteImport.update({
 const RidesRoute = RidesRouteImport.update({
   id: '/rides',
   path: '/rides',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SignupRoute = SignupRouteImport.update({
-  id: '/signup',
-  path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TripRoute = TripRouteImport.update({
@@ -159,7 +153,6 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/pay': typeof PayRoute
   '/rides': typeof RidesRoute
-  '/signup': typeof SignupRoute
   '/trip': typeof TripRoute
   '/trips': typeof TripsRoute
   '/admin/ai-matching': typeof AdminAiMatchingRoute
@@ -182,7 +175,6 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/pay': typeof PayRoute
   '/rides': typeof RidesRoute
-  '/signup': typeof SignupRoute
   '/trip': typeof TripRoute
   '/trips': typeof TripsRoute
   '/admin/ai-matching': typeof AdminAiMatchingRoute
@@ -208,7 +200,6 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/pay': typeof PayRoute
   '/rides': typeof RidesRoute
-  '/signup': typeof SignupRoute
   '/trip': typeof TripRoute
   '/trips': typeof TripsRoute
   '/admin/ai-matching': typeof AdminAiMatchingRoute
@@ -235,7 +226,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/pay'
     | '/rides'
-    | '/signup'
     | '/trip'
     | '/trips'
     | '/admin/ai-matching'
@@ -258,7 +248,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/pay'
     | '/rides'
-    | '/signup'
     | '/trip'
     | '/trips'
     | '/admin/ai-matching'
@@ -283,7 +272,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/pay'
     | '/rides'
-    | '/signup'
     | '/trip'
     | '/trips'
     | '/admin/ai-matching'
@@ -309,7 +297,6 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   PayRoute: typeof PayRoute
   RidesRoute: typeof RidesRoute
-  SignupRoute: typeof SignupRoute
   TripRoute: typeof TripRoute
   TripsRoute: typeof TripsRoute
   RideSlotIdRoute: typeof RideSlotIdRoute
@@ -378,13 +365,6 @@ declare module '@tanstack/react-router' {
       path: '/rides'
       fullPath: '/rides'
       preLoaderRoute: typeof RidesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/signup': {
-      id: '/signup'
-      path: '/signup'
-      fullPath: '/signup'
-      preLoaderRoute: typeof SignupRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/trip': {
@@ -528,7 +508,6 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   PayRoute: PayRoute,
   RidesRoute: RidesRoute,
-  SignupRoute: SignupRoute,
   TripRoute: TripRoute,
   TripsRoute: TripsRoute,
   RideSlotIdRoute: RideSlotIdRoute,
