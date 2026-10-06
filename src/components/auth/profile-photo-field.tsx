@@ -2,6 +2,7 @@ import * as React from "react";
 import { Camera } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n";
 
 /**
  * Optional profile photo for signup.
@@ -24,6 +25,7 @@ export function ProfilePhotoField({
   onChange: (dataUrl: string | undefined) => void;
   name?: string | undefined;
 }) {
+  const t = useT();
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   const initials =
@@ -48,7 +50,7 @@ export function ProfilePhotoField({
       <button
         type="button"
         onClick={() => inputRef.current?.click()}
-        aria-label={value ? "Change profile photo" : "Add profile photo"}
+        aria-label={value ? t("changePhoto") : t("addPhoto")}
         className={cn(
           "relative size-16 shrink-0 overflow-hidden rounded-full border border-border",
           "bg-primary/10 text-primary transition-transform active:scale-95",
@@ -67,8 +69,8 @@ export function ProfilePhotoField({
       </button>
 
       <div className="min-w-0">
-        <p className="text-sm font-medium">Profile photo (optional)</p>
-        <p className="text-xs text-muted-foreground">Helps your driver recognize you at pickup.</p>
+        <p className="text-sm font-medium">{t("profilePhotoOptional")}</p>
+        <p className="text-xs text-muted-foreground">{t("profilePhotoHint")}</p>
         {value ? (
           <button
             type="button"
@@ -78,7 +80,7 @@ export function ProfilePhotoField({
             }}
             className="mt-1 text-xs font-semibold text-primary underline-offset-4 hover:underline"
           >
-            Remove photo
+            {t("removePhoto")}
           </button>
         ) : null}
       </div>

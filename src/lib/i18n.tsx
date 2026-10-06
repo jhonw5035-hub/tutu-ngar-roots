@@ -251,6 +251,11 @@ const en = {
   teamReplyLabel: "Tu Tu Ngar team:",
   introTagline: "Shared rides across Yangon — booked ahead, priced upfront, and safer together.",
   getStarted: "Get Started",
+  profilePhotoOptional: "Profile photo (optional)",
+  profilePhotoHint: "Helps your driver recognize you at pickup.",
+  changePhoto: "Change profile photo",
+  addPhoto: "Add profile photo",
+  removePhoto: "Remove photo",
 } satisfies Record<string, string>;
 
 export type TranslationKey = keyof typeof en;
@@ -485,6 +490,11 @@ const my: Partial<Record<TranslationKey, string>> = {
   introTagline:
     "ရန်ကုန်တစ်ဝိုက် မျှဝေခရီးစဉ်များ — ကြိုစီစဉ်ပြီး ကြိုတွက်ထားသော ဈေးနှုန်းဖြင့် အတူစီးလျှင် ပိုစိတ်ချရသည်။",
   getStarted: "စတင်ရန်",
+  profilePhotoOptional: "ကိုယ်ရေးဓာတ်ပုံ (မဖြစ်မနေ မဟုတ်ပါ)",
+  profilePhotoHint: "ကြိုဆိုချိန်တွင် ယာဉ်မောင်းက သင့်ကို အသိမှတ်ပြုနိုင်ရန် ကူညီပါသည်။",
+  changePhoto: "ဓာတ်ပုံ ပြောင်းရန်",
+  addPhoto: "ဓာတ်ပုံ ထည့်ရန်",
+  removePhoto: "ဓာတ်ပုံ ဖယ်ရှားရန်",
 };
 
 const dictionaries: Record<Lang, Partial<Record<TranslationKey, string>>> = { en, my };
