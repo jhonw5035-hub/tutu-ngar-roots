@@ -15,8 +15,10 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as ConfirmedRouteImport } from './routes/confirmed'
 import { Route as DriverRouteImport } from './routes/driver'
 import { Route as HomeRouteImport } from './routes/home'
+import { Route as LiveRouteImport } from './routes/live'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PayRouteImport } from './routes/pay'
+import { Route as PrebookRouteImport } from './routes/prebook'
 import { Route as RidesRouteImport } from './routes/rides'
 import { Route as TripRouteImport } from './routes/trip'
 import { Route as TripsRouteImport } from './routes/trips'
@@ -62,6 +64,11 @@ const HomeRoute = HomeRouteImport.update({
   path: '/home',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LiveRoute = LiveRouteImport.update({
+  id: '/live',
+  path: '/live',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -70,6 +77,11 @@ const LoginRoute = LoginRouteImport.update({
 const PayRoute = PayRouteImport.update({
   id: '/pay',
   path: '/pay',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrebookRoute = PrebookRouteImport.update({
+  id: '/prebook',
+  path: '/prebook',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RidesRoute = RidesRouteImport.update({
@@ -150,8 +162,10 @@ export interface FileRoutesByFullPath {
   '/confirmed': typeof ConfirmedRoute
   '/driver': typeof DriverRouteWithChildren
   '/home': typeof HomeRoute
+  '/live': typeof LiveRoute
   '/login': typeof LoginRoute
   '/pay': typeof PayRoute
+  '/prebook': typeof PrebookRoute
   '/rides': typeof RidesRoute
   '/trip': typeof TripRoute
   '/trips': typeof TripsRoute
@@ -172,8 +186,10 @@ export interface FileRoutesByTo {
   '/account': typeof AccountRoute
   '/confirmed': typeof ConfirmedRoute
   '/home': typeof HomeRoute
+  '/live': typeof LiveRoute
   '/login': typeof LoginRoute
   '/pay': typeof PayRoute
+  '/prebook': typeof PrebookRoute
   '/rides': typeof RidesRoute
   '/trip': typeof TripRoute
   '/trips': typeof TripsRoute
@@ -197,8 +213,10 @@ export interface FileRoutesById {
   '/confirmed': typeof ConfirmedRoute
   '/driver': typeof DriverRouteWithChildren
   '/home': typeof HomeRoute
+  '/live': typeof LiveRoute
   '/login': typeof LoginRoute
   '/pay': typeof PayRoute
+  '/prebook': typeof PrebookRoute
   '/rides': typeof RidesRoute
   '/trip': typeof TripRoute
   '/trips': typeof TripsRoute
@@ -223,8 +241,10 @@ export interface FileRouteTypes {
     | '/confirmed'
     | '/driver'
     | '/home'
+    | '/live'
     | '/login'
     | '/pay'
+    | '/prebook'
     | '/rides'
     | '/trip'
     | '/trips'
@@ -245,8 +265,10 @@ export interface FileRouteTypes {
     | '/account'
     | '/confirmed'
     | '/home'
+    | '/live'
     | '/login'
     | '/pay'
+    | '/prebook'
     | '/rides'
     | '/trip'
     | '/trips'
@@ -269,8 +291,10 @@ export interface FileRouteTypes {
     | '/confirmed'
     | '/driver'
     | '/home'
+    | '/live'
     | '/login'
     | '/pay'
+    | '/prebook'
     | '/rides'
     | '/trip'
     | '/trips'
@@ -294,8 +318,10 @@ export interface RootRouteChildren {
   ConfirmedRoute: typeof ConfirmedRoute
   DriverRoute: typeof DriverRouteWithChildren
   HomeRoute: typeof HomeRoute
+  LiveRoute: typeof LiveRoute
   LoginRoute: typeof LoginRoute
   PayRoute: typeof PayRoute
+  PrebookRoute: typeof PrebookRoute
   RidesRoute: typeof RidesRoute
   TripRoute: typeof TripRoute
   TripsRoute: typeof TripsRoute
@@ -346,6 +372,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/live': {
+      id: '/live'
+      path: '/live'
+      fullPath: '/live'
+      preLoaderRoute: typeof LiveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -358,6 +391,13 @@ declare module '@tanstack/react-router' {
       path: '/pay'
       fullPath: '/pay'
       preLoaderRoute: typeof PayRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/prebook': {
+      id: '/prebook'
+      path: '/prebook'
+      fullPath: '/prebook'
+      preLoaderRoute: typeof PrebookRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/rides': {
@@ -505,8 +545,10 @@ const rootRouteChildren: RootRouteChildren = {
   ConfirmedRoute: ConfirmedRoute,
   DriverRoute: DriverRouteWithChildren,
   HomeRoute: HomeRoute,
+  LiveRoute: LiveRoute,
   LoginRoute: LoginRoute,
   PayRoute: PayRoute,
+  PrebookRoute: PrebookRoute,
   RidesRoute: RidesRoute,
   TripRoute: TripRoute,
   TripsRoute: TripsRoute,
