@@ -20,6 +20,7 @@ import {
   nearestPickupPoint,
   type LatLng,
 } from "@/lib/mockData";
+import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/ride/$slotId")({
   head: () => ({
@@ -47,6 +48,7 @@ function RideDetails() {
   const navItems = usePassengerNav("trips");
   const navigate = useNavigate();
   const booking = useBooking();
+  const t = useT();
   const { profile } = useSession();
   const [location, setLocation] = useState<LatLng | null>(null);
 
@@ -89,9 +91,9 @@ function RideDetails() {
   if (!slot || !route) {
     return (
       <AppShell portal="passenger" navItems={navItems}>
-        <p className="text-sm text-muted-foreground">That departure is no longer available.</p>
+        <p className="text-sm text-muted-foreground">{t("departureUnavailable")}</p>
         <Button className="mt-4" onClick={() => navigate({ to: "/rides" })}>
-          Back to shared rides
+          {t("backToSharedRides")}
         </Button>
       </AppShell>
     );
@@ -100,15 +102,15 @@ function RideDetails() {
   return (
     <AppShell portal="passenger" navItems={navItems}>
       <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" aria-label="Back" onClick={() => history.back()}>
+        <Button variant="ghost" size="icon" aria-label={t("back")} onClick={() => history.back()}>
           <ArrowLeft className="size-5" />
         </Button>
         <div>
           <h1 className="flex items-center gap-2 text-xl">
-            <Car className="size-5 text-primary" /> Shared Ride
+            <Car className="size-5 text-primary" /> {t("sharedRide")}
           </h1>
           <p className="text-sm text-muted-foreground">
-            {route.from} → {route.to} · departs{" "}
+            {route.from} → {route.to} · {t("departs")}{" "}
             <span className="num text-foreground">{formatTime12(slot.time)}</span>
           </p>
         </div>
@@ -119,15 +121,15 @@ function RideDetails() {
           <div className="flex gap-3">
             <MapPin className="mt-0.5 size-4 shrink-0 text-primary" />
             <div>
-              <p className="text-sm font-semibold">{pickup?.name ?? "Matched at departure"}</p>
-              <p className="text-xs text-muted-foreground">Closest pickup point to your location</p>
+              <p className="text-sm font-semibold">{pickup?.name ?? t("matchedAtDeparture")}</p>
+              <p className="text-xs text-muted-foreground">{t("closestPickupHint")}</p>
             </div>
           </div>
           <div className="flex gap-3">
             <Flag className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
             <div>
               <p className="text-sm font-semibold">{destination?.name ?? route.to}</p>
-              <p className="text-xs text-muted-foreground">Drop-off</p>
+              <p className="text-xs text-muted-foreground">{t("dropOff")}</p>
             </div>
           </div>
         </CardContent>
@@ -136,30 +138,30 @@ function RideDetails() {
       <Card className="mt-4 shadow-card">
         <CardContent className="space-y-3 pt-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg">Passengers</h2>
+            <h2 className="text-lg">{t("passengersHeading")}</h2>
             <span className="num text-sm text-muted-foreground">
-              {slot.seatsFilled} / {slot.seatsCapacity} seats occupied
+              {slot.seatsFilled} / {slot.seatsCapacity} {t("seatsOccupied")}
             </span>
           </div>
           <SeatBar filled={slot.seatsFilled} capacity={slot.seatsCapacity} />
           {/* Privacy: never show other passengers' names or photos here. */}
           <div className="flex flex-wrap gap-2">
             <span className="rounded-full border border-primary bg-accent px-3 py-1.5 text-xs font-semibold">
-              {youFemale ? "👩" : "👨"} You
+              {youFemale ? "👩" : "👨"} {t("you")}
             </span>
             {riders.map((r) => (
               <span
                 key={r.id}
                 className="rounded-full border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground"
               >
-                {r.gender === "female" ? "👩" : "👨"} Passenger
+                {r.gender === "female" ? "👩" : "👨"} {t("passenger")}
               </span>
             ))}
           </div>
           <p className="text-xs text-muted-foreground">
-            Passenger preferences: 👩 Women: <span className="num">{women}</span> · 👨 Men:{" "}
+            {t("passengersHeading")}: 👩 {t("womenCount")}: <span className="num">{women}</span> · 👨 {t("menCount")}:{" "}
             <span className="num">{men}</span>
-            {slot.womenOnlyAvailable ? " · women-only group available" : ""}
+            {slot.womenOnlyAvailable ? ` · ${t("womenOnlyAvailable")}` : ""}
           </p>
         </CardContent>
       </Card>
@@ -168,7 +170,7 @@ function RideDetails() {
         <CardContent className="flex items-center justify-between gap-3 pt-6">
           <div>
             <Badge variant="confirmed">
-              <ShieldCheck className="mr-1 size-3" /> Driver verified
+              <ShieldCheck className="mr-1 size-3" /> {t("driverVerified")}
             </Badge>
             <p className="mt-2 text-sm">{mockDriver.name}</p>
           </div>
@@ -178,7 +180,7 @@ function RideDetails() {
 
       <Card className="mt-4 shadow-card">
         <CardContent className="flex items-center justify-between pt-6">
-          <span className="text-sm text-muted-foreground">Your fare</span>
+          <span className="text-sm text-muted-foreground">{t("yourFare")}</span>
           <span className="num text-xl font-semibold text-primary">
             {slot.price.toLocaleString()} MMK
           </span>
@@ -188,7 +190,7 @@ function RideDetails() {
       <div className="safe-bottom fixed inset-x-0 bottom-14 z-30 border-t border-border bg-background/95 px-4 py-3 backdrop-blur">
         <div className="mx-auto w-full max-w-3xl">
           <Button className="w-full" size="lg" onClick={() => navigate({ to: "/pay" })}>
-            Confirm &amp; Pay
+            {t("confirmAndPay")}
           </Button>
         </div>
       </div>
