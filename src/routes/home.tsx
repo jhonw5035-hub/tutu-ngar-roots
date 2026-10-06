@@ -1,6 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Building2, CalendarClock, Radar } from "lucide-react";
-import mascotAsset from "@/assets/mascot.png.asset.json";
 
 import { AppShell } from "@/components/layout/app-shell";
 import { usePassengerNav } from "@/components/layout/passenger-nav";
