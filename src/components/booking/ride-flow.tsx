@@ -280,7 +280,7 @@ function LiveTracking({ method, fare }: { method: string; fare?: number | undefi
   return (
     <div className="space-y-4">
       <div className="relative isolate z-0 overflow-hidden rounded-2xl border border-border">
-        <MapView className="h-72" routes={[]} markers={markers} line={path ?? undefined} vehicle={vehicle} vehicleLabel="Driver" fitTo={path ?? undefined} />
+        <MapView className="h-72" routes={[]} markers={markers} line={path ?? undefined} vehicle={vehicle} vehicleLabel="Driver" {...(path ? { fitTo: path } : {})} />
       </div>
       <Card className="shadow-card">
         <CardContent className="space-y-3 pt-6">
