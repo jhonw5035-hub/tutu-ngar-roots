@@ -19,6 +19,7 @@ import { useMyLiveBooking } from "@/lib/live";
 import { useSession } from "@/lib/session";
 import { useRoadPath } from "@/lib/road-path";
 import type { LatLng } from "@/lib/mockData";
+import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/confirmed")({
   validateSearch: z.object({ booking: z.string().optional() }),
@@ -45,6 +46,7 @@ export const Route = createFileRoute("/confirmed")({
 function ConfirmationPage() {
   const navItems = usePassengerNav("trips");
   const navigate = useNavigate();
+  const t = useT();
   const booking = useBooking();
   const { booking: bookingId } = Route.useSearch();
   const { userId, profile } = useSession();
@@ -89,18 +91,18 @@ function ConfirmationPage() {
         return;
       }
       await navigator.clipboard.writeText(text);
-      toast.success("Trip link copied — share it with someone you trust");
+      toast.success(t("tripLinkCopied"));
     } catch {
-      toast.error("Couldn't share right now");
+      toast.error(t("couldntShare"));
     }
   };
 
   return (
     <AppShell portal="passenger" navItems={navItems}>
       <section className="space-y-1 text-center">
-        <h1 className="text-2xl">🎉 You're booked!</h1>
+        <h1 className="text-2xl">{t("youreBooked")}</h1>
         <p className="text-sm text-muted-foreground">
-          Your seat is held. Be at your stop five minutes early.
+          {t("seatHeldHint")}
         </p>
       </section>
 
@@ -108,24 +110,24 @@ function ConfirmationPage() {
         <CardContent className="space-y-2 pt-6 text-sm">
           <div className="flex items-center justify-between gap-3">
             <span className="font-semibold">
-              {route ? `${route.from} → ${route.to}` : "Shared ride"}
+              {route ? `${route.from} → ${route.to}` : t("sharedRide")}
             </span>
-            <Badge variant="confirmed">Confirmed</Badge>
+            <Badge variant="confirmed">{t("confirmedLabel")}</Badge>
           </div>
           <p className="text-muted-foreground">
-            Departs{" "}
+            {t("departs")}{" "}
             <span className="num text-foreground">
               {slot ? formatTime12(slot.time) : "8:00 AM"}
             </span>{" "}
             · <span className="capitalize">{booking.day}</span>
           </p>
           <p className="flex items-center gap-1.5 text-muted-foreground">
-            <MapPin className="size-3.5 text-primary" /> Pickup: {pickup?.name ?? "Your stop"}
+            <MapPin className="size-3.5 text-primary" /> {t("pickup")}: {pickup?.name ?? t("yourStop")}
           </p>
           <p className="text-muted-foreground">
-            Driver:{" "}
+            {t("driverLabel")}:{" "}
             {live.driver
-              ? `${live.driver.first_name ?? live.driver.full_name ?? "Assigned driver"}`
+              ? `${live.driver.first_name ?? live.driver.full_name ?? t("assignedDriver")}`
               : mockDriver.name}{" "}
             ·{" "}
             <span className="num text-foreground">
@@ -140,26 +142,25 @@ function ConfirmationPage() {
           {grouped ? (
             <>
               <p className="flex items-center gap-2 font-semibold text-primary">
-                <Users className="size-4" /> You&apos;ve been matched into a shared group
+                <Users className="size-4" /> {t("matchedIntoGroup")}
               </p>
               <p className="text-muted-foreground">
-                Meeting point: {live.group?.pickup_point_label ?? "Being finalised"}
-                {live.group?.eta_to_pickup ? ` · Driver ETA ${live.group.eta_to_pickup}` : ""}
+                {t("meetingPoint")} {live.group?.pickup_point_label ?? t("beingFinalised")}
+                {live.group?.eta_to_pickup ? ` · ${t("driverEta")} ${live.group.eta_to_pickup}` : ""}
               </p>
               <p className="text-muted-foreground">
-                {live.members.length} passenger{live.members.length === 1 ? "" : "s"} in this group
+                {live.members.length}{" "}
+                {live.members.length === 1 ? t("passenger") : t("passengers")} {t("inThisGroup")}
               </p>
               {live.booking?.minority_gender_note ? (
                 <p className="rounded-lg bg-muted px-3 py-2 text-xs text-muted-foreground">
-                  Heads up: you&apos;re the only passenger of your gender in this group. Tell us if
-                  you&apos;d rather wait for the next departure.
+                  {t("minorityGenderNote")}
                 </p>
               ) : null}
             </>
           ) : (
             <p className="flex items-center gap-2 text-muted-foreground">
-              <Loader2 className="size-4 animate-spin text-primary" /> Matching you with nearby
-              passengers… this screen updates automatically.
+              <Loader2 className="size-4 animate-spin text-primary" /> {t("matchingYouHint")}
             </p>
           )}
         </CardContent>
@@ -179,7 +180,7 @@ function ConfirmationPage() {
 
           <div className="mt-4 space-y-2">
             <p className="num text-center text-sm text-muted-foreground">
-              {filled} / {capacity} passengers
+              {filled} / {capacity} {t("passengers")}
             </p>
             <SeatBar filled={filled} capacity={capacity} />
           </div>
@@ -191,8 +192,8 @@ function ConfirmationPage() {
           <Card className="mt-4 shadow-card">
             <CardContent className="space-y-2 pt-6">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg">Driver on the way</h2>
-                <Badge variant="confirmed">Live</Badge>
+                <h2 className="text-lg">{t("driverOnTheWay")}</h2>
+                <Badge variant="confirmed">{t("liveBadge")}</Badge>
               </div>
               <div className="overflow-hidden rounded-2xl border border-border">
                 <MapView
@@ -203,7 +204,7 @@ function ConfirmationPage() {
                     driverLive.position ? [driverLive.position.lat, driverLive.position.lng] : null
                   }
                   vehicleLabel={
-                    live.group?.eta_to_pickup ? `Driver · ${live.group.eta_to_pickup}` : "Driver"
+                    live.group?.eta_to_pickup ? `${t("driverLabel")} · ${live.group.eta_to_pickup}` : t("driverLabel")
                   }
                   line={approachLine}
                   userLocation={groupPickup ? [groupPickup.lat, groupPickup.lng] : null}
@@ -220,7 +221,7 @@ function ConfirmationPage() {
                 />
               </div>
               <p className="text-xs text-muted-foreground">
-                The driver marker updates live as they approach your pickup point.
+                {t("markerUpdatesHint")}
               </p>
             </CardContent>
           </Card>
@@ -239,10 +240,10 @@ function ConfirmationPage() {
 
       <div className="mt-5 grid grid-cols-2 gap-3">
         <Button variant="outline" size="lg" onClick={share}>
-          <Share2 className="size-4" /> Share My Trip
+          <Share2 className="size-4" /> {t("shareMyTrip")}
         </Button>
         <Button size="lg" onClick={() => navigate({ to: "/trip" })}>
-          View Driver &amp; Pickup
+          {t("viewDriverPickup")}
         </Button>
       </div>
     </AppShell>

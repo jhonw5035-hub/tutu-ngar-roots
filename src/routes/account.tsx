@@ -12,6 +12,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/lib/session";
+import { useT } from "@/lib/i18n";
 import { sendSupportMessage, useMySupportMessages } from "@/lib/support";
 
 export const Route = createFileRoute("/account")({
@@ -36,23 +37,24 @@ export const Route = createFileRoute("/account")({
 
 function AccountPage() {
   const navItems = usePassengerNav("account");
+  const t = useT();
   const { profile, userId, refreshProfile } = useSession();
 
   return (
     <AppShell portal="passenger" navItems={navItems}>
-      <h1 className="text-2xl">Account</h1>
+      <h1 className="text-2xl">{t("accountTitle")}</h1>
 
       <Card className="mt-4 shadow-card">
         <CardContent className="space-y-4 pt-6">
           <PhotoEditor
             userId={userId}
-            name={profile?.fullName ?? profile?.firstName ?? "You"}
+            name={profile?.fullName ?? profile?.firstName ?? t("you")}
             current={profile?.photoDataUrl}
             onSaved={refreshProfile}
           />
           <div className="space-y-1 text-sm">
-            <p className="font-semibold">{profile?.fullName || "Guest passenger"}</p>
-            <p className="text-muted-foreground">{profile?.phone || "No phone on file"}</p>
+            <p className="font-semibold">{profile?.fullName || t("guestPassenger")}</p>
+            <p className="text-muted-foreground">{profile?.phone || t("noPhoneOnFile")}</p>
           </div>
         </CardContent>
       </Card>
@@ -73,6 +75,7 @@ function PhotoEditor({
   current?: string | undefined;
   onSaved: () => Promise<void>;
 }) {
+  const t = useT();
   const [draft, setDraft] = React.useState<string | undefined>(current);
   const [saving, setSaving] = React.useState(false);
 
@@ -89,11 +92,11 @@ function PhotoEditor({
       .eq("id", userId);
     setSaving(false);
     if (error) {
-      toast.error("Could not update your photo");
+      toast.error(t("couldNotUpdatePhoto"));
       return;
     }
     await onSaved();
-    toast.success("Profile photo updated");
+    toast.success(t("photoUpdated"));
   }
 
   return (
@@ -102,10 +105,10 @@ function PhotoEditor({
       {dirty ? (
         <div className="flex gap-2">
           <Button size="sm" onClick={() => void save()} disabled={saving}>
-            {saving ? <Loader2 className="size-4 animate-spin" /> : null} Save
+            {saving ? <Loader2 className="size-4 animate-spin" /> : null} {t("save")}
           </Button>
           <Button size="sm" variant="outline" onClick={() => setDraft(current)} disabled={saving}>
-            Cancel
+            {t("cancel")}
           </Button>
         </div>
       ) : null}
@@ -114,6 +117,7 @@ function PhotoEditor({
 }
 
 function SupportSection({ userId, name }: { userId: string | null; name: string | null }) {
+  const t = useT();
   const { messages } = useMySupportMessages(userId);
   const [open, setOpen] = React.useState(false);
   const [text, setText] = React.useState("");
@@ -125,9 +129,9 @@ function SupportSection({ userId, name }: { userId: string | null; name: string 
     try {
       await sendSupportMessage({ senderId: userId, senderName: name, message: text });
       setText("");
-      toast.success("Your message has been sent to our team");
+      toast.success(t("yourMessageSent"));
     } catch {
-      toast.error("Could not send your message");
+      toast.error(t("couldNotSendMessage"));
     } finally {
       setSending(false);
     }
@@ -142,9 +146,9 @@ function SupportSection({ userId, name }: { userId: string | null; name: string 
       >
         <Headset className="size-5 text-primary" />
         <span className="min-w-0">
-          <span className="block text-sm font-semibold">Contact Support</span>
+          <span className="block text-sm font-semibold">{t("contactSupport")}</span>
           <span className="block text-xs text-muted-foreground">
-            Message the Tu Tu Ngar team directly about anything.
+            {t("contactSupportSub")}
           </span>
         </span>
       </button>
@@ -156,10 +160,10 @@ function SupportSection({ userId, name }: { userId: string | null; name: string 
               value={text}
               onChange={(e) => setText(e.target.value)}
               rows={4}
-              placeholder="Tell us what's going on…"
+              placeholder={t("tellUsPlaceholder")}
             />
             <Button onClick={() => void send()} disabled={sending || !text.trim()}>
-              {sending ? <Loader2 className="size-4 animate-spin" /> : null} Send
+              {sending ? <Loader2 className="size-4 animate-spin" /> : null} {t("send")}
             </Button>
           </CardContent>
         </Card>
@@ -167,7 +171,7 @@ function SupportSection({ userId, name }: { userId: string | null; name: string 
 
       {messages.length ? (
         <div className="space-y-2">
-          <h2 className="text-sm font-semibold">Your messages</h2>
+          <h2 className="text-sm font-semibold">{t("yourMessages")}</h2>
           {messages.map((m) => (
             <article key={m.id} className="rounded-xl border border-border bg-card p-3">
               <div className="flex items-center gap-2">
@@ -179,7 +183,7 @@ function SupportSection({ userId, name }: { userId: string | null; name: string 
               <p className="mt-2 text-sm">{m.message}</p>
               {m.admin_reply ? (
                 <p className="mt-2 rounded-lg bg-muted p-2 text-xs">
-                  <span className="font-semibold">Tu Tu Ngar team:</span> {m.admin_reply}
+                  <span className="font-semibold">{t("teamReplyLabel")}</span> {m.admin_reply}
                 </p>
               ) : null}
             </article>

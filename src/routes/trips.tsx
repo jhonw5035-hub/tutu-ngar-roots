@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { useBooking } from "@/lib/booking-store";
 import { formatTime12, getRoute, pastTrips, upcomingTrip } from "@/lib/mockData";
 import { resolveSlot } from "@/lib/departure";
+import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/trips")({
   head: () => ({
@@ -36,6 +37,7 @@ export const Route = createFileRoute("/trips")({
 function TripsPage() {
   const navItems = usePassengerNav("trips");
   const navigate = useNavigate();
+  const t = useT();
   const booking = useBooking();
 
   const slot = resolveSlot(booking.slotId, booking.liveDeparture, booking.routeId);
@@ -45,7 +47,7 @@ function TripsPage() {
     slot && route
       ? {
           label: `${route.from} → ${route.to}`,
-          when: `${booking.day === "today" ? "Today" : "Tomorrow"} · ${formatTime12(slot.time)}`,
+          when: `${booking.day === "today" ? t("today") : t("tomorrow")} · ${formatTime12(slot.time)}`,
         }
       : {
           label: `${upcomingTrip.pickup} → ${upcomingTrip.destination}`,
@@ -54,26 +56,26 @@ function TripsPage() {
 
   return (
     <AppShell portal="passenger" navItems={navItems}>
-      <h1 className="text-2xl">My Trips.</h1>
+      <h1 className="text-2xl">{t("myTripsTitle")}</h1>
 
       <section className="mt-5 space-y-2">
-        <h2 className="text-lg">Upcoming</h2>
+        <h2 className="text-lg">{t("upcoming")}</h2>
         <Card className="shadow-card">
           <CardContent className="space-y-2 pt-6">
             <div className="flex items-center justify-between gap-3">
               <span className="text-sm font-semibold">{upcoming.label}</span>
-              <Badge variant="confirmed">Confirmed</Badge>
+              <Badge variant="confirmed">{t("confirmedLabel")}</Badge>
             </div>
             <p className="num text-sm text-muted-foreground">{upcoming.when}</p>
             <Button size="sm" onClick={() => navigate({ to: "/trip" })}>
-              View Trip
+              {t("viewTrip")}
             </Button>
           </CardContent>
         </Card>
       </section>
 
       <section className="mt-6 space-y-2">
-        <h2 className="text-lg">Completed</h2>
+        <h2 className="text-lg">{t("completed")}</h2>
         {pastTrips.map((trip, i) => (
           <Card key={trip.id} className="shadow-card">
             <CardContent className="space-y-2 pt-6">
@@ -84,9 +86,9 @@ function TripsPage() {
                 <span className="num text-sm text-primary">{trip.fare.toLocaleString()} MMK</span>
               </div>
               <p className="num text-xs text-muted-foreground">
-                {i === 0 ? "Yesterday" : trip.date} · {formatTime12(trip.time)}
+                {i === 0 ? t("yesterday") : trip.date} · {formatTime12(trip.time)}
               </p>
-              <StarRating tripId={trip.id} />
+              <StarRating />
             </CardContent>
           </Card>
         ))}
@@ -95,15 +97,16 @@ function TripsPage() {
   );
 }
 
-function StarRating({ tripId }: { tripId: string }) {
+function StarRating() {
   const [rating, setRating] = useState(0);
+  const t = useT();
   return (
     <div className="flex items-center gap-1">
       {[1, 2, 3, 4, 5].map((n) => (
         <button
           key={n}
           type="button"
-          aria-label={`Rate ${n} star${n === 1 ? "" : "s"} for trip ${tripId}`}
+          aria-label={`${n} ★ — ${t("rateAria")}`}
           onClick={() => setRating(n)}
           className="cursor-pointer p-0.5 transition-transform active:scale-90"
         >
@@ -116,7 +119,7 @@ function StarRating({ tripId }: { tripId: string }) {
         </button>
       ))}
       <span className="ml-1 text-xs text-muted-foreground">
-        {rating ? `${rating}.0` : "Not rated"}
+        {rating ? `${rating}.0` : t("notRated")}
       </span>
     </div>
   );

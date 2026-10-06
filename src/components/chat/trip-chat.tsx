@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { sendGroupMessage, useGroupChat } from "@/lib/chat";
+import { useT } from "@/lib/i18n";
 
 export type TripChatProps = {
   groupId: string;
@@ -26,6 +27,7 @@ export function TripChat({ groupId, senderId, senderName, senderRole, className 
   const [text, setText] = React.useState("");
   const [sending, setSending] = React.useState(false);
   const listRef = React.useRef<HTMLDivElement>(null);
+  const t = useT();
 
   React.useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
@@ -40,7 +42,7 @@ export function TripChat({ groupId, senderId, senderName, senderRole, className 
       await sendGroupMessage({ groupId, senderId, senderName, senderRole, message });
       setText("");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Message failed to send");
+      toast.error(err instanceof Error ? err.message : t("messageFailed"));
     }
     setSending(false);
   }
@@ -49,9 +51,9 @@ export function TripChat({ groupId, senderId, senderName, senderRole, className 
     <Card className={cn("shadow-card", className)}>
       <CardContent className="space-y-3 pt-6">
         <div>
-          <h2 className="text-lg">Trip chat</h2>
+          <h2 className="text-lg">{t("tripChat")}</h2>
           <p className="text-xs text-muted-foreground">
-            This chat is only available for this trip.
+            {t("tripChatHint")}
           </p>
         </div>
 
@@ -60,10 +62,10 @@ export function TripChat({ groupId, senderId, senderName, senderRole, className 
           className="max-h-64 space-y-3 overflow-y-auto rounded-xl bg-muted/40 p-3"
         >
           {loading ? (
-            <p className="text-center text-xs text-muted-foreground">Loading messages…</p>
+            <p className="text-center text-xs text-muted-foreground">{t("loadingMessages")}</p>
           ) : messages.length === 0 ? (
             <p className="text-center text-xs text-muted-foreground">
-              No messages yet — say hello to your group.
+              {t("noMessagesYet")}
             </p>
           ) : (
             messages.map((m) =>
@@ -83,7 +85,7 @@ export function TripChat({ groupId, senderId, senderName, senderRole, className 
                   )}
                 >
                   <span className="text-[11px] text-muted-foreground">
-                    {m.sender_id === senderId ? "You" : (m.sender_name ?? "Rider")}
+                    {m.sender_id === senderId ? t("you") : (m.sender_name ?? t("rider"))}
                     {m.sender_role ? ` · ${m.sender_role}` : ""}
                   </span>
                   <span
@@ -106,12 +108,12 @@ export function TripChat({ groupId, senderId, senderName, senderRole, className 
           <Input
             value={text}
             onChange={(e) => setText(e.target.value)}
-            placeholder="Message your group…"
-            aria-label="Message"
+            placeholder={t("messagePlaceholder")}
+            aria-label={t("messagePlaceholder")}
           />
           <Button type="submit" size="icon" disabled={sending || !text.trim()}>
             <Send className="size-4" />
-            <span className="sr-only">Send</span>
+            <span className="sr-only">{t("send")}</span>
           </Button>
         </form>
       </CardContent>

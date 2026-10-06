@@ -9,6 +9,7 @@ import {
   useGeolocationAvailable,
   type Suggestion,
 } from "@/lib/geocode";
+import { useT } from "@/lib/i18n";
 
 export type PickedPlace = { label: string; lat: number; lng: number };
 
@@ -39,6 +40,7 @@ export function LocationAutocomplete({
   const [locating, setLocating] = React.useState(false);
   const canLocate = useGeolocationAvailable();
   const [locateFailed, setLocateFailed] = React.useState(false);
+  const t = useT();
 
   const { results, loading } = usePlaceSearch(value, typing);
 
@@ -108,7 +110,7 @@ export function LocationAutocomplete({
                 ) : (
                   <LocateFixed className="size-4" />
                 )}
-                {locating ? "Finding you…" : "Use my current location"}
+                {locating ? t("findingYou") : t("useMyCurrentLocation")}
               </button>
             </li>
           ) : null}
@@ -134,7 +136,7 @@ export function LocationAutocomplete({
 
           {!loading && typing && value.trim().length >= 3 && results.length === 0 ? (
             <li className="border-t border-border px-3 py-2.5 text-xs text-muted-foreground">
-              No places found in Yangon for “{value.trim()}”.
+              {t("noPlacesFound")} “{value.trim()}”.
             </li>
           ) : null}
         </ul>

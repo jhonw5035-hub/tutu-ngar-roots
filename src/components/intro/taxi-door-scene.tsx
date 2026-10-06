@@ -2,10 +2,12 @@ import * as React from "react";
 import { Link } from "@tanstack/react-router";
 
 import { Button } from "@/components/ui/button";
+import { useT } from "@/lib/i18n";
 
 const SESSION_KEY = "ttn-intro-played";
 
 export function TaxiDoorScene() {
+  const t = useT();
   // Start in the animated state only after we know this session hasn't seen it.
   const [revealed, setRevealed] = React.useState(true);
   const [animate, setAnimate] = React.useState(false);
@@ -51,13 +53,13 @@ export function TaxiDoorScene() {
           <span className="text-primary">ငှား</span>
         </p>
         <p className="mt-4 max-w-xs text-sm text-[oklch(0.991_0.006_62/0.66)]">
-          Shared rides across Yangon — booked ahead, priced upfront, and safer together.
+          {t("introTagline")}
         </p>
 
         <div className={state === "playing" ? "" : "ttn-intro-cta mt-8"}>
           <Button asChild size="lg" className="w-full min-w-[240px]">
             <Link to="/login" onClick={(e) => e.stopPropagation()}>
-              Get Started
+              {t("getStarted")}
             </Link>
           </Button>
         </div>

@@ -81,9 +81,9 @@ export const paymentMethods = ["Cash", "KPay", "Wave Pay", "AYA Pay"] as const;
 export type PaymentMethod = (typeof paymentMethods)[number];
 
 export const popularPlaces = [
-  { id: "sule", name: "Sule Square", lat: 16.7745, lng: 96.1597 },
-  { id: "mmplaza", name: "MM Plaza", lat: 16.7798, lng: 96.1572 },
-  { id: "junctioncity", name: "Junction City", lat: 16.7795, lng: 96.1543 },
-  { id: "junctionsquare", name: "Junction Square / Time City", lat: 16.8183, lng: 96.1319 },
-  { id: "hledan", name: "Hledan Center", lat: 16.8236, lng: 96.13 },
+  { id: "sule", name: "Sule Square", nameMy: "ဆူလေ စကွဲ", lat: 16.7745, lng: 96.1597 },
+  { id: "mmplaza", name: "MM Plaza", nameMy: "အမ်အမ် ပလာဇာ", lat: 16.7798, lng: 96.1572 },
+  { id: "junctioncity", name: "Junction City", nameMy: "ဂျန်းရှင် စီတီ", lat: 16.7795, lng: 96.1543 },
+  { id: "junctionsquare", name: "Junction Square / Time City", nameMy: "ဂျန်းရှင် စကွဲ / တိုင်း စီတီ", lat: 16.8183, lng: 96.1319 },
+  { id: "hledan", name: "Hledan Center", nameMy: "လှည်းတန်း စင်တာ", lat: 16.8236, lng: 96.13 },
 ];
