@@ -257,6 +257,20 @@
   animation: ttn-step-in 260ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+/* One lightweight, transform-only confirmation entrance. */
+@keyframes ttn-prebook-success {
+  from { opacity: 0; transform: scale(0.7); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.prebook-success {
+  animation: ttn-prebook-success 480ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prebook-success { animation: none; }
+}
+
 /* ---- Intro scene: the taxi door opening ---- */
 .ttn-intro {
   background-color: oklch(0.276 0.052 251);

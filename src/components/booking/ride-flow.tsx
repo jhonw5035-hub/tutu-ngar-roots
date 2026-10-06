@@ -46,8 +46,15 @@ export function RideFlow({ mode }: { mode: Mode }) {
   const { pickupCoord, destinationCoord } = booking;
   const quote = quoteFare(pickupCoord, destinationCoord);
   const idx = steps.indexOf(step);
-  const go = (s: Step) => setStep(s);
-  const back = () => (idx === 0 ? navigate({ to: "/home" }) : setStep(steps[idx - 1]!));
+  const go = (s: Step) => {
+    if (s === "match" && mode === "prebook") setSearching(true);
+    setStep(s);
+  };
+  const back = () => {
+    const previous = steps[idx - 1];
+    if (previous) setStep(previous);
+    else void navigate({ to: "/home" });
+  };
 
   const now = new Date();
   const minMinutes = now.getHours() * 60 + now.getMinutes() + 120;
@@ -58,26 +65,26 @@ export function RideFlow({ mode }: { mode: Mode }) {
   const chosen = timeWindows.find((w) => w.id === windowId) ?? null;
 
   React.useEffect(() => {
-    if (step !== "match" || mode !== "live") return;
+    if (step !== "match") return;
     setSearching(true);
     const id = window.setTimeout(() => setSearching(false), 2600);
     return () => window.clearTimeout(id);
   }, [step, mode]);
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-3">
-        <button type="button" onClick={back} aria-label="Back" className="flex size-9 cursor-pointer items-center justify-center rounded-full border border-border bg-card">
+    <div className="min-w-0 space-y-4 [overflow-wrap:anywhere]">
+      <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3">
+        <Button type="button" variant="outline" size="icon" onClick={back} aria-label="Back" className="shrink-0 rounded-full">
           <ArrowLeft className="size-4" />
-        </button>
-        <div>
+        </Button>
+        <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-wide text-primary">
             {mode === "prebook" ? "Pre-Booking" : "Live Mode"}
           </p>
           <h1 className="text-xl">
             {step === "where" && "Where to go?"}
             {step === "time" && "Pick a departure time"}
-            {step === "match" && (mode === "prebook" ? "Riders on your route" : "Finding shared riders")}
+            {step === "match" && (mode === "prebook" && !searching ? "Riders on your route" : "Finding shared riders")}
             {step === "pay" && "Payment"}
             {step === "done" && (mode === "prebook" ? "Booking confirmed" : "Driver on the way")}
           </h1>
@@ -114,7 +121,7 @@ export function RideFlow({ mode }: { mode: Mode }) {
               />
             </div>
             {quote ? <FareBadge fare={quote.fare} from={quote.from.name} to={quote.to.name} /> : null}
-            <Button className="w-full" size="lg" disabled={!pickupCoord || !destinationCoord} onClick={() => go(steps[1]!)}>
+            <Button className="w-full" size="lg" disabled={!pickupCoord || !destinationCoord} onClick={() => go(mode === "prebook" ? "time" : "match")}>
               Continue <ArrowRight className="size-4" />
             </Button>
             {!pickupCoord || !destinationCoord ? (
@@ -161,14 +168,14 @@ export function RideFlow({ mode }: { mode: Mode }) {
       {step === "match" ? (
         <Card className="shadow-card">
           <CardContent className="space-y-4 pt-6">
-            {mode === "live" && searching ? (
-              <div className="flex flex-col items-center gap-3 py-8 text-center">
+            {searching ? (
+              <div role="status" aria-live="polite" className="flex min-h-52 flex-col items-center justify-center gap-3 py-8 text-center">
                 <span className="relative flex size-16 items-center justify-center">
-                  <span className="absolute inset-0 animate-ping rounded-full bg-primary/30" />
+                  <span className="absolute inset-0 motion-safe:animate-ping rounded-full bg-primary/30" />
                   <Radar className="relative size-8 text-primary" />
                 </span>
-                <p className="font-semibold">Finding shared riders near you…</p>
-                <p className="text-xs text-muted-foreground">Searching within 1.5 km for riders heading your way</p>
+                <p className="font-semibold">{mode === "prebook" ? "Finding other riders on your route…" : "Finding shared riders near you…"}</p>
+                {mode === "live" ? <p className="text-xs text-muted-foreground">Searching within 1.5 km for riders heading your way</p> : null}
               </div>
             ) : (
               <>
@@ -211,7 +218,7 @@ export function RideFlow({ mode }: { mode: Mode }) {
               </Select>
               <p className="text-xs text-muted-foreground">Demo only — no real payment is taken.</p>
             </div>
-            <Button className="w-full" size="lg" onClick={() => go("done")}>
+            <Button className="h-auto min-h-12 w-full whitespace-normal px-4 py-3" size="lg" onClick={() => go("done")}>
               Pay {quote ? formatMMK(quote.fare) : ""} with {method}
             </Button>
           </CardContent>
@@ -222,11 +229,12 @@ export function RideFlow({ mode }: { mode: Mode }) {
         mode === "prebook" ? (
           <Card className="shadow-card">
             <CardContent className="space-y-4 pt-6 text-center">
-              <CheckCircle2 className="mx-auto size-14 text-primary" />
+              <CheckCircle2 className="prebook-success mx-auto size-14 text-primary" />
               <p className="text-lg font-semibold">
                 Your driver will pick you up at {chosen ? formatTime12(chosen.from) : "your time"}
                 {day === "tomorrow" ? " tomorrow" : ""} at {booking.pickupText}
               </p>
+              <p className="text-sm text-muted-foreground">We’ll notify you 10 minutes before your driver arrives.</p>
               <DriverRow method={method} fare={quote?.fare} />
               <Button className="w-full" variant="outline" onClick={() => navigate({ to: "/home" })}>Back to home</Button>
             </CardContent>
