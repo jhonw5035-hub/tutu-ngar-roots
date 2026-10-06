@@ -249,6 +249,8 @@ const en = {
   tellUsPlaceholder: "Tell us what's going on…",
   yourMessages: "Your messages",
   teamReplyLabel: "Tu Tu Ngar team:",
+  introTagline: "Shared rides across Yangon — booked ahead, priced upfront, and safer together.",
+  getStarted: "Get Started",
 } satisfies Record<string, string>;
 
 export type TranslationKey = keyof typeof en;
@@ -480,6 +482,9 @@ const my: Partial<Record<TranslationKey, string>> = {
   tellUsPlaceholder: "ဖြစ်ပျက်နေသည်များကို ပြောပါ…",
   yourMessages: "သင့်မေးမြန်းမှုများ",
   teamReplyLabel: "Tu Tu Ngar အသင်း -",
+  introTagline:
+    "ရန်ကုန်တစ်ဝိုက် မျှဝေခရီးစဉ်များ — ကြိုစီစဉ်ပြီး ကြိုတွက်ထားသော ဈေးနှုန်းဖြင့် အတူစီးလျှင် ပိုစိတ်ချရသည်။",
+  getStarted: "စတင်ရန်",
 };
 
 const dictionaries: Record<Lang, Partial<Record<TranslationKey, string>>> = { en, my };
