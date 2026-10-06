@@ -4,11 +4,10 @@ import mascotAsset from "@/assets/mascot.png.asset.json";
 
 import { AppShell } from "@/components/layout/app-shell";
 import { usePassengerNav } from "@/components/layout/passenger-nav";
-import { Card, CardContent } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 import { useBooking } from "@/lib/booking-store";
 import { popularPlaces } from "@/lib/fares";
 import { useT } from "@/lib/i18n";
+
 
 export const Route = createFileRoute("/home")({
   head: () => ({
@@ -100,9 +99,8 @@ function PassengerHome() {
         <button
           type="button"
           onClick={() => navigate({ to: "/live" })}
-          className={cn(
-            "flex cursor-pointer items-start gap-3 rounded-2xl border-2 border-primary bg-primary/5 p-5 text-left shadow-card transition-all hover:bg-primary/10 active:scale-[0.99]",
-          )}
+          className="flex cursor-pointer items-start gap-3 rounded-2xl border-2 border-primary bg-primary/5 p-5 text-left shadow-card transition-all hover:bg-primary/10 active:scale-[0.99]"
+
         >
           <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
             <Radar className="size-6" />
