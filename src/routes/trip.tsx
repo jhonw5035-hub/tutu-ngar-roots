@@ -355,6 +355,7 @@ function TripInProgress() {
 }
 
 function Rider({ name, photo, you }: { name: string; photo?: string | undefined; you?: boolean }) {
+  const t = useT();
   const initials = name.slice(0, 2).toUpperCase();
   return (
     <div className="w-14 text-center">
