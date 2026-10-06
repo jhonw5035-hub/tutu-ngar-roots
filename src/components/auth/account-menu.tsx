@@ -68,7 +68,7 @@ export function AccountMenu() {
         <DropdownMenuLabel className="font-normal">
           <span className="block text-sm font-semibold">{displayName}</span>
           <span className="block text-xs text-muted-foreground">
-            {role ? `${t("signedInAs")} ${t(roleLabel[role])}` : t("notSignedIn")}
+            {role ? `${t("signedInAs")} ${t(role)}` : t("notSignedIn")}
           </span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
