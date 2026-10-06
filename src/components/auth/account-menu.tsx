@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useSession } from "@/lib/session";
+import { useT } from "@/lib/i18n";
 
 const roleLabel = {
   passenger: "Passenger",
@@ -39,6 +40,7 @@ function getInitials(name?: string | null) {
 export function AccountMenu() {
   const { role, profile, signOut } = useSession();
   const navigate = useNavigate();
+  const t = useT();
 
   const displayName = profile?.firstName || profile?.fullName || "Guest";
   const target = settingsPath[role ?? "passenger"];
