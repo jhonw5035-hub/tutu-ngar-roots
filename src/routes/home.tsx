@@ -1,6 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useCallback, useMemo, useState } from "react";
-import { ArrowRight, Flag, MapPin } from "lucide-react";
+import { ArrowRight, Building2, CalendarClock, Flag, MapPin, Radar } from "lucide-react";
+import { FareBadge } from "@/components/booking/ride-flow";
+import { popularPlaces, quoteFare } from "@/lib/fares";
 
 import { AppShell } from "@/components/layout/app-shell";
 import { usePassengerNav } from "@/components/layout/passenger-nav";
@@ -56,6 +58,7 @@ function PassengerHome() {
   const onDestSuggestions = useCallback((s: Suggestion[]) => setDestHints(s), []);
 
   const { pickupCoord, destinationCoord } = booking;
+  const fareQuote = quoteFare(pickupCoord, destinationCoord);
 
   /** Live preview pins: chosen points win, otherwise show the suggestion set. */
   const markers = useMemo<MapMarker[]>(() => {
@@ -169,54 +172,80 @@ function PassengerHome() {
 
       <section className="mt-6 space-y-3">
         <div className="space-y-1">
-          <h2 className="text-lg">{t("orChooseFixedRoute")}</h2>
-          <p className="text-sm text-muted-foreground">{t("fixedRouteSubtext")}</p>
+          <h2 className="text-lg">Popular Routes</h2>
+          <p className="text-sm text-muted-foreground">Tap a destination to see the fixed fare.</p>
         </div>
-
-        <div className="space-y-3">
-          {routes.map((route) => {
-            const start = route.path[0]!;
-            const end = route.path[route.path.length - 1]!;
-            const next = getSlotDetails(route.id).find((s) => s.seatsLeft > 0);
-            return (
-              <button
-                key={route.id}
-                type="button"
-                onClick={() => {
-                  booking.set({
-                    pickupText: route.from,
-                    destinationText: route.to,
-                    pickupCoord: { lat: start[0], lng: start[1] },
-                    destinationCoord: { lat: end[0], lng: end[1] },
-                    routeId: route.id,
-                    slotId: null,
-                    pickupPointId: null,
-                    liveDeparture: null,
-                  });
-                  navigate({ to: "/rides" });
-                }}
-                className="w-full cursor-pointer rounded-2xl border-2 border-primary/25 bg-card p-4 text-left shadow-card transition-all hover:border-primary hover:shadow-lg active:scale-[0.99]"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="space-y-1">
-                    <p className="text-base font-semibold">{route.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {next ? `Next departure ${formatTime12(next.time)} · ` : ""}K
-                      {route.fare.toLocaleString()} per seat
-                    </p>
-                  </div>
-                  <span className="shrink-0 rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-primary">
-                    {t("fixedRoute")}
-                  </span>
-                </div>
-                <span className="mt-3 flex items-center gap-1 text-sm font-semibold text-primary">
-                  {t("seeAvailableRides")} <ArrowRight className="size-4" />
-                </span>
-              </button>
-            );
-          })}
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          {popularPlaces.map((p) => (
+            <button
+              key={p.id}
+              type="button"
+              onClick={() =>
+                booking.set({ destinationText: p.name, destinationCoord: { lat: p.lat, lng: p.lng } })
+              }
+              className={cn(
+                "flex cursor-pointer items-center gap-2 rounded-2xl border-2 bg-card p-3 text-left text-sm font-semibold shadow-card transition-all active:scale-[0.98]",
+                booking.destinationText === p.name
+                  ? "border-primary"
+                  : "border-primary/20 hover:border-primary/60",
+              )}
+            >
+              <Building2 className="size-4 shrink-0 text-primary" /> {p.name}
+            </button>
+          ))}
         </div>
+        {destinationCoord ? (
+          <Card className="shadow-card">
+            <CardContent className="space-y-2 pt-6">
+              <p className="text-sm">
+                <span className="font-semibold">{booking.pickupText || "Your pickup"}</span> →{" "}
+                <span className="font-semibold">{booking.destinationText}</span>
+              </p>
+              {fareQuote ? (
+                <FareBadge fare={fareQuote.fare} from={fareQuote.from.name} to={fareQuote.to.name} />
+              ) : (
+                <p className="text-xs text-muted-foreground">
+                  Choose a pickup point above to see your fixed fare.
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        ) : null}
       </section>
+
+      <section className="mt-6 grid gap-3 sm:grid-cols-2">
+        <button
+          type="button"
+          onClick={() => navigate({ to: "/prebook" })}
+          className="flex cursor-pointer items-start gap-3 rounded-2xl border-2 border-primary/25 bg-card p-5 text-left shadow-card transition-all hover:border-primary active:scale-[0.99]"
+        >
+          <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <CalendarClock className="size-6" />
+          </span>
+          <span>
+            <span className="block text-lg font-bold">Pre-Booking</span>
+            <span className="block text-sm text-muted-foreground">
+              Book your seat at least 2 hours in advance
+            </span>
+          </span>
+        </button>
+        <button
+          type="button"
+          onClick={() => navigate({ to: "/live" })}
+          className="flex cursor-pointer items-start gap-3 rounded-2xl border-2 border-primary bg-primary/5 p-5 text-left shadow-card transition-all hover:bg-primary/10 active:scale-[0.99]"
+        >
+          <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+            <Radar className="size-6" />
+          </span>
+          <span>
+            <span className="block text-lg font-bold">Live Mode</span>
+            <span className="block text-sm text-muted-foreground">
+              Find a shared ride nearby, departing soon · book 5–15 min before
+            </span>
+          </span>
+        </button>
+      </section>
+
 
       <section className="mt-6 space-y-3">
         <h2 className="text-lg">{t("whenAreYouTravelling")}</h2>
