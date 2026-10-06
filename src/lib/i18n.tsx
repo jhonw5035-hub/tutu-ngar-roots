@@ -176,6 +176,7 @@ const en = {
   tripLinkCopied: "Trip link copied — share it with someone you trust",
   couldntShare: "Couldn't share right now",
   inThisGroup: "in this group",
+  yourStop: "Your stop",
 } satisfies Record<string, string>;
 
 export type TranslationKey = keyof typeof en;
@@ -336,6 +337,7 @@ const my: Partial<Record<TranslationKey, string>> = {
   tripLinkCopied: "ခရီးစဉ်လင့်ခ် ကော်ပီကူးပြီးပါပြီ — ယုံကြည်ရသူတစ်ဦးကို မျှဝေပါ",
   couldntShare: "မျှဝေ၍ မရပါ",
   inThisGroup: "ဤအဖွဲ့တွင် ရှိသည်",
+  yourStop: "သင့်ဘူတာ",
 };
 
 const dictionaries: Record<Lang, Partial<Record<TranslationKey, string>>> = { en, my };
