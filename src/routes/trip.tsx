@@ -18,6 +18,7 @@ import { useMyLiveBooking, getCurrentPosition } from "@/lib/live";
 import { useDriverLocation } from "@/lib/driver-sim";
 import { startDemoTrip } from "@/lib/demo-trip.functions";
 import { useRoadPath } from "@/lib/road-path";
+import { useT } from "@/lib/i18n";
 import {
   distanceKm,
   getPointsForRoute,
@@ -62,6 +63,7 @@ type Stop = {
 
 function TripInProgress() {
   const navItems = usePassengerNav("trips");
+  const t = useT();
   const { profile, userId } = useSession();
   const { booking, group, members, driver, loading, refresh } = useMyLiveBooking(userId);
   const { position: driverPosition } = useDriverLocation(group?.driver_id ?? null);
@@ -96,9 +98,9 @@ function TripInProgress() {
         },
       });
       await refresh();
-      toast.success(`Demo trip ready — pickup at ${pickup.name}`);
+      toast.success(`${t("demoReady")} ${pickup.name}`);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Could not start the demo trip");
+      toast.error(err instanceof Error ? err.message : t("couldNotStartDemo"));
     }
     setDemoLoading(false);
   };
@@ -116,7 +118,7 @@ function TripInProgress() {
     const list: Stop[] = [
       {
         id: `pickup-${group.id}`,
-        name: group.pickup_point_label ?? booking?.pickup_label ?? "Pickup point",
+        name: group.pickup_point_label ?? booking?.pickup_label ?? t("pickupPoint"),
         lat: group.pickup_lat != null ? Number(group.pickup_lat) : null,
         lng: group.pickup_lng != null ? Number(group.pickup_lng) : null,
         isDestination: false,
@@ -127,7 +129,7 @@ function TripInProgress() {
     ordered.forEach((m, i) => {
       list.push({
         id: m.id,
-        name: m.drop_label ?? `Drop ${i + 1}`,
+        name: m.drop_label ?? `${t("dropN")} ${i + 1}`,
         lat: m.drop_lat != null ? Number(m.drop_lat) : null,
         lng: m.drop_lng != null ? Number(m.drop_lng) : null,
         isDestination: i === ordered.length - 1,
@@ -180,12 +182,12 @@ function TripInProgress() {
   if (loading || demoLoading) {
     return (
       <AppShell portal="passenger" navItems={navItems}>
-        <h1 className="text-xl">Trip in progress</h1>
+        <h1 className="text-xl">{t("tripInProgress")}</h1>
         <div className="mt-4 space-y-3">
           <div className="h-64 animate-pulse rounded-2xl bg-muted" />
           <div className="h-28 animate-pulse rounded-2xl bg-muted" />
           <p className="text-center text-sm text-muted-foreground">
-            {demoLoading ? "Preparing demo trip…" : "Checking for your active trip…"}
+            {demoLoading ? t("preparingDemo") : t("checkingActiveTrip")}
           </p>
         </div>
       </AppShell>
@@ -195,16 +197,15 @@ function TripInProgress() {
   if (!group) {
     return (
       <AppShell portal="passenger" navItems={navItems}>
-        <h1 className="text-xl">Trip in progress</h1>
+        <h1 className="text-xl">{t("tripInProgress")}</h1>
         <div className="mt-4 rounded-xl border border-dashed border-border bg-card p-10 text-center text-sm text-muted-foreground">
-          You don’t have an active grouped trip yet. Once your booking is grouped and a driver
-          accepts, the live route appears here.
+          {t("noActiveTrip")}
           <div className="mt-6 flex flex-col items-center gap-2">
             <Button onClick={() => void startDemo()} disabled={demoLoading}>
-              {demoLoading ? "Preparing demo trip…" : "Preview Demo Trip"}
+              {demoLoading ? t("preparingDemo") : t("previewDemoTrip")}
             </Button>
             <p className="text-xs text-muted-foreground">
-              Instantly preview a live trip for demo purposes.
+              {t("demoHint")}
             </p>
           </div>
         </div>
@@ -217,13 +218,13 @@ function TripInProgress() {
     <AppShell portal="passenger" navItems={navItems}>
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl">Trip in progress</h1>
+          <h1 className="text-xl">{t("tripInProgress")}</h1>
           <p className="text-sm text-muted-foreground">
             {driverName} · {plate}
           </p>
         </div>
         <Badge variant="confirmed">
-          {group.status === "accepted" ? "On the way" : group.status}
+          {group.status === "accepted" ? t("onTheWay") : group.status}
         </Badge>
       </div>
 
@@ -234,21 +235,21 @@ function TripInProgress() {
           markers={markers}
           line={line}
           vehicle={vehicle}
-          vehicleLabel={nextStop ? `Heading to ${nextStop.name}` : undefined}
+          vehicleLabel={nextStop ? `${t("headingTo")} ${nextStop.name}` : undefined}
         />
       </div>
 
       <Card className="mt-4 shadow-card">
         <CardContent className="pt-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg">Current route</h2>
+            <h2 className="text-lg">{t("currentRoute")}</h2>
             <Button
               variant="ghost"
               size="sm"
               disabled={progress >= stops.length}
               onClick={() => setProgress((p) => Math.min(stops.length, p + 1))}
             >
-              Advance demo
+              {t("advanceDemo")}
             </Button>
           </div>
 
@@ -288,20 +289,20 @@ function TripInProgress() {
                       {stop.name}
                       {stop.isYou ? (
                         <span className="ml-2 text-xs font-normal text-muted-foreground">
-                          Your drop-off
+                          {t("yourDropOff")}
                         </span>
                       ) : null}
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {done
                         ? i === 0
-                          ? "Picked Up"
-                          : "Dropped off"
+                          ? t("pickedUp")
+                          : t("droppedOff")
                         : isNext
-                          ? `${etaMin ?? "—"} min · ${remainingKm ? remainingKm.toFixed(1) : "—"} km`
+                          ? `${etaMin ?? "—"} ${t("minUnit")} · ${remainingKm ? remainingKm.toFixed(1) : "—"} km`
                           : stop.isDestination
-                            ? "Final destination"
-                            : "Upcoming stop"}
+                            ? t("finalDestination")
+                            : t("upcomingStop")}
                     </p>
                   </div>
                 </li>
@@ -313,19 +314,19 @@ function TripInProgress() {
 
       <Card className="mt-4 shadow-card">
         <CardContent className="pt-6">
-          <h2 className="text-lg">Passengers onboard</h2>
+          <h2 className="text-lg">{t("passengersOnboard")}</h2>
           {/* Privacy: co-riders are shown as anonymous seats — never full
               profiles or photos. Only your own avatar may use your photo. */}
           <div className="mt-3 flex flex-wrap gap-4">
             <Rider
-              name={profile?.firstName || profile?.fullName?.split(" ")[0] || "You"}
+              name={profile?.firstName || profile?.fullName?.split(" ")[0] || t("you")}
               photo={profile?.photoDataUrl}
               you
             />
             {members
               .filter((m) => m.booking_id !== booking?.id)
               .map((m, i) => (
-                <Rider key={m.id} name={`Rider ${i + 1}`} />
+                <Rider key={m.id} name={`${t("rider")} ${i + 1}`} />
               ))}
           </div>
         </CardContent>
@@ -336,7 +337,7 @@ function TripInProgress() {
           className="mt-4 mb-24"
           groupId={group.id}
           senderId={userId}
-          senderName={profile?.firstName || profile?.fullName || "You"}
+          senderName={profile?.firstName || profile?.fullName || t("you")}
           senderRole="passenger"
         />
       ) : null}
@@ -345,7 +346,7 @@ function TripInProgress() {
         <div className="mx-auto w-full max-w-3xl">
           <Button className="w-full" size="lg">
             <Navigation className="size-4" />
-            Navigate to {nextStop?.name ?? "destination"}
+            {t("navigateTo")} {nextStop?.name ?? t("destination")}
           </Button>
         </div>
       </div>
@@ -368,7 +369,7 @@ function Rider({ name, photo, you }: { name: string; photo?: string | undefined;
           {initials}
         </div>
       )}
-      <p className="mt-1 truncate text-xs">{you ? "You" : name}</p>
+      <p className="mt-1 truncate text-xs">{you ? t("you") : name}</p>
     </div>
   );
 }
