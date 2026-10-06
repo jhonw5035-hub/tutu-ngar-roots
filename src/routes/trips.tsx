@@ -88,7 +88,7 @@ function TripsPage() {
               <p className="num text-xs text-muted-foreground">
                 {i === 0 ? t("yesterday") : trip.date} · {formatTime12(trip.time)}
               </p>
-              <StarRating tripId={trip.id} />
+              <StarRating />
             </CardContent>
           </Card>
         ))}
@@ -97,7 +97,7 @@ function TripsPage() {
   );
 }
 
-function StarRating({ tripId }: { tripId: string }) {
+function StarRating() {
   const [rating, setRating] = useState(0);
   const t = useT();
   return (

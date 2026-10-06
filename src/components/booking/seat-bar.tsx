@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n";
 
 /** Small segmented seat-availability indicator: filled vs. open seats. */
 export function SeatBar({
@@ -10,11 +11,12 @@ export function SeatBar({
   capacity: number;
   className?: string;
 }) {
+  const t = useT();
   return (
     <div
       className={cn("flex items-center gap-1", className)}
       role="img"
-      aria-label={`${filled} of ${capacity} seats booked`}
+      aria-label={`${filled} / ${capacity} ${t("seatsBooked")}`}
     >
       {Array.from({ length: capacity }, (_, i) => (
         <span
