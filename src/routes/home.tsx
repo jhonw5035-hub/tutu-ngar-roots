@@ -23,6 +23,8 @@ export const Route = createFileRoute("/home")({
         property: "og:description",
         content: "Find shared departures with people going your way in Yangon.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: PassengerHome,
