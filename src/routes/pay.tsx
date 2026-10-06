@@ -13,6 +13,7 @@ import { useBooking } from "@/lib/booking-store";
 import { createBooking, getCurrentPosition } from "@/lib/live";
 import { useSession } from "@/lib/session";
 import { formatTime12, getRoute } from "@/lib/mockData";
+import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/pay")({
   head: () => ({
@@ -33,6 +34,7 @@ export const Route = createFileRoute("/pay")({
 });
 
 function PaymentPage() {
+  const t = useT();
   const navItems = usePassengerNav("trips");
   const navigate = useNavigate();
   const booking = useBooking();
@@ -48,7 +50,7 @@ function PaymentPage() {
   // optimizer will pick up.
   const pay = async () => {
     if (!userId) {
-      toast.error("Please log in again to book a seat");
+      toast.error(t("pleaseLogInAgain"));
       navigate({ to: "/login" });
       return;
     }
@@ -58,21 +60,21 @@ function PaymentPage() {
       // Fall back to the geocoded pickup the passenger searched for on Home.
       const position = device ?? booking.pickupCoord;
       if (!device && !position) {
-        toast.message("Location unavailable — using your selected pickup area");
+        toast.message(t("locationUnavailable"));
       }
       const created = await createBooking({
         passengerId: userId,
         passengerName: profile?.firstName ?? profile?.fullName ?? null,
         passengerGender: profile?.gender ?? null,
-        pickupLabel: booking.pickupText || route?.from || "Pickup area",
-        destinationLabel: booking.destinationText || route?.to || "Destination",
+        pickupLabel: booking.pickupText || route?.from || t("pickupArea"),
+        destinationLabel: booking.destinationText || route?.to || t("destination"),
         requestedTime: slot ? new Date().toISOString() : null,
         pickup: position,
         destination: booking.destinationCoord,
       });
       navigate({ to: "/confirmed", search: { booking: created.id } });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Could not confirm your booking");
+      toast.error(err instanceof Error ? err.message : t("couldNotConfirm"));
       setPaying(false);
     }
   };
@@ -80,37 +82,37 @@ function PaymentPage() {
   return (
     <AppShell portal="passenger" navItems={navItems}>
       <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" aria-label="Back" onClick={() => history.back()}>
+        <Button variant="ghost" size="icon" aria-label={t("back")} onClick={() => history.back()}>
           <ArrowLeft className="size-5" />
         </Button>
-        <h1 className="text-2xl">Confirm your ride.</h1>
+        <h1 className="text-2xl">{t("confirmYourRide")}</h1>
       </div>
 
       <Card className="mt-4 shadow-card">
         <CardContent className="space-y-2 pt-6 text-sm">
           <div className="flex justify-between gap-3">
-            <span className="text-muted-foreground">Route</span>
+            <span className="text-muted-foreground">{t("routeLabel")}</span>
             <span className="font-semibold">
-              {route ? `${route.from} → ${route.to}` : "Shared ride"}
+              {route ? `${route.from} → ${route.to}` : t("sharedRide")}
             </span>
           </div>
           <div className="flex justify-between gap-3">
-            <span className="text-muted-foreground">Time</span>
+            <span className="text-muted-foreground">{t("timeLabel")}</span>
             <span className="num">{slot ? formatTime12(slot.time) : "8:00 AM"}</span>
           </div>
           <div className="flex justify-between gap-3">
-            <span className="text-muted-foreground">Seats</span>
-            <span className="num">1 Seat × {fare.toLocaleString()} MMK</span>
+            <span className="text-muted-foreground">{t("seatsLabel")}</span>
+            <span className="num">1 {t("seat")} × {fare.toLocaleString()} MMK</span>
           </div>
           <div className="flex justify-between gap-3 border-t border-border pt-3 text-base">
-            <span className="font-semibold">Total</span>
+            <span className="font-semibold">{t("total")}</span>
             <span className="num font-semibold text-primary">{fare.toLocaleString()} MMK</span>
           </div>
         </CardContent>
       </Card>
 
       <section className="mt-5 space-y-2">
-        <h2 className="text-lg">Payment method</h2>
+        <h2 className="text-lg">{t("paymentMethod")}</h2>
         <div className="flex items-center gap-3 rounded-2xl border border-primary bg-accent p-4 shadow-card">
           <span className="flex size-5 items-center justify-center rounded-full border-2 border-primary">
             <span className="size-2.5 rounded-full bg-primary" />
@@ -118,7 +120,7 @@ function PaymentPage() {
           <QrCode className="size-5 text-primary" />
           <div>
             <p className="text-sm font-semibold">MMQR</p>
-            <p className="text-xs text-muted-foreground">Scan and pay with any Myanmar bank app</p>
+            <p className="text-xs text-muted-foreground">{t("scanPayHint")}</p>
           </div>
         </div>
       </section>
@@ -128,10 +130,10 @@ function PaymentPage() {
           <Button className="w-full" size="lg" disabled={paying} onClick={() => void pay()}>
             {paying ? (
               <>
-                <Loader2 className="size-4 animate-spin" /> Processing payment…
+                <Loader2 className="size-4 animate-spin" /> {t("processingPayment")}
               </>
             ) : (
-              "Pay & Book Seat"
+              t("payAndBook")
             )}
           </Button>
         </div>
