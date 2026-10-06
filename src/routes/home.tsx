@@ -116,12 +116,7 @@ function PassengerHome() {
         </button>
       </section>
 
-      <Card className="mt-6 border-dashed">
-        <CardContent className="pt-6 text-sm text-muted-foreground">
-          <span className="mm">အတူစီးရင် ပိုသက်သာတယ်</span> — share the ride, split the fare.
-          Tu Tu Ngar runs on fixed shared routes across Yangon.
-        </CardContent>
-      </Card>
     </AppShell>
+
   );
 }
