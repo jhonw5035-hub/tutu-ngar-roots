@@ -177,6 +177,28 @@ const en = {
   couldntShare: "Couldn't share right now",
   inThisGroup: "in this group",
   yourStop: "Your stop",
+
+  // Trips / chat / autocomplete
+  myTripsTitle: "My Trips.",
+  upcoming: "Upcoming",
+  completed: "Completed",
+  viewTrip: "View Trip",
+  yesterday: "Yesterday",
+  notRated: "Not rated",
+  rateAria: "Rate this trip",
+  findingYou: "Finding you…",
+  useMyCurrentLocation: "Use my current location",
+  noPlacesFound: "No places found for",
+  seatsBooked: "seats booked",
+  messageFailed: "Message failed to send",
+  tripChat: "Trip chat",
+  tripChatHint: "This chat is only available for this trip.",
+  loadingMessages: "Loading messages…",
+  noMessagesYet: "No messages yet — say hello to your group.",
+  you: "You",
+  rider: "Rider",
+  messagePlaceholder: "Message your group…",
+  send: "Send",
 } satisfies Record<string, string>;
 
 export type TranslationKey = keyof typeof en;
@@ -338,6 +360,27 @@ const my: Partial<Record<TranslationKey, string>> = {
   couldntShare: "မျှဝေ၍ မရပါ",
   inThisGroup: "ဤအဖွဲ့တွင် ရှိသည်",
   yourStop: "သင့်ဘူတာ",
+
+  myTripsTitle: "ကျွန်ုပ်၏ ခရီးစဉ်များ။",
+  upcoming: "လာမည့် ခရီးစဉ်",
+  completed: "ပြီးစီးသော ခရီးစဉ်များ",
+  viewTrip: "ခရီးစဉ် ကြည့်ရန်",
+  yesterday: "မနေ့",
+  notRated: "အဆင့်သတ်မှတ်ခြင်း မရှိပါ",
+  rateAria: "ဤခရီးစဉ်ကို အဆင့်သတ်မှတ်ရန်",
+  findingYou: "သင့်ကို ရှာနေပါသည်…",
+  useMyCurrentLocation: "လက်ရှိတည်နေရာကို အသုံးပြုမည်",
+  noPlacesFound: "နေရာ မတွေ့ပါ -",
+  seatsBooked: "နေရာ စီစဉ်ပြီး",
+  messageFailed: "မက်ဆေ့ပို့ရန် မအောင်မြင်ပါ",
+  tripChat: "ခရီးစဉ် စကားဝိုင်း",
+  tripChatHint: "ဤစကားဝိုင်းသည် ဤခရီးစဉ်အတွက်သာ ဖြစ်ပါသည်။",
+  loadingMessages: "မက်ဆေ့များ ဖွင့်နေပါသည်…",
+  noMessagesYet: "မက်ဆေ့ မရှိသေးပါ — အဖွဲ့ကို နှုတ်ဆက်ပါ။",
+  you: "သင်",
+  rider: "ခရီးသည်",
+  messagePlaceholder: "အဖွဲ့ကို မက်ဆေ့ပို့ပါ…",
+  send: "ပို့မည်",
 };
 
 const dictionaries: Record<Lang, Partial<Record<TranslationKey, string>>> = { en, my };
