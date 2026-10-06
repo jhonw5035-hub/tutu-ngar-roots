@@ -62,6 +62,29 @@ const en = {
   goOnline: "GO ONLINE",
   goOffline: "GO OFFLINE",
   todaysEarnings: "Today's earnings",
+
+  // Home greeting pair
+  welcomeToApp: "Welcome to Tu Tu Ngar App",
+  popularRoutes: "Popular Routes",
+  tapDestinationHint: "Tap a destination to see available shared rides.",
+  preBooking: "Pre-Booking",
+  preBookingDesc: "Book your seat at least 2 hours in advance",
+  liveMode: "Live Mode",
+  liveModeDesc: "Find a shared ride nearby, departing soon · book 5–15 min before",
+
+  // Role select / account menu
+  welcomeTitle: "Welcome to Tu Tu Ngar",
+  chooseHowContinue: "Choose how you'd like to continue",
+  continueAsPassenger: "Continue as Passenger",
+  continueAsDriver: "Continue as Driver",
+  continueAsAdmin: "Continue as Admin",
+  viewProfile: "View profile",
+  settings: "Settings",
+  notifications: "Notifications",
+  accountMenu: "Account menu",
+  signedInAs: "Signed in as",
+  notSignedIn: "Not signed in",
+  back: "Back",
 } satisfies Record<string, string>;
 
 export type TranslationKey = keyof typeof en;
@@ -114,6 +137,27 @@ const my: Partial<Record<TranslationKey, string>> = {
   goOnline: "အွန်လိုင်းဝင်ရန်",
   goOffline: "အော့ဖ်လိုင်းသွားရန်",
   todaysEarnings: "ယနေ့ ဝင်ငွေ",
+
+  welcomeToApp: "တူတူငှား အက်ပ်သို့ ကြိုဆိုပါသည်",
+  popularRoutes: "လူကြိုက်များသော လမ်းကြောင်းများ",
+  tapDestinationHint: "သွားလိုရာနေရာကို နှိပ်ပြီး ရရှိနိုင်သည့် မျှဝေခရီးစဉ်များ ကြည့်ပါ။",
+  preBooking: "ကြိုတင်စီစဉ်မှု",
+  preBookingDesc: "အနည်းဆုံး ၂ နာရီအကြို ကိုယ့်နေရာ ကြိုစီစဉ်ပါ",
+  liveMode: "တိုက်ရိုက် ရှာဖွေမှု",
+  liveModeDesc: "အနီးနားရှိ မကြာမီ ထွက်ခွာမည့် မျှဝေခရီးစဉ် ရှာပါ · ထွက်ခွာခင် ၅–၁၅ မိနစ်အကြို စီစဉ်ပါ",
+
+  welcomeTitle: "တူတူငှားမှ ကြိုဆိုပါသည်",
+  chooseHowContinue: "ဆက်လက်ရန် နည်းလမ်းကို ရွေးပါ",
+  continueAsPassenger: "ခရီးသည်အဖြစ် ဆက်လက်ရန်",
+  continueAsDriver: "ယာဉ်မောင်းအဖြစ် ဆက်လက်ရန်",
+  continueAsAdmin: "စီမံခန့်ခွဲသူအဖြစ် ဆက်လက်ရန်",
+  viewProfile: "ကိုယ်ရေးအချက်အလက် ကြည့်ရန်",
+  settings: "ဆက်တင်များ",
+  notifications: "အသိပေးချက်များ",
+  accountMenu: "အကောင့် မီနူး",
+  signedInAs: "ဝင်ရောက်ထားသည့် အကောင့် -",
+  notSignedIn: "မဝင်ရောက်ရသေးပါ",
+  back: "နောက်သို့",
 };
 
 const dictionaries: Record<Lang, Partial<Record<TranslationKey, string>>> = { en, my };
