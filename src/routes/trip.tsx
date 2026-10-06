@@ -176,7 +176,7 @@ function TripInProgress() {
       : null;
   const etaMin = remainingKm ? Math.max(1, Math.round((remainingKm / AVG_SPEED_KMH) * 60)) : null;
 
-  const driverName = driver?.full_name ?? driver?.first_name ?? "Your driver";
+  const driverName = driver?.full_name ?? driver?.first_name ?? t("yourDriver");
   const plate = driver?.plate_number ?? "—";
 
   if (loading || demoLoading) {
