@@ -1,6 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Building2, CalendarClock, Radar } from "lucide-react";
-import mascotAsset from "@/assets/mascot.png.asset.json";
 
 import { AppShell } from "@/components/layout/app-shell";
 import { usePassengerNav } from "@/components/layout/passenger-nav";
@@ -40,26 +39,12 @@ function PassengerHome() {
 
   return (
     <AppShell portal="passenger" navItems={navItems}>
-      {/* Greeting pair: small bowing mascot left, welcome heading right. */}
-      <section className="flex items-center justify-between gap-3 pt-2">
-        <MascotGreeting className="h-20 w-14 shrink-0 sm:h-24 sm:w-16" />
-        <h1 className="text-right text-lg font-bold leading-snug tracking-tight text-primary sm:text-2xl">
+      {/* Greeting pair: large animated mascot beside the welcome heading. */}
+      <section className="flex items-center gap-3 pt-2 sm:gap-6">
+        <MascotGreeting className="h-52 w-36 shrink-0 sm:h-60 sm:w-40" />
+        <h1 className="min-w-0 text-3xl font-bold leading-tight tracking-tight text-primary sm:text-5xl">
           {t("welcomeToApp")}
         </h1>
-      </section>
-
-      {/* Mascot hero with the brand slogan, coloured like the wordmark. */}
-      <section className="flex flex-col items-center pt-2 text-center">
-        <img
-          src={mascotAsset.url}
-          alt="Tu Tu Ngar mascot — a smiling boy in a Myanmar longyi giving a thumbs up"
-          className="h-44 w-auto max-w-full object-contain sm:h-52"
-          draggable={false}
-        />
-        <p className="mm mt-2 max-w-full text-xl font-bold sm:text-2xl">
-          <span className="text-foreground">အတူစီးရင် </span>
-          <span className="text-primary">ပိုသက်သာတယ်</span>
-        </p>
       </section>
 
       <section className="mt-6 space-y-3">

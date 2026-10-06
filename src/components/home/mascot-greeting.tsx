@@ -1,7 +1,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import standingAsset from "@/assets/mascot-standing.png.asset.json";
-import bowingAsset from "@/assets/mascot-bowing.png.asset.json";
+import standingAsset from "@/assets/mascot-standing-v2.png.asset.json";
+import bowingAsset from "@/assets/mascot-bowing-v2.png.asset.json";
 
 const BOW_EVERY_MS = 4500;
 const BOW_HOLD_MS = 1000;
@@ -34,13 +34,13 @@ export function MascotGreeting({ className }: { className?: string }) {
   }, []);
 
   return (
-    <span className={cn("relative block", className)} aria-hidden="true">
+    <span className={cn("relative block overflow-hidden bg-transparent", className)} aria-hidden="true">
       <img
         src={standingAsset.url}
         alt=""
         draggable={false}
         className={cn(
-          "h-full w-full object-contain object-bottom transition-opacity duration-[350ms]",
+          "h-full w-full object-contain object-bottom bg-transparent transition-opacity duration-[350ms]",
           bowing && "opacity-0",
         )}
       />
@@ -49,7 +49,7 @@ export function MascotGreeting({ className }: { className?: string }) {
         alt=""
         draggable={false}
         className={cn(
-          "absolute inset-0 h-full w-full object-contain object-bottom transition-opacity duration-[350ms]",
+          "absolute inset-0 h-full w-full object-contain object-bottom bg-transparent transition-opacity duration-[350ms]",
           bowing ? "opacity-100" : "opacity-0",
         )}
       />
