@@ -19,6 +19,7 @@ import { useBooking } from "@/lib/booking-store";
 import { formatMMK, paymentMethods, quoteFare, type PaymentMethod } from "@/lib/fares";
 import { formatTime12, timeWindows, type LatLng } from "@/lib/mockData";
 import { useRoadPath } from "@/lib/road-path";
+import { useT } from "@/lib/i18n";
 import { useVehicleAnimation } from "@/lib/use-vehicle-animation";
 import { cn } from "@/lib/utils";
 
@@ -36,6 +37,7 @@ const MOCK_RIDERS = [
 export function RideFlow({ mode }: { mode: Mode }) {
   const navigate = useNavigate();
   const booking = useBooking();
+  const t = useT();
   const steps: Step[] = mode === "prebook" ? ["where", "time", "match", "pay", "done"] : ["where", "match", "pay", "done"];
   const [step, setStep] = React.useState<Step>("where");
   const [day, setDay] = React.useState<"today" | "tomorrow">("today");
@@ -74,19 +76,19 @@ export function RideFlow({ mode }: { mode: Mode }) {
   return (
     <div className="min-w-0 space-y-4 [overflow-wrap:anywhere]">
       <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3">
-        <Button type="button" variant="outline" size="icon" onClick={back} aria-label="Back" className="shrink-0 rounded-full">
+        <Button type="button" variant="outline" size="icon" onClick={back} aria-label={t("back")} className="shrink-0 rounded-full">
           <ArrowLeft className="size-4" />
         </Button>
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-wide text-primary">
-            {mode === "prebook" ? "Pre-Booking" : "Live Mode"}
+            {mode === "prebook" ? t("preBooking") : t("liveMode")}
           </p>
           <h1 className="text-xl">
-            {step === "where" && "Where to go?"}
-            {step === "time" && "Pick a departure time"}
-            {step === "match" && (mode === "prebook" && !searching ? "Riders on your route" : "Finding shared riders")}
-            {step === "pay" && "Payment"}
-            {step === "done" && (mode === "prebook" ? "Booking confirmed" : "Driver on the way")}
+            {step === "where" && t("whereToGo")}
+            {step === "time" && t("pickDepartureTime")}
+            {step === "match" && (mode === "prebook" && !searching ? t("ridersOnYourRoute") : t("findingSharedRiders"))}
+            {step === "pay" && t("payment")}
+            {step === "done" && (mode === "prebook" ? t("bookingConfirmed") : t("driverOnTheWay"))}
           </h1>
         </div>
       </div>
@@ -100,10 +102,10 @@ export function RideFlow({ mode }: { mode: Mode }) {
         <Card className="shadow-card">
           <CardContent className="space-y-4 pt-6">
             <div className="space-y-1.5">
-              <Label htmlFor="flow-pickup"><MapPin className="size-4 text-primary" /> Pickup point</Label>
+              <Label htmlFor="flow-pickup"><MapPin className="size-4 text-primary" /> {t("pickupPoint")}</Label>
               <LocationAutocomplete
                 id="flow-pickup"
-                placeholder="Search a place — e.g. Hledan Junction"
+                placeholder={t("searchPlacePlaceholder")}
                 value={booking.pickupText}
                 onValueChange={(pickupText) => booking.set({ pickupText, pickupCoord: null })}
                 onPick={(p) => booking.set({ pickupText: p.label, pickupCoord: { lat: p.lat, lng: p.lng } })}
@@ -111,10 +113,10 @@ export function RideFlow({ mode }: { mode: Mode }) {
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="flow-dest"><Flag className="size-4 text-muted-foreground" /> Destination</Label>
+              <Label htmlFor="flow-dest"><Flag className="size-4 text-muted-foreground" /> {t("destination")}</Label>
               <LocationAutocomplete
                 id="flow-dest"
-                placeholder="Where to — e.g. Sule Square"
+                placeholder={t("whereToPlaceholder")}
                 value={booking.destinationText}
                 onValueChange={(destinationText) => booking.set({ destinationText, destinationCoord: null })}
                 onPick={(p) => booking.set({ destinationText: p.label, destinationCoord: { lat: p.lat, lng: p.lng } })}
@@ -122,10 +124,10 @@ export function RideFlow({ mode }: { mode: Mode }) {
             </div>
             {quote ? <FareBadge fare={quote.fare} from={quote.from.name} to={quote.to.name} /> : null}
             <Button className="w-full" size="lg" disabled={!pickupCoord || !destinationCoord} onClick={() => go(mode === "prebook" ? "time" : "match")}>
-              Continue <ArrowRight className="size-4" />
+              {t("continueLabel")} <ArrowRight className="size-4" />
             </Button>
             {!pickupCoord || !destinationCoord ? (
-              <p className="text-center text-xs text-muted-foreground">Pick both places from the suggestions to continue.</p>
+              <p className="text-center text-xs text-muted-foreground">{t("pickBothPlacesHint")}</p>
             ) : null}
           </CardContent>
         </Card>
@@ -134,13 +136,13 @@ export function RideFlow({ mode }: { mode: Mode }) {
       {step === "time" ? (
         <Card className="shadow-card">
           <CardContent className="space-y-4 pt-6">
-            <p className="text-sm text-muted-foreground">Book at least 2 hours in advance — earlier times are greyed out.</p>
+            <p className="text-sm text-muted-foreground">{t("twoHourHint")}</p>
             <div className="flex gap-2">
               {(["today", "tomorrow"] as const).map((d) => (
                 <button key={d} type="button" onClick={() => { setDay(d); setWindowId(null); }}
                   className={cn("flex-1 cursor-pointer rounded-xl border px-4 py-2.5 text-sm font-semibold capitalize",
                     day === d ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-muted-foreground")}>
-                  {d}
+                  {t(d)}
                 </button>
               ))}
             </div>
@@ -159,7 +161,7 @@ export function RideFlow({ mode }: { mode: Mode }) {
               })}
             </div>
             <Button className="w-full" size="lg" disabled={!windowId} onClick={() => go("match")}>
-              See matched riders <ArrowRight className="size-4" />
+              {t("seeMatchedRiders")} <ArrowRight className="size-4" />
             </Button>
           </CardContent>
         </Card>
