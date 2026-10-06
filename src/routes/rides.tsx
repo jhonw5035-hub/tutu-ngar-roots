@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { useBooking } from "@/lib/booking-store";
 import { formatTime12, nearestCorridor, type Route as Corridor } from "@/lib/mockData";
 import { getCorridorDepartures, type LiveDeparture } from "@/lib/rides.functions";
+import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/rides")({
   head: () => ({
@@ -36,6 +37,7 @@ export const Route = createFileRoute("/rides")({
 function AvailableRides() {
   const navItems = usePassengerNav("trips");
   const booking = useBooking();
+  const t = useT();
   const [departures, setDepartures] = useState<LiveDeparture[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -84,19 +86,19 @@ function AvailableRides() {
   return (
     <AppShell portal="passenger" navItems={navItems}>
       <section className="space-y-1">
-        <h1 className="text-2xl">Available shared rides</h1>
+        <h1 className="text-2xl">{t("availableSharedRides")}</h1>
         <p className="text-sm text-muted-foreground">
-          {booking.pickupText || "Your area"} → {booking.destinationText || "Downtown Yangon"} ·{" "}
+          {booking.pickupText || t("yourArea")} → {booking.destinationText || t("downtownYangon")} ·{" "}
           <span className="capitalize">{booking.day}</span>
         </p>
         {corridor ? (
-          <p className="text-xs text-muted-foreground">Matched corridor: {corridor.name}</p>
+          <p className="text-xs text-muted-foreground">{t("matchedCorridor")} {corridor.name}</p>
         ) : null}
       </section>
 
       <div className="mt-4 space-y-3">
         {loading ? (
-          <p className="text-sm text-muted-foreground">Finding people going your way…</p>
+          <p className="text-sm text-muted-foreground">{t("findingPeopleGoingYourWay")}</p>
         ) : !corridor || departures.length === 0 ? (
           <EmptyState hasCorridor={Boolean(corridor)} />
         ) : (
@@ -109,17 +111,16 @@ function AvailableRides() {
 
 function EmptyState({ hasCorridor }: { hasCorridor: boolean }) {
   const navigate = useNavigate();
+  const t = useT();
   return (
     <Card className="shadow-card">
       <CardContent className="space-y-3 pt-6 text-center">
-        <p className="text-base font-semibold">No shared rides on this route yet</p>
+        <p className="text-base font-semibold">{t("noRidesYet")}</p>
         <p className="text-sm text-muted-foreground">
-          {hasCorridor
-            ? "Nobody has booked this corridor for that window yet — try another departure window."
-            : "We only run three corridors today: North Okkalapa ↔ Sule, Inya Road ↔ Sanchaung and North Okkalapa ↔ South Okkalapa."}
+          {hasCorridor ? t("nobodyBookedHint") : t("threeCorridorsHint")}
         </p>
         <Button variant="outline" onClick={() => navigate({ to: "/home" })}>
-          Change search
+          {t("changeSearch")}
         </Button>
       </CardContent>
     </Card>
@@ -129,6 +130,7 @@ function EmptyState({ hasCorridor }: { hasCorridor: boolean }) {
 function DepartureCard({ departure, corridor }: { departure: LiveDeparture; corridor: Corridor }) {
   const navigate = useNavigate();
   const booking = useBooking();
+  const t = useT();
   const seatsLeft = Math.max(0, departure.seatsCapacity - departure.seatsFilled);
   const nearlyFull = seatsLeft === 1;
 
@@ -143,7 +145,7 @@ function DepartureCard({ departure, corridor }: { departure: LiveDeparture; corr
               {departure.destinationLabel}
             </p>
           </div>
-          {nearlyFull ? <Badge variant="progress">Almost full</Badge> : null}
+          {nearlyFull ? <Badge variant="progress">{t("almostFull")}</Badge> : null}
         </div>
 
         <div className="flex items-center gap-3">
@@ -151,7 +153,7 @@ function DepartureCard({ departure, corridor }: { departure: LiveDeparture; corr
             {departure.riders.map((r) => (
               <span
                 key={r.id}
-                title="Passenger"
+                title={t("passenger")}
                 className="num flex size-8 items-center justify-center rounded-full border-2 border-card bg-primary text-[11px] text-primary-foreground"
               >
                 {r.firstName.slice(0, 2).toUpperCase()}
@@ -171,21 +173,21 @@ function DepartureCard({ departure, corridor }: { departure: LiveDeparture; corr
             <span className="num">
               {departure.seatsFilled} / {departure.seatsCapacity}
             </span>{" "}
-            seats filled
+            {t("seatsFilled")}
           </p>
         </div>
 
         {departure.hasDriver ? (
           <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Clock className="size-3.5" /> Driver assigned · pickup at {departure.pickupLabel}
+            <Clock className="size-3.5" /> {t("driverAssignedAt")} {departure.pickupLabel}
           </p>
         ) : null}
 
         <div className="flex items-center justify-between gap-3 border-t border-border pt-3">
           <p className="text-sm">
-            <span className="num font-semibold">{seatsLeft}</span> seat
-            {seatsLeft === 1 ? "" : "s"} available ·{" "}
-            <span className="num text-primary">{corridor.fare.toLocaleString()} MMK</span> / seat
+            <span className="num font-semibold">{seatsLeft}</span>{" "}
+            {seatsLeft === 1 ? t("seatAvailable") : t("seatsAvailable")} ·{" "}
+            <span className="num text-primary">{corridor.fare.toLocaleString()} MMK</span> {t("perSeat")}
           </p>
           <Button
             size="sm"
@@ -200,7 +202,7 @@ function DepartureCard({ departure, corridor }: { departure: LiveDeparture; corr
               navigate({ to: "/ride/$slotId", params: { slotId: departure.groupId } });
             }}
           >
-            View Ride <ArrowRight className="size-4" />
+            {t("viewRide")} <ArrowRight className="size-4" />
           </Button>
         </div>
       </CardContent>
