@@ -18,6 +18,8 @@ export const Route = createFileRoute("/login")({
         property: "og:description",
         content: "Pick how you'd like to use Tu Tu Ngar shared rides.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: RoleSelectPage,

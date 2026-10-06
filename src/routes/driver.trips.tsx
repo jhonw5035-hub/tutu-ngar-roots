@@ -8,6 +8,10 @@ export const Route = createFileRoute("/driver/trips")({
     meta: [
       { title: "Driver trips — Tu Tu Ngar" },
       { name: "description", content: "Trip history for Tu Tu Ngar drivers." },
+      { property: "og:title", content: "Driver trips — Tu Tu Ngar" },
+      { property: "og:description", content: "Trip history for Tu Tu Ngar drivers." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: DriverTrips,

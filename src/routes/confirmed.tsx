@@ -35,6 +35,8 @@ export const Route = createFileRoute("/confirmed")({
         property: "og:description",
         content: "Shared seat confirmed with driver and pickup details.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: ConfirmationPage,

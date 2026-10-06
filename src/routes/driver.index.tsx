@@ -33,6 +33,8 @@ export const Route = createFileRoute("/driver/")({
         property: "og:description",
         content: "Go online, check earnings and manage your next trip on Tu Tu Ngar.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: DriverHome,

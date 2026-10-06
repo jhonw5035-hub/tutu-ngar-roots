@@ -26,6 +26,8 @@ export const Route = createFileRoute("/rides")({
         property: "og:description",
         content: "Shared departures with real seat-fill and price per seat.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: AvailableRides,

@@ -25,6 +25,8 @@ export const Route = createFileRoute("/pay")({
       },
       { property: "og:title", content: "Confirm Your Ride — Tu Tu Ngar" },
       { property: "og:description", content: "Pay your seat fare with MMQR and book." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: PaymentPage,
