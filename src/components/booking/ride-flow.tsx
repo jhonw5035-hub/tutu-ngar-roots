@@ -176,15 +176,15 @@ export function RideFlow({ mode }: { mode: Mode }) {
                   <span className="absolute inset-0 motion-safe:animate-ping rounded-full bg-primary/30" />
                   <Radar className="relative size-8 text-primary" />
                 </span>
-                <p className="font-semibold">{mode === "prebook" ? "Finding other riders on your route…" : "Finding shared riders near you…"}</p>
-                {mode === "live" ? <p className="text-xs text-muted-foreground">Searching within 1.5 km for riders heading your way</p> : null}
+                <p className="font-semibold">{mode === "prebook" ? t("findingRidersRoute") : t("findingRidersNearby")}</p>
+                {mode === "live" ? <p className="text-xs text-muted-foreground">{t("searchingRadiusHint")}</p> : null}
               </div>
             ) : (
               <>
                 <p className="text-sm text-muted-foreground">
                   {mode === "prebook"
-                    ? `Already booked on ${booking.pickupText} → ${booking.destinationText}${chosen ? `, ${chosen.label}` : ""}`
-                    : "Matched! These riders nearby are heading the same direction."}
+                    ? `${t("alreadyBookedOn")} ${booking.pickupText} → ${booking.destinationText}${chosen ? `, ${chosen.label}` : ""}`
+                    : t("matchedRidersNearby")}
                 </p>
                 <ul className="space-y-2">
                   {MOCK_RIDERS.map((r) => (
@@ -198,7 +198,7 @@ export function RideFlow({ mode }: { mode: Mode }) {
                 </ul>
                 {quote ? <FareBadge fare={quote.fare} from={quote.from.name} to={quote.to.name} /> : null}
                 <Button className="w-full" size="lg" onClick={() => go("pay")}>
-                  Join this ride <ArrowRight className="size-4" />
+                  {t("joinThisRide")} <ArrowRight className="size-4" />
                 </Button>
               </>
             )}
@@ -211,17 +211,17 @@ export function RideFlow({ mode }: { mode: Mode }) {
           <CardContent className="space-y-4 pt-6">
             {quote ? <FareBadge fare={quote.fare} from={quote.from.name} to={quote.to.name} /> : null}
             <div className="space-y-1.5">
-              <Label htmlFor="pay-method">Payment method</Label>
+              <Label htmlFor="pay-method">{t("paymentMethod")}</Label>
               <Select value={method} onValueChange={(v) => setMethod(v as PaymentMethod)}>
                 <SelectTrigger id="pay-method" className="w-full"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {paymentMethods.map((m) => <SelectItem key={m} value={m}>{m}</SelectItem>)}
                 </SelectContent>
               </Select>
-              <p className="text-xs text-muted-foreground">Demo only — no real payment is taken.</p>
+              <p className="text-xs text-muted-foreground">{t("demoPaymentHint")}</p>
             </div>
             <Button className="h-auto min-h-12 w-full whitespace-normal px-4 py-3" size="lg" onClick={() => go("done")}>
-              Pay {quote ? formatMMK(quote.fare) : ""} with {method}
+              {t("pay")} {quote ? formatMMK(quote.fare) : ""} {t("withMethod")} {method}
             </Button>
           </CardContent>
         </Card>
@@ -233,12 +233,12 @@ export function RideFlow({ mode }: { mode: Mode }) {
             <CardContent className="space-y-4 pt-6 text-center">
               <CheckCircle2 className="prebook-success mx-auto size-14 text-primary" />
               <p className="text-lg font-semibold">
-                Your driver will pick you up at {chosen ? formatTime12(chosen.from) : "your time"}
-                {day === "tomorrow" ? " tomorrow" : ""} at {booking.pickupText}
+                {t("driverWillPickUpAt")} {chosen ? formatTime12(chosen.from) : t("yourTime")}
+                {day === "tomorrow" ? ` ${t("tomorrow")}` : ""} {t("at")} {booking.pickupText}
               </p>
-              <p className="text-sm text-muted-foreground">We’ll notify you 10 minutes before your driver arrives.</p>
+              <p className="text-sm text-muted-foreground">{t("notify10Min")}</p>
               <DriverRow method={method} fare={quote?.fare} />
-              <Button className="w-full" variant="outline" onClick={() => navigate({ to: "/home" })}>Back to home</Button>
+              <Button className="w-full" variant="outline" onClick={() => navigate({ to: "/home" })}>{t("backToHome")}</Button>
             </CardContent>
           </Card>
         ) : (
@@ -255,25 +255,28 @@ function toMin(t: string) {
 }
 
 export function FareBadge({ fare, from, to }: { fare: number; from: string; to: string }) {
+  const t = useT();
   return (
     <div className="rounded-xl border border-primary/30 bg-primary/5 px-4 py-3">
       <p className="text-lg font-bold text-primary">{formatMMK(fare)}</p>
-      <p className="text-xs text-muted-foreground">Fixed rate for this route · {from} → {to}</p>
+      <p className="text-xs text-muted-foreground">{t("fixedRateForRoute")} · {from} → {to}</p>
     </div>
   );
 }
 
 function DriverRow({ method, fare }: { method: string; fare?: number | undefined }) {
+  const t = useT();
   return (
     <div className="rounded-xl border border-border bg-card p-3 text-left text-sm">
       <p className="font-semibold">{DRIVER.name}</p>
-      <p className="text-muted-foreground">Plate {DRIVER.plate}</p>
-      <p className="text-muted-foreground">Paid {fare ? formatMMK(fare) : ""} · {method}</p>
+      <p className="text-muted-foreground">{t("plate")} {DRIVER.plate}</p>
+      <p className="text-muted-foreground">{t("paid")} {fare ? formatMMK(fare) : ""} · {method}</p>
     </div>
   );
 }
 
 function LiveTracking({ method, fare }: { method: string; fare?: number | undefined }) {
+  const t = useT();
   const { pickupCoord, pickupText } = useBooking();
   const pickup: LatLng | null = pickupCoord ? [pickupCoord.lat, pickupCoord.lng] : null;
   const waypoints = React.useMemo<LatLng[] | null>(
@@ -290,12 +293,12 @@ function LiveTracking({ method, fare }: { method: string; fare?: number | undefi
   return (
     <div className="space-y-4">
       <div className="relative isolate z-0 overflow-hidden rounded-2xl border border-border">
-        <MapView className="h-72" routes={[]} markers={markers} line={path ?? undefined} vehicle={vehicle} vehicleLabel="Driver" {...(path ? { fitTo: path } : {})} />
+        <MapView className="h-72" routes={[]} markers={markers} line={path ?? undefined} vehicle={vehicle} vehicleLabel={t("driver")} {...(path ? { fitTo: path } : {})} />
       </div>
       <Card className="shadow-card">
         <CardContent className="space-y-3 pt-6">
           <p className="flex items-center gap-2 font-semibold">
-            <Loader2 className="size-4 animate-spin text-primary" /> Driver heading to {pickupText}
+            <Loader2 className="size-4 animate-spin text-primary" /> {t("driverHeadingTo")} {pickupText}
           </p>
           <DriverRow method={method} fare={fare} />
         </CardContent>
