@@ -51,7 +51,7 @@ export function AccountMenu() {
         <Button
           variant="ghost"
           size="icon"
-          aria-label="Account menu"
+          aria-label={t("accountMenu")}
           className="relative rounded-full"
         >
           <Avatar className="size-8">
@@ -68,17 +68,17 @@ export function AccountMenu() {
         <DropdownMenuLabel className="font-normal">
           <span className="block text-sm font-semibold">{displayName}</span>
           <span className="block text-xs text-muted-foreground">
-            {role ? `Signed in as ${roleLabel[role]}` : "Not signed in"}
+            {role ? `${t("signedInAs")} ${t(roleLabel[role])}` : t("notSignedIn")}
           </span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem onSelect={() => void navigate({ to: target })}>
           <UserRound className="size-4" />
-          View profile
+          {t("viewProfile")}
         </DropdownMenuItem>
         <DropdownMenuItem onSelect={() => void navigate({ to: target })}>
           <Settings className="size-4" />
-          Settings
+          {t("settings")}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
@@ -87,7 +87,7 @@ export function AccountMenu() {
           }}
         >
           <LogOut className="size-4" />
-          Log out
+          {t("logOut")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -95,8 +95,9 @@ export function AccountMenu() {
 }
 
 export function NotificationBell() {
+  const t = useT();
   return (
-    <Button variant="ghost" size="icon" aria-label="Notifications" className="relative">
+    <Button variant="ghost" size="icon" aria-label={t("notifications")} className="relative">
       <Bell className="size-5" />
       <span className="absolute right-1.5 top-1.5 size-2 rounded-full bg-primary" />
     </Button>
