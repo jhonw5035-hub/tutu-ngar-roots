@@ -75,6 +75,7 @@ function PhotoEditor({
   current?: string | undefined;
   onSaved: () => Promise<void>;
 }) {
+  const t = useT();
   const [draft, setDraft] = React.useState<string | undefined>(current);
   const [saving, setSaving] = React.useState(false);
 
@@ -91,11 +92,11 @@ function PhotoEditor({
       .eq("id", userId);
     setSaving(false);
     if (error) {
-      toast.error("Could not update your photo");
+      toast.error(t("couldNotUpdatePhoto"));
       return;
     }
     await onSaved();
-    toast.success("Profile photo updated");
+    toast.success(t("photoUpdated"));
   }
 
   return (
