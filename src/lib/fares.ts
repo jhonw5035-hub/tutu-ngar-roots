@@ -11,7 +11,7 @@ export const zones: Zone[] = [
   { id: "z-nokk", name: "North Okkalapa", lat: 16.9006, lng: 96.172 },
   { id: "z-sokk", name: "South Okkalapa", lat: 16.8495, lng: 96.1785 },
   { id: "z-yankin", name: "Yankin / Thingangyun", lat: 16.8382, lng: 96.1596 },
-  { id: "z-insein", name: "Insein", lat: 16.889, lng: 96.1, lng2: 0 } as Zone,
+  { id: "z-insein", name: "Insein", lat: 16.889, lng: 96.1 },
   { id: "z-kamayut", name: "Kamayut / Hledan", lat: 16.8236, lng: 96.13 },
   { id: "z-inya", name: "Inya Road", lat: 16.8285, lng: 96.1435 },
   { id: "z-sanchaung", name: "Sanchaung", lat: 16.8045, lng: 96.1325 },
