@@ -35,6 +35,8 @@ export const Route = createFileRoute("/ride/$slotId")({
         property: "og:description",
         content: "Matched pickup point, group makeup and fare for your shared departure.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: RideDetails,

@@ -26,6 +26,8 @@ export const Route = createFileRoute("/trips")({
         property: "og:description",
         content: "Upcoming shared departures and completed rides in Yangon.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: TripsPage,

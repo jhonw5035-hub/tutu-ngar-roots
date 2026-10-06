@@ -23,6 +23,8 @@ export const Route = createFileRoute("/home")({
         property: "og:description",
         content: "Find shared departures with people going your way in Yangon.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: PassengerHome,
@@ -41,10 +43,10 @@ function PassengerHome() {
         <img
           src={mascotAsset.url}
           alt="Tu Tu Ngar mascot — a smiling boy in a Myanmar longyi giving a thumbs up"
-          className="h-44 w-auto object-contain sm:h-52"
+          className="h-44 w-auto max-w-full object-contain sm:h-52"
           draggable={false}
         />
-        <p className="mm mt-2 text-xl font-bold tracking-tight sm:text-2xl">
+        <p className="mm mt-2 max-w-full text-xl font-bold sm:text-2xl">
           <span className="text-foreground">အတူစီးရင် </span>
           <span className="text-primary">ပိုသက်သာတယ်</span>
         </p>
@@ -72,9 +74,9 @@ function PassengerHome() {
                 });
                 navigate({ to: "/rides" });
               }}
-              className="flex cursor-pointer items-center gap-2 rounded-2xl border-2 border-primary/20 bg-card p-3 text-left text-sm font-semibold shadow-card transition-all hover:border-primary/60 active:scale-[0.98]"
+              className="flex min-w-0 cursor-pointer items-center gap-2 rounded-2xl border-2 border-primary/20 bg-card p-3 text-left text-sm font-semibold shadow-card transition-colors hover:border-primary/60 motion-safe:active:scale-[0.98]"
             >
-              <Building2 className="size-4 shrink-0 text-primary" /> {p.name}
+              <Building2 className="size-4 shrink-0 text-primary" /> <span className="min-w-0 break-words">{p.name}</span>
             </button>
           ))}
         </div>
@@ -89,7 +91,7 @@ function PassengerHome() {
           <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
             <CalendarClock className="size-6" />
           </span>
-          <span>
+          <span className="min-w-0">
             <span className="block text-lg font-bold">Pre-Booking</span>
             <span className="block text-sm text-muted-foreground">
               Book your seat at least 2 hours in advance
@@ -105,7 +107,7 @@ function PassengerHome() {
           <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
             <Radar className="size-6" />
           </span>
-          <span>
+          <span className="min-w-0">
             <span className="block text-lg font-bold">Live Mode</span>
             <span className="block text-sm text-muted-foreground">
               Find a shared ride nearby, departing soon · book 5–15 min before

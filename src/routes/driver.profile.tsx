@@ -8,6 +8,10 @@ export const Route = createFileRoute("/driver/profile")({
     meta: [
       { title: "Driver profile — Tu Tu Ngar" },
       { name: "description", content: "Driver profile and settings for Tu Tu Ngar." },
+      { property: "og:title", content: "Driver profile — Tu Tu Ngar" },
+      { property: "og:description", content: "Driver profile and settings for Tu Tu Ngar." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: DriverProfile,
