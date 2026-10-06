@@ -12,6 +12,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/lib/session";
+import { useT } from "@/lib/i18n";
 import { sendSupportMessage, useMySupportMessages } from "@/lib/support";
 
 export const Route = createFileRoute("/account")({
@@ -36,23 +37,24 @@ export const Route = createFileRoute("/account")({
 
 function AccountPage() {
   const navItems = usePassengerNav("account");
+  const t = useT();
   const { profile, userId, refreshProfile } = useSession();
 
   return (
     <AppShell portal="passenger" navItems={navItems}>
-      <h1 className="text-2xl">Account</h1>
+      <h1 className="text-2xl">{t("accountTitle")}</h1>
 
       <Card className="mt-4 shadow-card">
         <CardContent className="space-y-4 pt-6">
           <PhotoEditor
             userId={userId}
-            name={profile?.fullName ?? profile?.firstName ?? "You"}
+            name={profile?.fullName ?? profile?.firstName ?? t("you")}
             current={profile?.photoDataUrl}
             onSaved={refreshProfile}
           />
           <div className="space-y-1 text-sm">
-            <p className="font-semibold">{profile?.fullName || "Guest passenger"}</p>
-            <p className="text-muted-foreground">{profile?.phone || "No phone on file"}</p>
+            <p className="font-semibold">{profile?.fullName || t("guestPassenger")}</p>
+            <p className="text-muted-foreground">{profile?.phone || t("noPhoneOnFile")}</p>
           </div>
         </CardContent>
       </Card>

@@ -235,6 +235,20 @@ const en = {
   passengersOnboard: "Passengers onboard",
   navigateTo: "Navigate to",
   dropN: "Drop",
+  accountTitle: "Account",
+  guestPassenger: "Guest passenger",
+  noPhoneOnFile: "No phone on file",
+  couldNotUpdatePhoto: "Could not update your photo",
+  photoUpdated: "Profile photo updated",
+  save: "Save",
+  cancel: "Cancel",
+  yourMessageSent: "Your message has been sent to our team",
+  couldNotSendMessage: "Could not send your message",
+  contactSupport: "Contact Support",
+  contactSupportSub: "Message the Tu Tu Ngar team directly about anything.",
+  tellUsPlaceholder: "Tell us what's going on…",
+  yourMessages: "Your messages",
+  teamReplyLabel: "Tu Tu Ngar team:",
 } satisfies Record<string, string>;
 
 export type TranslationKey = keyof typeof en;
@@ -452,6 +466,20 @@ const my: Partial<Record<TranslationKey, string>> = {
   passengersOnboard: "စီးနေသည့် ခရီးသည်များ",
   navigateTo: "လမ်းညွှန် -",
   dropN: "ဆင်းမည့်နေရာ",
+  accountTitle: "အကောင့်",
+  guestPassenger: "ဧည့်သည် ခရီးသည်",
+  noPhoneOnFile: "ဖုန်းနံပါတ် မရှိပါ",
+  couldNotUpdatePhoto: "ဓာတ်ပုံ ပြောင်းလဲ၍ မရပါ",
+  photoUpdated: "ကိုယ်ရေးဓာတ်ပုံ မွမ်းမံပြီး",
+  save: "သိမ်းမည်",
+  cancel: "ပယ်ဖျက်",
+  yourMessageSent: "သင့်မေးမြန်းမှု ကျွန်ုပ်တို့အသင်းသို့ ရောက်ပါပြီ",
+  couldNotSendMessage: "မေးမြန်းမှု ပို့၍ မရပါ",
+  contactSupport: "အကူအညီ တောင်းရန်",
+  contactSupportSub: "မည်သည့်အကြောင်းအရာမဆို Tu Tu Ngar အသင်းကို တိုက်ရိုက်မေးပါ။",
+  tellUsPlaceholder: "ဖြစ်ပျက်နေသည်များကို ပြောပါ…",
+  yourMessages: "သင့်မေးမြန်းမှုများ",
+  teamReplyLabel: "Tu Tu Ngar အသင်း -",
 };
 
 const dictionaries: Record<Lang, Partial<Record<TranslationKey, string>>> = { en, my };
