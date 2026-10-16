@@ -231,6 +231,6 @@ export function useSession(): SessionValue {
 
 export const portalHome: Record<Role, string> = {
   passenger: "/home",
-  driver: "/driver",
-  admin: "/admin",
+  driver: "/home",
+  admin: "/home",
 };
