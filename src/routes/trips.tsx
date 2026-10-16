@@ -1,126 +1,183 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Star } from "lucide-react";
+import { Banknote, CalendarClock, Car, MapPin } from "lucide-react";
+import { toast } from "sonner";
 
 import { AppShell } from "@/components/layout/app-shell";
 import { usePassengerNav } from "@/components/layout/passenger-nav";
-import { Button } from "@/components/ui/button";
+import { MapView } from "@/components/map/map-view";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  cancelHistoryBooking,
+  canCancel,
+  effectiveStatus,
+  useBookingHistory,
+  type HistoryBooking,
+} from "@/lib/booking-history";
+import { formatMMK } from "@/lib/fares";
+import { useLanguage, useT } from "@/lib/i18n";
+import { getPickup } from "@/lib/main-road-pickups";
 import { cn } from "@/lib/utils";
-import { useBooking } from "@/lib/booking-store";
-import { formatTime12, getRoute, pastTrips, upcomingTrip } from "@/lib/mockData";
-import { resolveSlot } from "@/lib/departure";
-import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/trips")({
   head: () => ({
     meta: [
-      { title: "My Trips — Tu Tu Ngar" },
-      {
-        name: "description",
-        content:
-          "Your upcoming Tu Tu Ngar shared departures and completed Yangon rides, with fares and ratings.",
-      },
-      { property: "og:title", content: "My Trips — Tu Tu Ngar" },
-      {
-        property: "og:description",
-        content: "Upcoming shared departures and completed rides in Yangon.",
-      },
+      { title: "History — Tu Tu Ngar" },
+      { name: "description", content: "Your Tu Tu Ngar pre-bookings: upcoming, completed and cancelled shared rides in Yangon." },
+      { property: "og:title", content: "History — Tu Tu Ngar" },
+      { property: "og:description", content: "Your pre-booked shared rides across Yangon." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: TripsPage,
+  component: HistoryPage,
 });
 
-function TripsPage() {
+function HistoryPage() {
   const navItems = usePassengerNav("trips");
-  const navigate = useNavigate();
   const t = useT();
-  const booking = useBooking();
-
-  const slot = resolveSlot(booking.slotId, booking.liveDeparture, booking.routeId);
-  const route = getRoute(booking.routeId);
-
-  const upcoming =
-    slot && route
-      ? {
-          label: `${route.from} → ${route.to}`,
-          when: `${booking.day === "today" ? t("today") : t("tomorrow")} · ${formatTime12(slot.time)}`,
-        }
-      : {
-          label: `${upcomingTrip.pickup} → ${upcomingTrip.destination}`,
-          when: `${upcomingTrip.date} · ${formatTime12(upcomingTrip.time)}`,
-        };
+  const list = useBookingHistory();
 
   return (
     <AppShell portal="passenger" navItems={navItems}>
-      <h1 className="text-2xl">{t("myTripsTitle")}</h1>
-
-      <section className="mt-5 space-y-2">
-        <h2 className="text-lg">{t("upcoming")}</h2>
-        <Card className="shadow-card">
-          <CardContent className="space-y-2 pt-6">
-            <div className="flex items-center justify-between gap-3">
-              <span className="text-sm font-semibold">{upcoming.label}</span>
-              <Badge variant="confirmed">{t("confirmedLabel")}</Badge>
-            </div>
-            <p className="num text-sm text-muted-foreground">{upcoming.when}</p>
-            <Button size="sm" onClick={() => navigate({ to: "/trip" })}>
-              {t("viewTrip")}
-            </Button>
-          </CardContent>
-        </Card>
-      </section>
-
-      <section className="mt-6 space-y-2">
-        <h2 className="text-lg">{t("completed")}</h2>
-        {pastTrips.map((trip, i) => (
-          <Card key={trip.id} className="shadow-card">
-            <CardContent className="space-y-2 pt-6">
-              <div className="flex items-center justify-between gap-3">
-                <span className="text-sm font-semibold">
-                  {trip.pickup} → {trip.destination}
-                </span>
-                <span className="num text-sm text-primary">{trip.fare.toLocaleString()} MMK</span>
-              </div>
-              <p className="num text-xs text-muted-foreground">
-                {i === 0 ? t("yesterday") : trip.date} · {formatTime12(trip.time)}
-              </p>
-              <StarRating />
-            </CardContent>
-          </Card>
-        ))}
+      <h1 className="text-2xl">{t("historyTitle")}</h1>
+      <section className="mt-5 space-y-3">
+        {list === null ? (
+          <Skeleton className="h-40 w-full rounded-2xl" />
+        ) : list.length === 0 ? (
+          <p className="rounded-2xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+            {t("noHistory")}
+          </p>
+        ) : (
+          list.map((b) => <HistoryCard key={b.id} b={b} />)
+        )}
       </section>
     </AppShell>
   );
 }
 
-function StarRating() {
-  const [rating, setRating] = useState(0);
+function HistoryCard({ b }: { b: HistoryBooking }) {
   const t = useT();
+  const { lang } = useLanguage();
+  const [showMap, setShowMap] = useState(false);
+  const status = effectiveStatus(b);
+  const cancelled = status === "cancelled";
+  const pickup = getPickup(b.pickupPointId);
+  const pickupName = pickup ? (lang === "my" ? pickup.nameMy : pickup.name) : b.pickupArea;
+
+  const depart = new Date(b.departAt);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const dayDiff = Math.round((new Date(depart).setHours(0, 0, 0, 0) - today.getTime()) / 86400000);
+  const dayLabel =
+    dayDiff === 0 ? t("today") : dayDiff === 1 ? t("tomorrow") : dayDiff === -1 ? t("yesterday") : depart.toLocaleDateString();
+
+  const badge =
+    status === "upcoming" ? (
+      <Badge variant="confirmed">{t("statusUpcoming")}</Badge>
+    ) : status === "completed" ? (
+      <Badge variant="secondary">{t("statusCompleted")}</Badge>
+    ) : (
+      <Badge variant="outline">{t("statusCancelled")}</Badge>
+    );
+
   return (
-    <div className="flex items-center gap-1">
-      {[1, 2, 3, 4, 5].map((n) => (
+    <Card className={cn("shadow-card", cancelled && "opacity-60 grayscale")}>
+      <CardContent className="space-y-2.5 pt-6 text-sm">
+        <div className="flex items-start justify-between gap-3">
+          <span className="font-semibold [overflow-wrap:anywhere]">
+            {b.pickupArea} → {b.destination}
+          </span>
+          {badge}
+        </div>
+        <p className="num flex items-center gap-2 text-muted-foreground">
+          <CalendarClock className="size-4 shrink-0" /> {dayLabel}, {b.windowLabel}
+        </p>
+        <p className="num flex items-center gap-2 text-muted-foreground">
+          <Banknote className="size-4 shrink-0" /> {b.fare ? formatMMK(b.fare) : "—"} · {b.method}
+        </p>
+        <p className="flex items-center gap-2 text-muted-foreground">
+          <Car className="size-4 shrink-0" /> {b.driverName} · {b.plate}
+        </p>
         <button
-          key={n}
           type="button"
-          aria-label={`${n} ★ — ${t("rateAria")}`}
-          onClick={() => setRating(n)}
-          className="cursor-pointer p-0.5 transition-transform active:scale-90"
+          onClick={() => pickup && setShowMap((v) => !v)}
+          className="flex w-full cursor-pointer items-start gap-2 rounded-xl border border-primary/30 bg-primary/5 px-3 py-2 text-left"
+          aria-label={showMap ? t("hideMap") : t("showOnMap")}
         >
-          <Star
-            className={cn(
-              "size-4",
-              n <= rating ? "fill-primary text-primary" : "text-muted-foreground",
-            )}
-          />
+          <MapPin className="mt-0.5 size-4 shrink-0 text-primary" />
+          <span className="min-w-0">
+            <span className="block font-semibold text-primary">
+              {t("pickupLabel")}: {pickupName} ({t("nearLabel")} {b.pickupArea})
+            </span>
+            <span className="block text-xs text-muted-foreground">
+              {t("yourAreaLabel")}: {b.pickupArea} · {showMap ? t("hideMap") : t("showOnMap")}
+            </span>
+          </span>
         </button>
-      ))}
-      <span className="ml-1 text-xs text-muted-foreground">
-        {rating ? `${rating}.0` : t("notRated")}
-      </span>
-    </div>
+        {showMap && pickup ? (
+          <div className="relative isolate z-0 overflow-hidden rounded-xl border border-border">
+            <MapView
+              className="h-48"
+              routes={[]}
+              markers={[{ id: b.id, lat: pickup.lat, lng: pickup.lng, color: "#F75514", size: 26, label: "P", title: pickupName }]}
+              fitTo={[[pickup.lat, pickup.lng]]}
+            />
+          </div>
+        ) : null}
+        {status === "upcoming" ? <CancelControl b={b} /> : null}
+      </CardContent>
+    </Card>
+  );
+}
+
+function CancelControl({ b }: { b: HistoryBooking }) {
+  const t = useT();
+  const allowed = canCancel(b);
+  if (!allowed) {
+    return (
+      <div className="space-y-1">
+        <Button variant="outline" size="sm" disabled>{t("cancelBooking")}</Button>
+        <p className="text-xs text-muted-foreground">{t("tooCloseToCancel")}</p>
+      </div>
+    );
+  }
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button variant="outline" size="sm">{t("cancelBooking")}</Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{t("cancelBookingQ")}</AlertDialogTitle>
+          <AlertDialogDescription>{t("cancelBookingBody")}</AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>{t("keepBooking")}</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={() => {
+              cancelHistoryBooking(b.id);
+              toast(t("bookingCancelled"));
+            }}
+          >
+            {t("confirmCancel")}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
