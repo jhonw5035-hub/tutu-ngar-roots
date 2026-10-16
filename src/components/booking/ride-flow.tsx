@@ -21,7 +21,7 @@ import { formatMMK, paymentMethods, quoteFare, type PaymentMethod } from "@/lib/
 import { formatTime12, timeWindows, type LatLng } from "@/lib/mockData";
 import { useRoadPath } from "@/lib/road-path";
 import { useLanguage, useT } from "@/lib/i18n";
-import { nearestPickups, getPickup, type NearbyPickup } from "@/lib/main-road-pickups";
+import { nearestPickups, type NearbyPickup } from "@/lib/main-road-pickups";
 import { addHistoryBooking } from "@/lib/booking-history";
 import { useVehicleAnimation } from "@/lib/use-vehicle-animation";
 import { cn } from "@/lib/utils";

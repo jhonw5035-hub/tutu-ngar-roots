@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Banknote, CalendarClock, Car, MapPin } from "lucide-react";
+import { Banknote, CalendarClock, Car, Map as MapIcon, MapPin } from "lucide-react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/layout/app-shell";
@@ -30,7 +30,7 @@ import {
 } from "@/lib/booking-history";
 import { formatMMK } from "@/lib/fares";
 import { useLanguage, useT } from "@/lib/i18n";
-import { getPickup } from "@/lib/main-road-pickups";
+import { formatDistance, getPickup, haversineM } from "@/lib/main-road-pickups";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/trips")({
@@ -63,21 +63,25 @@ function HistoryPage() {
             {t("noHistory")}
           </p>
         ) : (
-          list.map((b) => <HistoryCard key={b.id} b={b} />)
+          list.map((b) => (
+            <HistoryCard key={b.id} b={b} defaultOpen={b.id === list.find((x) => effectiveStatus(x) === "upcoming")?.id} />
+          ))
         )}
       </section>
     </AppShell>
   );
 }
 
-function HistoryCard({ b }: { b: HistoryBooking }) {
+function HistoryCard({ b, defaultOpen }: { b: HistoryBooking; defaultOpen: boolean }) {
   const t = useT();
   const { lang } = useLanguage();
-  const [showMap, setShowMap] = useState(false);
+  const [showMap, setShowMap] = useState(defaultOpen);
   const status = effectiveStatus(b);
   const cancelled = status === "cancelled";
   const pickup = getPickup(b.pickupPointId);
   const pickupName = pickup ? (lang === "my" ? pickup.nameMy : pickup.name) : b.pickupArea;
+  const area = b.areaLat != null && b.areaLng != null ? { lat: b.areaLat, lng: b.areaLng } : null;
+  const distanceM = b.pickupDistanceM ?? (pickup && area ? Math.round(haversineM(area, pickup)) : null);
 
   const depart = new Date(b.departAt);
   const today = new Date();
@@ -113,29 +117,35 @@ function HistoryCard({ b }: { b: HistoryBooking }) {
         <p className="flex items-center gap-2 text-muted-foreground">
           <Car className="size-4 shrink-0" /> {b.driverName} · {b.plate}
         </p>
-        <button
-          type="button"
-          onClick={() => pickup && setShowMap((v) => !v)}
-          className="flex w-full cursor-pointer items-start gap-2 rounded-xl border border-primary/30 bg-primary/5 px-3 py-2 text-left"
-          aria-label={showMap ? t("hideMap") : t("showOnMap")}
-        >
+        <div className="flex items-start gap-2 rounded-xl border border-primary/30 bg-primary/5 px-3 py-2">
           <MapPin className="mt-0.5 size-4 shrink-0 text-primary" />
           <span className="min-w-0">
-            <span className="block font-semibold text-primary">
-              {t("pickupLabel")}: {pickupName} ({t("nearLabel")} {b.pickupArea})
-            </span>
-            <span className="block text-xs text-muted-foreground">
-              {t("yourAreaLabel")}: {b.pickupArea} · {showMap ? t("hideMap") : t("showOnMap")}
-            </span>
+            <span className="block font-semibold text-primary">{t("pickupLabel")}: {pickupName}</span>
+            {distanceM != null ? (
+              <span className="num block text-xs text-foreground">{formatDistance(distanceM)} {t("fromYourArea")}</span>
+            ) : null}
+            <span className="block text-xs text-muted-foreground">{t("yourAreaLabel")}: {b.pickupArea}</span>
           </span>
-        </button>
+        </div>
+        {pickup ? (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setShowMap((v) => !v)}
+            aria-expanded={showMap}
+            className="min-h-10 w-full border-primary bg-primary/5 text-sm font-medium text-primary hover:bg-primary/10 hover:text-primary"
+          >
+            <MapIcon className="size-4" /> {showMap ? t("hideMap") : t("showMap")}
+          </Button>
+        ) : null}
         {showMap && pickup ? (
           <div className="relative isolate z-0 overflow-hidden rounded-xl border border-border">
             <MapView
-              className="h-48"
+              className="h-56"
               routes={[]}
-              markers={[{ id: b.id, lat: pickup.lat, lng: pickup.lng, color: "#F75514", size: 26, label: "P", title: pickupName }]}
-              fitTo={[[pickup.lat, pickup.lng]]}
+              markers={[{ id: b.id, lat: pickup.lat, lng: pickup.lng, color: "#F75514", size: 34, label: "P", pulse: true, title: pickupName }]}
+              userLocation={area ? [area.lat, area.lng] : null}
+              fitTo={area ? [[pickup.lat, pickup.lng], [area.lat, area.lng]] : [[pickup.lat, pickup.lng]]}
             />
           </div>
         ) : null}
