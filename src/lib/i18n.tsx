@@ -70,7 +70,7 @@ const en = {
   preBooking: "Pre-Booking",
   preBookingDesc: "Book your seat at least 2 hours in advance",
   liveMode: "Live Mode",
-  liveModeDesc: "Find a shared ride nearby, departing soon · book 5–15 min before",
+  liveModeDesc: "Find a shared ride nearby, departing soon · book 30 min before",
 
   // Role select / account menu
   welcomeTitle: "Welcome to Tu Tu Ngar",
@@ -315,7 +315,7 @@ const my: Partial<Record<TranslationKey, string>> = {
   preBooking: "ကြိုတင်စီစဉ်မှု",
   preBookingDesc: "အနည်းဆုံး ၂ နာရီအကြို ကိုယ့်နေရာ ကြိုစီစဉ်ပါ",
   liveMode: "တိုက်ရိုက် ရှာဖွေမှု",
-  liveModeDesc: "အနီးနားရှိ မကြာမီ ထွက်ခွာမည့် မျှဝေခရီးစဉ် ရှာပါ · ထွက်ခွာခင် ၅–၁၅ မိနစ်အကြို စီစဉ်ပါ",
+  liveModeDesc: "အနီးနားရှိ မကြာမီ ထွက်ခွာမည့် မျှဝေခရီးစဉ် ရှာပါ · ထွက်ခွာခင် ၃၀ မိနစ်အကြို စီစဉ်ပါ",
 
   welcomeTitle: "တူတူငှားမှ ကြိုဆိုပါသည်",
   chooseHowContinue: "ဆက်လက်ရန် နည်းလမ်းကို ရွေးပါ",
