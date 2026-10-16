@@ -1,8 +1,9 @@
 import * as React from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, CheckCircle2, Flag, Loader2, MapPin, Radar } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2, Flag, LocateFixed, Loader2, MapPin, Radar } from "lucide-react";
 
 import { LocationAutocomplete } from "@/components/booking/location-autocomplete";
+import { PickupChooser } from "@/components/booking/pickup-chooser";
 import { MapView } from "@/components/map/map-view";
 import type { MapMarker } from "@/components/map/route-map";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,7 @@ import { formatMMK, paymentMethods, quoteFare, type PaymentMethod } from "@/lib/
 import { formatTime12, timeWindows, type LatLng } from "@/lib/mockData";
 import { useRoadPath } from "@/lib/road-path";
 import { useLanguage, useT } from "@/lib/i18n";
-import { pickupsNear, getPickup } from "@/lib/main-road-pickups";
+import { nearestPickups, getPickup, type NearbyPickup } from "@/lib/main-road-pickups";
 import { addHistoryBooking } from "@/lib/booking-history";
 import { useVehicleAnimation } from "@/lib/use-vehicle-animation";
 import { cn } from "@/lib/utils";
@@ -52,11 +53,19 @@ export function RideFlow({ mode }: { mode: Mode }) {
   const { pickupCoord, destinationCoord } = booking;
   const quote = quoteFare(pickupCoord, destinationCoord);
   const idx = steps.indexOf(step);
-  const nearPickups = React.useMemo(() => (pickupCoord ? pickupsNear(pickupCoord) : []), [pickupCoord]);
+  const live = useLiveLocation(mode === "live");
+  // Live Mode measures from the device location; otherwise from the chosen pickup area.
+  const originCoord = mode === "live" && live.coord && !pickupCoord ? live.coord : pickupCoord;
+  const near = React.useMemo(
+    () => (originCoord ? nearestPickups(originCoord) : { pickups: [] as NearbyPickup[], withinRadius: true }),
+    [originCoord],
+  );
+  const nearPickups = near.pickups;
   React.useEffect(() => {
-    setMainPickupId((cur) => (nearPickups.some((p) => p.id === cur) ? cur : (nearPickups[0]?.id ?? null)));
+    // Preselect the nearest whenever the origin changes.
+    setMainPickupId(nearPickups[0]?.id ?? null);
   }, [nearPickups]);
-  const mainPickup = getPickup(mainPickupId);
+  const mainPickup = nearPickups.find((p) => p.id === mainPickupId) ?? null;
   const mainPickupLabel = mainPickup ? (lang === "my" ? mainPickup.nameMy : mainPickup.name) : booking.pickupText;
   const savedRef = React.useRef(false);
   const go = (s: Step) => {
@@ -78,6 +87,8 @@ export function RideFlow({ mode }: { mode: Mode }) {
         driverName: DRIVER.name,
         plate: DRIVER.plate,
         pickupPointId: mainPickup.id,
+        pickupDistanceM: mainPickup.distanceM,
+        ...(originCoord ? { areaLat: originCoord.lat, areaLng: originCoord.lng } : {}),
         status: "upcoming",
       });
     }
@@ -132,6 +143,7 @@ export function RideFlow({ mode }: { mode: Mode }) {
       {step === "where" ? (
         <Card className="shadow-card">
           <CardContent className="space-y-4 pt-6">
+            {mode === "live" ? <LiveLocationPanel live={live} pickups={nearPickups} selectedId={mainPickupId} usingDevice={!pickupCoord} onUseDevice={() => { booking.set({ pickupText: "", pickupCoord: null }); live.request(); }} /> : null}
             <div className="space-y-1.5">
               <Label htmlFor="flow-pickup"><MapPin className="size-4 text-primary" /> {t("pickupPoint")}</Label>
               <LocationAutocomplete
@@ -153,26 +165,12 @@ export function RideFlow({ mode }: { mode: Mode }) {
                 onPick={(p) => booking.set({ destinationText: p.label, destinationCoord: { lat: p.lat, lng: p.lng } })}
               />
             </div>
-            {mode === "prebook" && nearPickups.length ? (
-              <div className="space-y-1.5">
-                <Label>{t("mainRoadPickup")}</Label>
-                <div className="grid gap-2">
-                  {nearPickups.map((p) => (
-                    <button key={p.id} type="button" onClick={() => setMainPickupId(p.id)}
-                      className={cn("flex cursor-pointer items-center gap-2 rounded-xl border px-3 py-2 text-left text-sm",
-                        mainPickupId === p.id ? "border-primary bg-primary/10 text-primary" : "border-border bg-card")}>
-                      <MapPin className="size-4 shrink-0" /> {lang === "my" ? p.nameMy : p.name}
-                    </button>
-                  ))}
-                </div>
-                <p className="text-xs text-muted-foreground">{t("mainRoadNote")}</p>
-              </div>
-            ) : null}
+            <PickupChooser pickups={nearPickups} withinRadius={near.withinRadius} selectedId={mainPickupId} onSelect={setMainPickupId} />
             {quote ? <FareBadge fare={quote.fare} from={quote.from.name} to={quote.to.name} /> : null}
-            <Button className="w-full" size="lg" disabled={!pickupCoord || !destinationCoord || (mode === "prebook" && !mainPickupId)} onClick={() => go(mode === "prebook" ? "time" : "match")}>
+            <Button className="w-full" size="lg" disabled={!originCoord || !destinationCoord || !mainPickupId} onClick={() => go(mode === "prebook" ? "time" : "match")}>
               {t("continueLabel")} <ArrowRight className="size-4" />
             </Button>
-            {!pickupCoord || !destinationCoord ? (
+            {!originCoord || !destinationCoord ? (
               <p className="text-center text-xs text-muted-foreground">{t("pickBothPlacesHint")}</p>
             ) : null}
           </CardContent>
@@ -288,7 +286,7 @@ export function RideFlow({ mode }: { mode: Mode }) {
             </CardContent>
           </Card>
         ) : (
-          <LiveTracking method={method} fare={quote?.fare} />
+          <LiveTracking method={method} fare={quote?.fare} pickupPoint={mainPickup} pickupLabel={mainPickupLabel} />
         )
       ) : null}
     </div>
@@ -321,14 +319,16 @@ function DriverRow({ method, fare }: { method: string; fare?: number | undefined
   );
 }
 
-function LiveTracking({ method, fare }: { method: string; fare?: number | undefined }) {
+function LiveTracking({ method, fare, pickupPoint, pickupLabel }: { method: string; fare?: number | undefined; pickupPoint: NearbyPickup | null; pickupLabel: string }) {
   const t = useT();
-  const { pickupCoord, pickupText } = useBooking();
-  const pickup: LatLng | null = pickupCoord ? [pickupCoord.lat, pickupCoord.lng] : null;
+  const { pickupCoord } = useBooking();
+  const src = pickupPoint ?? pickupCoord;
+  const pickupText = pickupLabel;
+  const pickup: LatLng | null = src ? [src.lat, src.lng] : null;
   const waypoints = React.useMemo<LatLng[] | null>(
     () => (pickup ? [[pickup[0] + 0.012, pickup[1] + 0.01], pickup] : null),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [pickupCoord],
+    [src?.lat, src?.lng],
   );
   const path = useRoadPath(waypoints) ?? null;
   const vehicle = useVehicleAnimation(path, true);
@@ -349,6 +349,58 @@ function LiveTracking({ method, fare }: { method: string; fare?: number | undefi
           <DriverRow method={method} fare={fare} />
         </CardContent>
       </Card>
+    </div>
+  );
+}
+
+/** Central Yangon (Sule) — demo fallback so Live Mode never breaks. */
+const DEMO_LOCATION = { lat: 16.7770, lng: 96.1586 };
+type LiveLocation = { coord: { lat: number; lng: number } | null; status: "idle" | "locating" | "ok" | "failed"; request: () => void };
+
+function useLiveLocation(enabled: boolean): LiveLocation {
+  const [coord, setCoord] = React.useState<LiveLocation["coord"]>(null);
+  const [status, setStatus] = React.useState<LiveLocation["status"]>("idle");
+  const request = React.useCallback(() => {
+    const fail = () => { setCoord(DEMO_LOCATION); setStatus("failed"); };
+    if (typeof navigator === "undefined" || !navigator.geolocation) return fail();
+    setStatus("locating");
+    navigator.geolocation.getCurrentPosition(
+      (pos) => { setCoord({ lat: pos.coords.latitude, lng: pos.coords.longitude }); setStatus("ok"); },
+      fail,
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 },
+    );
+  }, []);
+  React.useEffect(() => { if (enabled) request(); }, [enabled, request]);
+  return { coord, status, request };
+}
+
+function LiveLocationPanel({ live, pickups, selectedId, usingDevice, onUseDevice }: {
+  live: LiveLocation; pickups: NearbyPickup[]; selectedId: string | null; usingDevice: boolean; onUseDevice: () => void;
+}) {
+  const t = useT();
+  const markers: MapMarker[] = pickups.map((p) => ({
+    id: p.id, lat: p.lat, lng: p.lng, color: p.id === selectedId ? "#F75514" : "#334155", size: p.id === selectedId ? 30 : 22, label: "P", title: p.name,
+  }));
+  const me: LatLng | null = usingDevice && live.coord ? [live.coord.lat, live.coord.lng] : null;
+  const fit: LatLng[] = [...(me ? [me] : []), ...pickups.map((p) => [p.lat, p.lng] as LatLng)];
+  return (
+    <div className="space-y-2.5">
+      <p className="text-sm text-muted-foreground">{t("locationExplain")}</p>
+      {live.status === "locating" ? (
+        <p role="status" className="flex items-center gap-2 text-sm"><Loader2 className="size-4 animate-spin text-primary" /> {t("locating")}</p>
+      ) : live.status === "failed" ? (
+        <p role="status" className="rounded-xl border border-primary/30 bg-primary/5 px-3 py-2 text-xs font-medium text-primary">{t("locationUnavailable")}</p>
+      ) : live.status === "ok" && usingDevice ? (
+        <p className="text-xs font-medium text-primary">{t("usingYourLocation")}</p>
+      ) : null}
+      {usingDevice && fit.length ? (
+        <div className="relative isolate z-0 overflow-hidden rounded-xl border border-border">
+          <MapView className="h-44" routes={[]} markers={markers} userLocation={me} fitTo={fit} />
+        </div>
+      ) : null}
+      <Button type="button" variant="outline" className="min-h-10 w-full border-primary text-primary" onClick={onUseDevice} disabled={live.status === "locating"}>
+        <LocateFixed className="size-4" /> {t("useMyLocation")}
+      </Button>
     </div>
   );
 }
