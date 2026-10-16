@@ -22,7 +22,7 @@ export function usePassengerNav(activeTab?: Tab): BottomNavItem[] {
       onSelect: () => navigate({ to: "/home" }),
     },
     {
-      label: t("trips"),
+      label: t("history"),
       icon: CalendarClock,
       active: isActive("trips", ["/trips", "/rides", "/pay", "/confirmed", "/trip"]),
       onSelect: () => navigate({ to: "/trips" }),
