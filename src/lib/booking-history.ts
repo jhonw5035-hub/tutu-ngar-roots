@@ -16,6 +16,11 @@ export type HistoryBooking = {
   driverName: string;
   plate: string;
   pickupPointId: string;
+  /** Distance (m) from the passenger's area to the pickup point. */
+  pickupDistanceM?: number;
+  /** Passenger's area coordinate, for the "you" dot on the map. */
+  areaLat?: number;
+  areaLng?: number;
   status: HistoryStatus;
 };
 
