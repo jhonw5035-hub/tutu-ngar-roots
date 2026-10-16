@@ -58,7 +58,7 @@ export function TaxiDoorScene() {
 
         <div className={state === "playing" ? "" : "ttn-intro-cta mt-8"}>
           <Button asChild size="lg" className="w-full min-w-[240px]">
-            <Link to="/login" onClick={(e) => e.stopPropagation()}>
+            <Link to="/home" onClick={(e) => e.stopPropagation()}>
               {t("getStarted")}
             </Link>
           </Button>

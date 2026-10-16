@@ -11,9 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AccountRouteImport } from './routes/account'
-import { Route as AdminRouteImport } from './routes/admin'
 import { Route as ConfirmedRouteImport } from './routes/confirmed'
-import { Route as DriverRouteImport } from './routes/driver'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as LiveRouteImport } from './routes/live'
 import { Route as LoginRouteImport } from './routes/login'
@@ -22,16 +20,6 @@ import { Route as PrebookRouteImport } from './routes/prebook'
 import { Route as RidesRouteImport } from './routes/rides'
 import { Route as TripRouteImport } from './routes/trip'
 import { Route as TripsRouteImport } from './routes/trips'
-import { Route as AdminIndexRouteImport } from './routes/admin.index'
-import { Route as AdminAiMatchingRouteImport } from './routes/admin.ai-matching'
-import { Route as AdminPassengersRouteImport } from './routes/admin.passengers'
-import { Route as AdminRoutesRouteImport } from './routes/admin.routes'
-import { Route as AdminSupportRouteImport } from './routes/admin.support'
-import { Route as AdminVehiclesRouteImport } from './routes/admin.vehicles'
-import { Route as DriverIndexRouteImport } from './routes/driver.index'
-import { Route as DriverEarningsRouteImport } from './routes/driver.earnings'
-import { Route as DriverProfileRouteImport } from './routes/driver.profile'
-import { Route as DriverTripsRouteImport } from './routes/driver.trips'
 import { Route as RideSlotIdRouteImport } from './routes/ride.$slotId'
 
 const IndexRoute = IndexRouteImport.update({
@@ -44,19 +32,9 @@ const AccountRoute = AccountRouteImport.update({
   path: '/account',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ConfirmedRoute = ConfirmedRouteImport.update({
   id: '/confirmed',
   path: '/confirmed',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DriverRoute = DriverRouteImport.update({
-  id: '/driver',
-  path: '/driver',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HomeRoute = HomeRouteImport.update({
@@ -99,56 +77,6 @@ const TripsRoute = TripsRouteImport.update({
   path: '/trips',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminIndexRoute = AdminIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminAiMatchingRoute = AdminAiMatchingRouteImport.update({
-  id: '/ai-matching',
-  path: '/ai-matching',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminPassengersRoute = AdminPassengersRouteImport.update({
-  id: '/passengers',
-  path: '/passengers',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminRoutesRoute = AdminRoutesRouteImport.update({
-  id: '/routes',
-  path: '/routes',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminSupportRoute = AdminSupportRouteImport.update({
-  id: '/support',
-  path: '/support',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminVehiclesRoute = AdminVehiclesRouteImport.update({
-  id: '/vehicles',
-  path: '/vehicles',
-  getParentRoute: () => AdminRoute,
-} as any)
-const DriverIndexRoute = DriverIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => DriverRoute,
-} as any)
-const DriverEarningsRoute = DriverEarningsRouteImport.update({
-  id: '/earnings',
-  path: '/earnings',
-  getParentRoute: () => DriverRoute,
-} as any)
-const DriverProfileRoute = DriverProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => DriverRoute,
-} as any)
-const DriverTripsRoute = DriverTripsRouteImport.update({
-  id: '/trips',
-  path: '/trips',
-  getParentRoute: () => DriverRoute,
-} as any)
 const RideSlotIdRoute = RideSlotIdRouteImport.update({
   id: '/ride/$slotId',
   path: '/ride/$slotId',
@@ -158,9 +86,7 @@ const RideSlotIdRoute = RideSlotIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
-  '/admin': typeof AdminRouteWithChildren
   '/confirmed': typeof ConfirmedRoute
-  '/driver': typeof DriverRouteWithChildren
   '/home': typeof HomeRoute
   '/live': typeof LiveRoute
   '/login': typeof LoginRoute
@@ -169,17 +95,7 @@ export interface FileRoutesByFullPath {
   '/rides': typeof RidesRoute
   '/trip': typeof TripRoute
   '/trips': typeof TripsRoute
-  '/admin/ai-matching': typeof AdminAiMatchingRoute
-  '/admin/passengers': typeof AdminPassengersRoute
-  '/admin/routes': typeof AdminRoutesRoute
-  '/admin/support': typeof AdminSupportRoute
-  '/admin/vehicles': typeof AdminVehiclesRoute
-  '/driver/earnings': typeof DriverEarningsRoute
-  '/driver/profile': typeof DriverProfileRoute
-  '/driver/trips': typeof DriverTripsRoute
   '/ride/$slotId': typeof RideSlotIdRoute
-  '/admin/': typeof AdminIndexRoute
-  '/driver/': typeof DriverIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -193,25 +109,13 @@ export interface FileRoutesByTo {
   '/rides': typeof RidesRoute
   '/trip': typeof TripRoute
   '/trips': typeof TripsRoute
-  '/admin/ai-matching': typeof AdminAiMatchingRoute
-  '/admin/passengers': typeof AdminPassengersRoute
-  '/admin/routes': typeof AdminRoutesRoute
-  '/admin/support': typeof AdminSupportRoute
-  '/admin/vehicles': typeof AdminVehiclesRoute
-  '/driver/earnings': typeof DriverEarningsRoute
-  '/driver/profile': typeof DriverProfileRoute
-  '/driver/trips': typeof DriverTripsRoute
   '/ride/$slotId': typeof RideSlotIdRoute
-  '/admin': typeof AdminIndexRoute
-  '/driver': typeof DriverIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
-  '/admin': typeof AdminRouteWithChildren
   '/confirmed': typeof ConfirmedRoute
-  '/driver': typeof DriverRouteWithChildren
   '/home': typeof HomeRoute
   '/live': typeof LiveRoute
   '/login': typeof LoginRoute
@@ -220,26 +124,14 @@ export interface FileRoutesById {
   '/rides': typeof RidesRoute
   '/trip': typeof TripRoute
   '/trips': typeof TripsRoute
-  '/admin/ai-matching': typeof AdminAiMatchingRoute
-  '/admin/passengers': typeof AdminPassengersRoute
-  '/admin/routes': typeof AdminRoutesRoute
-  '/admin/support': typeof AdminSupportRoute
-  '/admin/vehicles': typeof AdminVehiclesRoute
-  '/driver/earnings': typeof DriverEarningsRoute
-  '/driver/profile': typeof DriverProfileRoute
-  '/driver/trips': typeof DriverTripsRoute
   '/ride/$slotId': typeof RideSlotIdRoute
-  '/admin/': typeof AdminIndexRoute
-  '/driver/': typeof DriverIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/account'
-    | '/admin'
     | '/confirmed'
-    | '/driver'
     | '/home'
     | '/live'
     | '/login'
@@ -248,17 +140,7 @@ export interface FileRouteTypes {
     | '/rides'
     | '/trip'
     | '/trips'
-    | '/admin/ai-matching'
-    | '/admin/passengers'
-    | '/admin/routes'
-    | '/admin/support'
-    | '/admin/vehicles'
-    | '/driver/earnings'
-    | '/driver/profile'
-    | '/driver/trips'
     | '/ride/$slotId'
-    | '/admin/'
-    | '/driver/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -272,24 +154,12 @@ export interface FileRouteTypes {
     | '/rides'
     | '/trip'
     | '/trips'
-    | '/admin/ai-matching'
-    | '/admin/passengers'
-    | '/admin/routes'
-    | '/admin/support'
-    | '/admin/vehicles'
-    | '/driver/earnings'
-    | '/driver/profile'
-    | '/driver/trips'
     | '/ride/$slotId'
-    | '/admin'
-    | '/driver'
   id:
     | '__root__'
     | '/'
     | '/account'
-    | '/admin'
     | '/confirmed'
-    | '/driver'
     | '/home'
     | '/live'
     | '/login'
@@ -298,25 +168,13 @@ export interface FileRouteTypes {
     | '/rides'
     | '/trip'
     | '/trips'
-    | '/admin/ai-matching'
-    | '/admin/passengers'
-    | '/admin/routes'
-    | '/admin/support'
-    | '/admin/vehicles'
-    | '/driver/earnings'
-    | '/driver/profile'
-    | '/driver/trips'
     | '/ride/$slotId'
-    | '/admin/'
-    | '/driver/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRoute
-  AdminRoute: typeof AdminRouteWithChildren
   ConfirmedRoute: typeof ConfirmedRoute
-  DriverRoute: typeof DriverRouteWithChildren
   HomeRoute: typeof HomeRoute
   LiveRoute: typeof LiveRoute
   LoginRoute: typeof LoginRoute
@@ -344,25 +202,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/confirmed': {
       id: '/confirmed'
       path: '/confirmed'
       fullPath: '/confirmed'
       preLoaderRoute: typeof ConfirmedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/driver': {
-      id: '/driver'
-      path: '/driver'
-      fullPath: '/driver'
-      preLoaderRoute: typeof DriverRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/home': {
@@ -421,76 +265,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TripsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/': {
-      id: '/admin/'
-      path: '/'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof AdminIndexRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/ai-matching': {
-      id: '/admin/ai-matching'
-      path: '/ai-matching'
-      fullPath: '/admin/ai-matching'
-      preLoaderRoute: typeof AdminAiMatchingRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/passengers': {
-      id: '/admin/passengers'
-      path: '/passengers'
-      fullPath: '/admin/passengers'
-      preLoaderRoute: typeof AdminPassengersRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/routes': {
-      id: '/admin/routes'
-      path: '/routes'
-      fullPath: '/admin/routes'
-      preLoaderRoute: typeof AdminRoutesRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/support': {
-      id: '/admin/support'
-      path: '/support'
-      fullPath: '/admin/support'
-      preLoaderRoute: typeof AdminSupportRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/vehicles': {
-      id: '/admin/vehicles'
-      path: '/vehicles'
-      fullPath: '/admin/vehicles'
-      preLoaderRoute: typeof AdminVehiclesRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/driver/': {
-      id: '/driver/'
-      path: '/'
-      fullPath: '/driver/'
-      preLoaderRoute: typeof DriverIndexRouteImport
-      parentRoute: typeof DriverRoute
-    }
-    '/driver/earnings': {
-      id: '/driver/earnings'
-      path: '/earnings'
-      fullPath: '/driver/earnings'
-      preLoaderRoute: typeof DriverEarningsRouteImport
-      parentRoute: typeof DriverRoute
-    }
-    '/driver/profile': {
-      id: '/driver/profile'
-      path: '/profile'
-      fullPath: '/driver/profile'
-      preLoaderRoute: typeof DriverProfileRouteImport
-      parentRoute: typeof DriverRoute
-    }
-    '/driver/trips': {
-      id: '/driver/trips'
-      path: '/trips'
-      fullPath: '/driver/trips'
-      preLoaderRoute: typeof DriverTripsRouteImport
-      parentRoute: typeof DriverRoute
-    }
     '/ride/$slotId': {
       id: '/ride/$slotId'
       path: '/ride/$slotId'
@@ -501,49 +275,10 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface AdminRouteChildren {
-  AdminAiMatchingRoute: typeof AdminAiMatchingRoute
-  AdminPassengersRoute: typeof AdminPassengersRoute
-  AdminRoutesRoute: typeof AdminRoutesRoute
-  AdminSupportRoute: typeof AdminSupportRoute
-  AdminVehiclesRoute: typeof AdminVehiclesRoute
-  AdminIndexRoute: typeof AdminIndexRoute
-}
-
-const AdminRouteChildren: AdminRouteChildren = {
-  AdminAiMatchingRoute: AdminAiMatchingRoute,
-  AdminPassengersRoute: AdminPassengersRoute,
-  AdminRoutesRoute: AdminRoutesRoute,
-  AdminSupportRoute: AdminSupportRoute,
-  AdminVehiclesRoute: AdminVehiclesRoute,
-  AdminIndexRoute: AdminIndexRoute,
-}
-
-const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
-
-interface DriverRouteChildren {
-  DriverEarningsRoute: typeof DriverEarningsRoute
-  DriverProfileRoute: typeof DriverProfileRoute
-  DriverTripsRoute: typeof DriverTripsRoute
-  DriverIndexRoute: typeof DriverIndexRoute
-}
-
-const DriverRouteChildren: DriverRouteChildren = {
-  DriverEarningsRoute: DriverEarningsRoute,
-  DriverProfileRoute: DriverProfileRoute,
-  DriverTripsRoute: DriverTripsRoute,
-  DriverIndexRoute: DriverIndexRoute,
-}
-
-const DriverRouteWithChildren =
-  DriverRoute._addFileChildren(DriverRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
-  AdminRoute: AdminRouteWithChildren,
   ConfirmedRoute: ConfirmedRoute,
-  DriverRoute: DriverRouteWithChildren,
   HomeRoute: HomeRoute,
   LiveRoute: LiveRoute,
   LoginRoute: LoginRoute,

@@ -14,18 +14,6 @@ import {
 import { useSession } from "@/lib/session";
 import { useT } from "@/lib/i18n";
 
-const roleLabel = {
-  passenger: "Passenger",
-  driver: "Driver",
-  admin: "Admin",
-} as const;
-
-/** Where "Settings" / "View profile" go for each signed-in role. */
-const settingsPath = {
-  passenger: "/account",
-  driver: "/driver/profile",
-  admin: "/account",
-} as const;
 
 function getInitials(name?: string | null) {
   if (!name) return "?";
@@ -43,7 +31,7 @@ export function AccountMenu() {
   const t = useT();
 
   const displayName = profile?.firstName || profile?.fullName || "Guest";
-  const target = settingsPath[role ?? "passenger"];
+  const target = "/account";
 
   return (
     <DropdownMenu>
@@ -83,7 +71,7 @@ export function AccountMenu() {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onSelect={() => {
-            void signOut().then(() => navigate({ to: "/login", replace: true }));
+            void signOut().then(() => navigate({ to: "/home", replace: true }));
           }}
         >
           <LogOut className="size-4" />

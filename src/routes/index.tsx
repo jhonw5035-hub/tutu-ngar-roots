@@ -1,6 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
-
-import { TaxiDoorScene } from "@/components/intro/taxi-door-scene";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -20,9 +18,7 @@ export const Route = createFileRoute("/")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: Index,
+  beforeLoad: () => {
+    throw redirect({ to: "/home", replace: true });
+  },
 });
-
-function Index() {
-  return <TaxiDoorScene />;
-}

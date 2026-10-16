@@ -19,7 +19,9 @@ import { useBooking } from "@/lib/booking-store";
 import { formatMMK, paymentMethods, quoteFare, type PaymentMethod } from "@/lib/fares";
 import { formatTime12, timeWindows, type LatLng } from "@/lib/mockData";
 import { useRoadPath } from "@/lib/road-path";
-import { useT } from "@/lib/i18n";
+import { useLanguage, useT } from "@/lib/i18n";
+import { pickupsNear, getPickup } from "@/lib/main-road-pickups";
+import { addHistoryBooking } from "@/lib/booking-history";
 import { useVehicleAnimation } from "@/lib/use-vehicle-animation";
 import { cn } from "@/lib/utils";
 
@@ -44,12 +46,41 @@ export function RideFlow({ mode }: { mode: Mode }) {
   const [windowId, setWindowId] = React.useState<string | null>(null);
   const [method, setMethod] = React.useState<PaymentMethod>("Cash");
   const [searching, setSearching] = React.useState(false);
+  const { lang } = useLanguage();
+  const [mainPickupId, setMainPickupId] = React.useState<string | null>(null);
 
   const { pickupCoord, destinationCoord } = booking;
   const quote = quoteFare(pickupCoord, destinationCoord);
   const idx = steps.indexOf(step);
+  const nearPickups = React.useMemo(() => (pickupCoord ? pickupsNear(pickupCoord) : []), [pickupCoord]);
+  React.useEffect(() => {
+    setMainPickupId((cur) => (nearPickups.some((p) => p.id === cur) ? cur : (nearPickups[0]?.id ?? null)));
+  }, [nearPickups]);
+  const mainPickup = getPickup(mainPickupId);
+  const mainPickupLabel = mainPickup ? (lang === "my" ? mainPickup.nameMy : mainPickup.name) : booking.pickupText;
+  const savedRef = React.useRef(false);
   const go = (s: Step) => {
     if (s === "match" && mode === "prebook") setSearching(true);
+    if (s === "done" && mode === "prebook" && !savedRef.current && chosen && mainPickup) {
+      savedRef.current = true;
+      const d = new Date();
+      d.setHours(0, 0, 0, 0);
+      if (day === "tomorrow") d.setDate(d.getDate() + 1);
+      addHistoryBooking({
+        id: `hb-${Date.now()}`,
+        createdAt: Date.now(),
+        pickupArea: booking.pickupText,
+        destination: booking.destinationText,
+        departAt: d.getTime() + toMin(chosen.from) * 60000,
+        windowLabel: chosen.label,
+        fare: quote?.fare ?? null,
+        method,
+        driverName: DRIVER.name,
+        plate: DRIVER.plate,
+        pickupPointId: mainPickup.id,
+        status: "upcoming",
+      });
+    }
     setStep(s);
   };
   const back = () => {
@@ -122,8 +153,23 @@ export function RideFlow({ mode }: { mode: Mode }) {
                 onPick={(p) => booking.set({ destinationText: p.label, destinationCoord: { lat: p.lat, lng: p.lng } })}
               />
             </div>
+            {mode === "prebook" && nearPickups.length ? (
+              <div className="space-y-1.5">
+                <Label>{t("mainRoadPickup")}</Label>
+                <div className="grid gap-2">
+                  {nearPickups.map((p) => (
+                    <button key={p.id} type="button" onClick={() => setMainPickupId(p.id)}
+                      className={cn("flex cursor-pointer items-center gap-2 rounded-xl border px-3 py-2 text-left text-sm",
+                        mainPickupId === p.id ? "border-primary bg-primary/10 text-primary" : "border-border bg-card")}>
+                      <MapPin className="size-4 shrink-0" /> {lang === "my" ? p.nameMy : p.name}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground">{t("mainRoadNote")}</p>
+              </div>
+            ) : null}
             {quote ? <FareBadge fare={quote.fare} from={quote.from.name} to={quote.to.name} /> : null}
-            <Button className="w-full" size="lg" disabled={!pickupCoord || !destinationCoord} onClick={() => go(mode === "prebook" ? "time" : "match")}>
+            <Button className="w-full" size="lg" disabled={!pickupCoord || !destinationCoord || (mode === "prebook" && !mainPickupId)} onClick={() => go(mode === "prebook" ? "time" : "match")}>
               {t("continueLabel")} <ArrowRight className="size-4" />
             </Button>
             {!pickupCoord || !destinationCoord ? (
@@ -234,7 +280,7 @@ export function RideFlow({ mode }: { mode: Mode }) {
               <CheckCircle2 className="prebook-success mx-auto size-14 text-primary" />
               <p className="text-lg font-semibold">
                 {t("driverWillPickUpAt")} {chosen ? formatTime12(chosen.from) : t("yourTime")}
-                {day === "tomorrow" ? ` ${t("tomorrow")}` : ""} {t("at")} {booking.pickupText}
+                {day === "tomorrow" ? ` ${t("tomorrow")}` : ""} {t("at")} {mainPickupLabel}
               </p>
               <p className="text-sm text-muted-foreground">{t("notify10Min")}</p>
               <DriverRow method={method} fare={quote?.fare} />
