@@ -73,11 +73,6 @@ const en = {
   liveModeDesc: "Find a shared ride nearby, departing soon · book 30 min before",
 
   // Role select / account menu
-  welcomeTitle: "Welcome to Tu Tu Ngar",
-  chooseHowContinue: "Choose how you'd like to continue",
-  continueAsPassenger: "Continue as Passenger",
-  continueAsDriver: "Continue as Driver",
-  continueAsAdmin: "Continue as Admin",
   viewProfile: "View profile",
   settings: "Settings",
   notifications: "Notifications",
@@ -317,11 +312,6 @@ const my: Partial<Record<TranslationKey, string>> = {
   liveMode: "တိုက်ရိုက် ရှာဖွေမှု",
   liveModeDesc: "အနီးနားရှိ မကြာမီ ထွက်ခွာမည့် မျှဝေခရီးစဉ် ရှာပါ · ထွက်ခွာခင် ၃၀ မိနစ်အကြို စီစဉ်ပါ",
 
-  welcomeTitle: "တူတူငှားမှ ကြိုဆိုပါသည်",
-  chooseHowContinue: "ဆက်လက်ရန် နည်းလမ်းကို ရွေးပါ",
-  continueAsPassenger: "ခရီးသည်အဖြစ် ဆက်လက်ရန်",
-  continueAsDriver: "ယာဉ်မောင်းအဖြစ် ဆက်လက်ရန်",
-  continueAsAdmin: "စီမံခန့်ခွဲသူအဖြစ် ဆက်လက်ရန်",
   viewProfile: "ကိုယ်ရေးအချက်အလက် ကြည့်ရန်",
   settings: "ဆက်တင်များ",
   notifications: "အသိပေးချက်များ",
