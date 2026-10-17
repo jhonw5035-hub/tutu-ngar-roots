@@ -61,6 +61,8 @@ export type RouteMapProps = {
   userLocation?: LatLng | null;
   /** Optional label bubble rendered next to the vehicle marker. */
   vehicleLabel?: string | undefined;
+  /** Direction of travel in degrees (0 = north), rotates the vehicle arrow. */
+  vehicleHeading?: number | undefined;
   fitTo?: LatLng[];
   locateNonce?: number;
   /** Per-route polyline colour override (used for the simulated traffic view). */
@@ -94,6 +96,7 @@ export default function RouteMap({
   vehicle = null,
   userLocation = null,
   vehicleLabel,
+  vehicleHeading,
   fitTo,
   locateNonce = 0,
   routeColors,
@@ -206,7 +209,7 @@ export default function RouteMap({
                   html: `<span style="display:flex;align-items:center;gap:6px;white-space:nowrap;
                     padding:5px 10px 5px 6px;border-radius:9999px;background:#0f172a;color:#fff;
                     font:600 11px/1 Inter,sans-serif;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.4)">
-                    <span style="font-size:12px">▲</span>${vehicleLabel}</span>`,
+                    <span style="font-size:12px;display:inline-block;transform:rotate(${vehicleHeading ?? 0}deg)">▲</span>${vehicleLabel}</span>`,
                   iconSize: [10, 10],
                   iconAnchor: [12, 12],
                 })
