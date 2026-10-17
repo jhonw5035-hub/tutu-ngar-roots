@@ -145,7 +145,6 @@ const en = {
   plate: "Plate",
   paid: "Paid",
   driverHeadingTo: "Driver heading to",
-  driverOnTheWay: "Driver is on the way...",
 
   // Available rides
   yourArea: "Your area",
@@ -415,7 +414,6 @@ const my: Partial<Record<TranslationKey, string>> = {
   plate: "ကားပလိတ်",
   paid: "ပေးချေပြီး",
   driverHeadingTo: "ယာဉ်မောင်း သွားနေသည့် နေရာ -",
-  driverOnTheWay: "ယာဉ်မောင်း လာနေပါပြီ...",
 
   yourArea: "သင့်နေရာ",
   downtownYangon: "ရန်ကုန် မြို့လယ်",
