@@ -23,7 +23,7 @@ import { useRoadPath } from "@/lib/road-path";
 import { useLanguage, useT } from "@/lib/i18n";
 import { nearestPickups, type NearbyPickup } from "@/lib/main-road-pickups";
 import { addHistoryBooking } from "@/lib/booking-history";
-import { useVehicleAnimation } from "@/lib/use-vehicle-animation";
+import { useLiveDriverRoute } from "@/lib/live-driver-route";
 import { cn } from "@/lib/utils";
 
 type Mode = "prebook" | "live";
@@ -325,13 +325,10 @@ function LiveTracking({ method, fare, pickupPoint, pickupLabel }: { method: stri
   const src = pickupPoint ?? pickupCoord;
   const pickupText = pickupLabel;
   const pickup: LatLng | null = src ? [src.lat, src.lng] : null;
-  const waypoints = React.useMemo<LatLng[] | null>(
-    () => (pickup ? [[pickup[0] + 0.012, pickup[1] + 0.01], pickup] : null),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [src?.lat, src?.lng],
-  );
-  const path = useRoadPath(waypoints) ?? null;
-  const vehicle = useVehicleAnimation(path, true);
+  const pickupKey = pickup ? `${pickup[0]},${pickup[1]}` : null;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const stablePickup = React.useMemo(() => pickup, [pickupKey]);
+  const route = useLiveDriverRoute(stablePickup);
   const markers: MapMarker[] = pickup
     ? [{ id: "pickup", lat: pickup[0], lng: pickup[1], color: "#F75514", size: 26, label: "P", pulse: true, title: pickupText }]
     : [];
@@ -339,13 +336,22 @@ function LiveTracking({ method, fare, pickupPoint, pickupLabel }: { method: stri
   return (
     <div className="space-y-4">
       <div className="relative isolate z-0 overflow-hidden rounded-2xl border border-border">
-        <MapView className="h-72" routes={[]} markers={markers} line={path ?? undefined} vehicle={vehicle} vehicleLabel={t("driver")} {...(path ? { fitTo: path } : {})} />
+        {route.ready && route.path ? (
+          <MapView className="h-72" routes={[]} markers={markers} line={route.path} vehicle={route.position} vehicleLabel={t("driver")} vehicleHeading={route.heading} fitTo={route.path} />
+        ) : (
+          <div className="flex h-72 items-center justify-center gap-2 bg-muted text-sm text-muted-foreground">
+            <Loader2 className="size-4 animate-spin text-primary" /> {t("driverOnTheWay")}
+          </div>
+        )}
       </div>
       <Card className="shadow-card">
         <CardContent className="space-y-3 pt-6">
           <p className="flex items-center gap-2 font-semibold">
             <Loader2 className="size-4 animate-spin text-primary" /> {t("driverHeadingTo")} {pickupText}
           </p>
+          {route.etaMin != null ? (
+            <p className="text-sm text-muted-foreground">ETA {route.etaMin} {t("minUnit")}</p>
+          ) : null}
           <DriverRow method={method} fare={fare} />
         </CardContent>
       </Card>
